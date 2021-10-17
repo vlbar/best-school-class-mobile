@@ -1,11 +1,14 @@
-import React from 'react';
-import { Text, View } from 'react-native';
+import React, { useState } from 'react';
+import StartNavigation from './src/components/navigation/StartNavigation';
+import MainNavigation from './src/components/navigation/MainNavigation';
 
 const App = () => {
-  return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Text>Best School Class Mobile</Text>
-    </View>
+  const [isSignedIn, setIsSignedIn] = useState(false);
+
+  return !isSignedIn ? (
+    <StartNavigation onLoginSuccess={() => setIsSignedIn(true)} />
+  ) : (
+    <MainNavigation />
   );
 };
 
