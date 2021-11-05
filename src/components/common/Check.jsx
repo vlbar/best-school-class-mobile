@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
+import Color from '../../constants';
 import Text from './Text';
 
 export const RADIO_TYPE = 'radio';
@@ -109,8 +110,8 @@ export function Checkbox({
   size = 24,
   active,
   disabled,
-  color = '#298AE5',
-  borderColor = '#9B9B9B',
+  color = Color.primary,
+  borderColor = Color.secondary,
   style,
 }) {
   const checkbox = StyleSheet.create({
@@ -140,7 +141,7 @@ export function Checkbox({
         style,
       ]}
     >
-      {active && <Icon name="checkmark" size={20} color="white" />}
+      {active && <Icon name="checkmark" size={20} color={Color.white} />}
     </View>
   );
 }
@@ -149,8 +150,8 @@ export function Radiomark({
   size = 24,
   active,
   disabled,
-  color = '#298AE5',
-  borderColor = '#9B9B9B',
+  color = Color.primary,
+  borderColor = Color.secondary,
   style,
 }) {
   const radio = StyleSheet.create({
@@ -165,7 +166,7 @@ export function Radiomark({
     active: {
       borderWidth: 7,
       borderColor: color,
-      backgroundColor: 'white',
+      backgroundColor: Color.white,
     },
   });
 
@@ -185,8 +186,8 @@ export function Switch({
   size = 24,
   active,
   disabled,
-  color = '#298AE5',
-  borderColor = '#9B9B9B',
+  color = Color.primary,
+  borderColor = Color.secondary,
   style,
 }) {
   const switchStyle = StyleSheet.create({
@@ -200,7 +201,7 @@ export function Switch({
 
       alignItems: 'center',
       justifyContent: 'center',
-      backgroundColor: 'white',
+      backgroundColor: Color.white,
     },
     active: {
       borderWidth: 0,
@@ -214,7 +215,7 @@ export function Switch({
       transform: [{ translateX: -size / 2 }],
     },
     activeCircle: {
-      backgroundColor: 'white',
+      backgroundColor: Color.white,
       transform: [{ translateX: size / 2 }],
     },
   });
@@ -247,7 +248,7 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     fontSize: 14,
-    color: 'gray',
+    color: Color.silver,
   },
   disabled: {
     opacity: 0.5,

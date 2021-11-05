@@ -1,5 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text as NativeText } from 'react-native';
+import Color from '../../constants';
 
 export const BOLD_WEIGHT = 'bold';
 export const MEDIUM_WEIGHT = 'medium';
@@ -25,7 +26,7 @@ function Text({ children, weight = NORMAL_WEIGHT, style }) {
 
 const styles = StyleSheet.create({
   text: {
-    color: '#343434',
+    color: Color.darkGray,
     fontSize: 17,
   },
 });

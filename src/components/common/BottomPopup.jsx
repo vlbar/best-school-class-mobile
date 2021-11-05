@@ -9,6 +9,7 @@ import {
 import Text from './Text';
 import IconButton from './IconButton';
 import Container from './Container';
+import Color from '../../constants';
 
 function BottomPopup({ show = true, title, onClose, children }) {
   const translateY = useRef(new Animated.Value(0)).current;
@@ -81,7 +82,7 @@ const styles = StyleSheet.create({
   },
   popup: {
     width: '100%',
-    backgroundColor: 'white',
+    backgroundColor: Color.white,
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10,
     minHeight: 200,
@@ -94,7 +95,7 @@ const styles = StyleSheet.create({
     flex: 1,
     textAlign: 'center',
     paddingVertical: 10,
-    color: 'black',
+    color: Color.black,
   },
   close: {
     position: 'absolute',
