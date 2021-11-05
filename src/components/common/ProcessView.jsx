@@ -1,10 +1,11 @@
 import React, { useRef } from 'react';
 import { Animated } from 'react-native';
+import Color from '../../constants';
 
 function ProcessView({
   height = 50,
   width = '100%',
-  backgroundColor = '#EFF2F8',
+  backgroundColor = Color.ultraLightPrimary,
   borderRadius = 10,
   style,
 }) {

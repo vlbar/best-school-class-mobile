@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { Animated, Easing, StyleSheet, View } from 'react-native';
+import Color from '../../constants';
 
 function ProcessBar({ height = 6, active = true, style }) {
   const load = useRef(new Animated.Value(0)).current;
@@ -53,13 +54,13 @@ function ProcessBar({ height = 6, active = true, style }) {
 
 const styles = StyleSheet.create({
   background: {
-    backgroundColor: '#F4F2F2',
+    backgroundColor: Color.veryLightGray,
     width: '100%',
     overflow: 'hidden',
   },
   fill: {
     flex: 1,
-    backgroundColor: '#298AE5',
+    backgroundColor: Color.primary,
     borderRadius: 999,
   },
 });

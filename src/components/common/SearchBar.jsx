@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, TextInput } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
+import Color from '../../constants';
 import IconButton from './IconButton';
 
 function SearchBar({
@@ -35,6 +36,7 @@ function SearchBar({
           value={value}
           style={styles.input}
           placeholder={placeholder}
+          placeholderTextColor={Color.lightGray}
           returnKeyType="search"
           onChangeText={onChangeHandler}
           onSubmitEditing={e => onSearch?.(e.nativeEvent.text.trim())}
@@ -71,7 +73,7 @@ const styles = StyleSheet.create({
   },
   search: {
     flex: 1,
-    backgroundColor: '#EFF2F8',
+    backgroundColor: Color.ultraLightPrimary,
     borderRadius: 6,
     flexDirection: 'row',
     paddingStart: 16,
@@ -90,7 +92,7 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
   },
   button: {
-    backgroundColor: '#EFF2F8',
+    backgroundColor: Color.ultraLightPrimary,
     borderRadius: 6,
     padding: 6,
     marginLeft: 10,

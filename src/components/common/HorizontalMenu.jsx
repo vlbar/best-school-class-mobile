@@ -1,6 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { Children } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
+import Color from '../../constants';
 import Text from './Text';
 
 function HorizontalMenu({ children, style }) {
@@ -52,7 +53,7 @@ function HorizontalMenuItem({
 const styles = StyleSheet.create({
   container: {
     width: '100%',
-    backgroundColor: '#EFF2F8',
+    backgroundColor: Color.ultraLightPrimary,
     borderRadius: 999,
     flexDirection: 'row',
   },
@@ -61,13 +62,13 @@ const styles = StyleSheet.create({
   },
   title: {
     textAlign: 'center',
-    color: 'black',
+    color: Color.darkGray,
     paddingVertical: 6,
     borderRadius: 999,
   },
   active: {
-    backgroundColor: '#51A3FD',
-    color: 'white',
+    backgroundColor: Color.lightPrimary,
+    color: Color.white,
   },
 });
 
