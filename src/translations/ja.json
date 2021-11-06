@@ -1,0 +1,10 @@
+{
+  "start": {
+    "comeback": "おかえりなさい！",
+    "username": "ユーザー名",
+    "password": "パスワード"
+  },
+  "common": {
+    "search": "検索"
+  }
+}

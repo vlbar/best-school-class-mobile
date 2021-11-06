@@ -2,10 +2,11 @@ import React, { useState } from 'react';
 import { View, StyleSheet, TextInput } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import Color from '../../constants';
+import { translate } from '../../utils/Internationalization';
 import IconButton from './IconButton';
 
 function SearchBar({
-  placeholder = 'Search',
+  placeholder = translate('common.search'),
   onChange,
   onSearch,
   onEmpty,
