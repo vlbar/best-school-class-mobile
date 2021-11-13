@@ -9,7 +9,7 @@ const WorkspaceNavigation = () => {
     <>
       <Stack.Navigator
         initialRouteName={WORKSPACE_SCREEN}
-        screenOptions={{ ...TransitionPresets.ScaleFromCenterAndroid }}
+        screenOptions={{ headerShown: false, ...TransitionPresets.ScaleFromCenterAndroid }}
       >
         <Stack.Screen name={WORKSPACE_SCREEN} component={Workspace} />
       </Stack.Navigator>

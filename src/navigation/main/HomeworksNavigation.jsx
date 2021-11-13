@@ -9,7 +9,7 @@ const HomeworksNavigation = () => {
     <>
       <Stack.Navigator
         initialRouteName={HOMEWORKS_SCREEN}
-        screenOptions={{ ...TransitionPresets.ScaleFromCenterAndroid }}
+        screenOptions={{ headerShown: false, ...TransitionPresets.ScaleFromCenterAndroid }}
       >
         <Stack.Screen name={HOMEWORKS_SCREEN} component={Homeworks} />
       </Stack.Navigator>

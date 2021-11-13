@@ -12,5 +12,13 @@
     "homeworks": "Задания",
     "course": "Курс",
     "groups": "Группы"
+  },
+  "screen": {
+    "workspace": {
+      "title": "Рабочая область"
+    },
+    "course": {
+      "title": "Курс"
+    }
   }
 }

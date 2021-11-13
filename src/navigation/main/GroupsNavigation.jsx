@@ -9,7 +9,7 @@ const GroupsNavigation = () => {
     <>
       <Stack.Navigator 
         initialRouteName={GROUPS_SCREEN} 
-        screenOptions={{ ...TransitionPresets.ScaleFromCenterAndroid }}
+        screenOptions={{ headerShown: false, ...TransitionPresets.ScaleFromCenterAndroid }}
       >
         <Stack.Screen name={GROUPS_SCREEN} component={Groups} />
       </Stack.Navigator>

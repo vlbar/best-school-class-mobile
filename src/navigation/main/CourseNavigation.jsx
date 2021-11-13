@@ -7,9 +7,9 @@ const Stack = createStackNavigator();
 
 const CourseNavigation = () => {
   return (
-    <Stack.Navigator 
-      initialRouteName={COURSE_SCREEN} 
-      screenOptions={{ ...TransitionPresets.ScaleFromCenterAndroid }}
+    <Stack.Navigator
+      initialRouteName={COURSE_SCREEN}
+      screenOptions={{ headerShown: false, ...TransitionPresets.ScaleFromCenterAndroid }}
     >
       <Stack.Screen name={COURSE_SCREEN} component={Course} />
       <Stack.Screen name={TASKS_SCREEN} component={Tasks} />

@@ -12,5 +12,13 @@
     "homeworks": "Homeworks",
     "course": "Course",
     "groups": "Groups"
+  },
+  "screen": {
+    "workspace": {
+      "title": "Workspace"
+    },
+    "course": {
+      "title": "Course"
+    }
   }
 }
