@@ -6,5 +6,11 @@
   },
   "common": {
     "search": "Search"
+  },
+  "navigation": {
+    "workspace": "Workspace",
+    "homeworks": "Homeworks",
+    "course": "Course",
+    "groups": "Groups"
   }
 }

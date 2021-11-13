@@ -1,5 +1,6 @@
 import React, { useContext } from 'react';
 import { Button, Text, View } from 'react-native';
+
 import {
   REGISTER_SCREEN,
   TemporaryLoginContext,
