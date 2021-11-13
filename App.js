@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import MainNavigation from './src/navigation/MainNavigation';
+import ProfileNavigation from './src/navigation/ProfileNavigation';
 import StartNavigation from './src/navigation/StartNavigation';
 import { configureInternationalization } from './src/utils/Internationalization';
 
@@ -11,7 +11,7 @@ const App = () => {
   return isSignedIn ? (
     <StartNavigation onLoginSuccess={() => setIsSignedIn(true)} />
   ) : (
-    <MainNavigation />
+    <ProfileNavigation />
   );
 };
 

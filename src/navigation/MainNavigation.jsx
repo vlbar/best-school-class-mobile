@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
-import { NavigationContainer, useNavigationContainerRef } from '@react-navigation/native';
 
 import BottomTabNavigator from '../components/navigation/BottomTabNavigator';
 import CourseNavigation from './main/CourseNavigation';
@@ -56,14 +55,10 @@ const getNavigatorTabs = () => {
   ];
 };
 
-function MainNavigation() {
-  const navigationRef = useNavigationContainerRef();
-  const [navigatorState, setNavigatorState] = useState({
-    routes: [{ name: initialRouteName, state: { index: 0, routes: [] } }],
-  });
-
+export const MAIN_NAVIGATION = 'MainNavigation';
+function MainNavigation({ navigation }) {
   return (
-    <NavigationContainer ref={navigationRef} onStateChange={state => setNavigatorState(state)}>
+    <>
       <Stack.Navigator
         initialRouteName={initialRouteName}
         screenOptions={{
@@ -75,8 +70,12 @@ function MainNavigation() {
           return <Stack.Screen key={tab.name} name={tab.name} component={tab.component} />;
         })}
       </Stack.Navigator>
-      <BottomTabNavigator navigationState={navigatorState} navigationRef={navigationRef} navigatorTabs={getNavigatorTabs()} />
-    </NavigationContainer>
+      <BottomTabNavigator
+        navigation={navigation}
+        navigatorTabs={getNavigatorTabs()}
+        initialRouteName={initialRouteName}
+      />
+    </>
   );
 }
 

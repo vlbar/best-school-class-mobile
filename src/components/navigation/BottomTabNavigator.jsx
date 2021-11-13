@@ -11,9 +11,12 @@ const BAR_HEIGHT = 56;
 const MIN_TAB_WIDTH = 96;
 const MAX_TAB_WIDTH = 168;
 
-function BottomTabNavigator({ navigationState, navigationRef, navigatorTabs }) {
+function BottomTabNavigator({ navigation, navigatorTabs, initialRouteName }) {
   const [isVisible, setIsVisible] = useState(true);
   const [isKeyboardShow, setIsKeyboardShow] = useState(false);
+  const [navigationState, setNavigationState] = useState({
+    routes: [{ name: initialRouteName, state: { index: 0, routes: [] } }],
+  });
 
   useEffect(() => {
     const showSubscription = Keyboard.addListener('keyboardDidShow', () => setIsKeyboardShow(true));
@@ -25,15 +28,20 @@ function BottomTabNavigator({ navigationState, navigationRef, navigatorTabs }) {
     };
   }, []);
 
-  // только не спрашивайте потом, почему undefined...
+  // только не спрашивайте потом, почему undefined... прошу...
   useEffect(() => {
-    let currentNavigatorRoute = navigationState?.routes?.[navigationState.routes.length - 1];
-    let isFirstScreen = currentNavigatorRoute?.state?.index === 0;
+    if (!navigation.getState().routes[0].state) return;
+
+    let currentNavigationState = navigation.getState().routes[0].state;
+    let currentNavigatorRoute = currentNavigationState?.routes?.[currentNavigationState.routes.length - 1];
+    let screenIndex = currentNavigatorRoute?.state?.index ?? 0;
+    let isFirstScreen = screenIndex === 0 && currentNavigatorRoute.params?.screen === undefined;
     let currentScreenRoutes = currentNavigatorRoute?.state?.routes?.[currentNavigatorRoute.state.routes.length - 1];
     let isScreenNeedBottomTabs = currentScreenRoutes?.params?.tabBarVisible;
-
     setIsVisible((isFirstScreen || isScreenNeedBottomTabs) && isScreenNeedBottomTabs !== false);
-  }, [navigationState]);
+
+    setNavigationState(currentNavigationState);
+  }, [navigation.getState().routes]);
 
   if (isVisible && !isKeyboardShow)
     return (
@@ -47,7 +55,7 @@ function BottomTabNavigator({ navigationState, navigationRef, navigatorTabs }) {
               iconName={tab.iconName}
               focusedIconName={tab.focusedIconName}
               navigationState={navigationState}
-              navigationRef={navigationRef}
+              navigationRef={navigation}
             />
           );
         })}
