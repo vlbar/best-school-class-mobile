@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View } from 'react-native';
+import SplashScreen from 'react-native-splash-screen';
 
 import StartNavigation from './src/components/navigation/StartNavigation';
 import MainNavigation from './src/components/navigation/MainNavigation';
@@ -11,6 +12,7 @@ const App = () => {
 
   useEffect(() => {
     configureInternationalization().then(() => setIsInitialized(true));
+    SplashScreen.hide();
   }, []);
 
   if (!isInitialized) return <View />;
