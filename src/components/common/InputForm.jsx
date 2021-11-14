@@ -3,11 +3,11 @@ import { Text, View, StyleSheet, TextInput } from 'react-native';
 
 export default function InputForm({
   label,
-  placeholder,
   errorMessage,
-  value,
   onChange,
   style,
+  inputRef,
+  ...props
 }) {
   return (
     <View style={[styles.container, style]}>
@@ -15,8 +15,8 @@ export default function InputForm({
       <TextInput
         style={[styles.input, errorMessage ? styles.errorInput : styles.input]}
         onChangeText={onChange}
-        placeholder={placeholder}
-        value={value}
+        ref={inputRef}
+        {...props}
       />
       {errorMessage && <Text style={styles.error}>{errorMessage}</Text>}
     </View>
@@ -30,6 +30,8 @@ const styles = StyleSheet.create({
   },
   label: {
     marginBottom: 6,
+    color: '#686868',
+    fontSize: 14,
   },
   error: {
     color: '#dc3545',

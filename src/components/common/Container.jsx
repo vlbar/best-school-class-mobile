@@ -9,6 +9,5 @@ const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 20,
     flex: 1,
-    backgroundColor: 'white',
   },
 });
