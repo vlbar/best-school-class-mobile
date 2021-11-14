@@ -6,6 +6,7 @@
   },
   "common": {
     "search": "Поиск",
-    "input-placeholder-prefix": "Введите"
+    "input-placeholder-prefix": "Введите",
+    "input-placeholder-postfix": ""
   }
 }
