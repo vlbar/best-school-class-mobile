@@ -1,5 +1,13 @@
-import React, { useContext } from 'react';
-import { StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native';
+import React, { useContext, useState } from 'react';
+import {
+  Image,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  TouchableWithoutFeedback,
+  View,
+  ScrollView,
+} from 'react-native';
 import getI from '../../../utils/Internationalization';
 import Button from '../../common/Button';
 import Container from '../../common/Container';
@@ -10,8 +18,29 @@ import {
   TemporaryLoginContext,
 } from '../../navigation/StartNavigation';
 
+import logo from '../../../assets/images/app_logo.png';
+import cumwave from '../../../assets/images/cumwave.png';
+import FormGroup from '../../common/FormGroup';
+import axios from 'axios';
+import SecureStorage from 'react-native-secure-storage';
+
+function login(username, password) {
+  const cridentials = {
+    username,
+    password,
+  };
+  return axios
+    .post('v2/auth/tokens/', cridentials, { skipAuthRefresh: true })
+    .then(response => {
+      return response.data;
+    });
+}
+
 function Login({ navigation }) {
   const { onLoginSuccess } = useContext(TemporaryLoginContext);
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState(null);
 
   function onForgotten() {
     navigation.navigate(PASSWORD_RECOVERY_SCREEN);
@@ -21,67 +50,114 @@ function Login({ navigation }) {
     navigation.navigate(REGISTER_SCREEN);
   }
 
+  function onLogin() {
+    login(username, password)
+      .then(data => {
+        SecureStorage.setItem('token', data.token);
+        SecureStorage.setItem('refreshToken', data.refreshToken);
+
+        onLoginSuccess();
+      })
+      .catch(err => {
+        setError(err.response.data.message);
+      });
+  }
+
   return (
-    <Container style={styles.container}>
-      <Text style={styles.title}>Best school class</Text>
-      <View style={styles.container}>
-        <View>
-          <Text style={styles.cumback}>
-            {getI('login.comeback', 'С возвращением!')}
-          </Text>
-          <InputForm
-            label={getI('login.username', 'Имя пользователя')}
-            placeholder={getI(
-              'login.username-placeholder',
-              'Введите имя пользователя...',
-            )}
-          />
-          <InputForm
-            label={getI('login.password', 'Пароль')}
-            placeholder={getI(
-              'login.password-placeholder',
-              'Введите пароль...',
-            )}
-            style={{ marginBottom: 6 }}
-          />
-          <TouchableWithoutFeedback onPress={onForgotten}>
-            <View style={styles.textActionContainer}>
-              <Text>{getI('login.forgot-question', 'Забыли пароль?')}</Text>
-              <Text> </Text>
-              <Text style={styles.textActionButton}>
-                {getI('login.forgot-button', 'Восстановить пароль')}
-              </Text>
-            </View>
-          </TouchableWithoutFeedback>
+    <SafeAreaView style={{ flex: 1 }}>
+      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+        <View style={[styles.logoContainer]}>
+          <Text style={styles.title}>Best school class</Text>
+          <Image source={logo} style={styles.logo} />
+          <Image source={cumwave} style={styles.cumwave} />
         </View>
-        <View>
-          <Button
-            title={getI('login.button', 'Войти')}
-            onPress={() => onLoginSuccess()}
-          />
-          <TouchableWithoutFeedback onPress={onRegister}>
-            <View
-              style={[
-                styles.textActionContainer,
-                styles.registerActionContainer,
-              ]}
-            >
-              <Text>{getI('login.register-question', 'Нет аккаунта?')}</Text>
-              <Text> </Text>
-              <Text style={styles.textActionButton}>
-                {getI('login.register-button', 'Зарегистрироваться')}
-              </Text>
-            </View>
-          </TouchableWithoutFeedback>
-        </View>
-      </View>
-    </Container>
+        <Container style={styles.mainContainer}>
+          <View>
+            <Text style={styles.cumback}>
+              {getI('login.comeback', 'С возвращением!')}
+            </Text>
+            {error && <Text style={styles.error}>
+              {error}
+            </Text>}
+            <FormGroup>
+              <InputForm
+                label={getI('login.username', 'Имя пользователя')}
+                placeholder={getI(
+                  'login.username-placeholder',
+                  'Введите имя пользователя...',
+                )}
+                onChange={setUsername}
+              />
+              <InputForm
+                label={getI('login.password', 'Пароль')}
+                placeholder={getI(
+                  'login.password-placeholder',
+                  'Введите пароль...',
+                )}
+                style={{ marginBottom: 6 }}
+                secureTextEntry={true}
+                onChange={setPassword}
+              />
+            </FormGroup>
+            <TouchableWithoutFeedback onPress={onForgotten}>
+              <View style={styles.textActionContainer}>
+                <Text>{getI('login.forgot-question', 'Забыли пароль?')}</Text>
+                <Text> </Text>
+                <Text style={styles.textActionButton}>
+                  {getI('login.forgot-button', 'Восстановить пароль')}
+                </Text>
+              </View>
+            </TouchableWithoutFeedback>
+          </View>
+          <View>
+            <Button title={getI('login.button', 'Войти')} onPress={onLogin} />
+            <TouchableWithoutFeedback onPress={onRegister}>
+              <View
+                style={[
+                  styles.textActionContainer,
+                  styles.registerActionContainer,
+                ]}
+              >
+                <Text>{getI('login.register-question', 'Нет аккаунта?')}</Text>
+                <Text> </Text>
+                <Text style={styles.textActionButton}>
+                  {getI('login.register-button', 'Зарегистрироваться')}
+                </Text>
+              </View>
+            </TouchableWithoutFeedback>
+          </View>
+        </Container>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 export default Login;
 
 const styles = StyleSheet.create({
+  logoContainer: {
+    flex: 1,
+    backgroundColor: '#E7EDF4',
+    flexShrink: 0.6,
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  mainContainer: {
+    flex: 1,
+    flexGrow: 1.4,
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+  },
+  logo: {
+    width: 160,
+    height: 160,
+    marginBottom: -100,
+  },
+  cumwave: {
+    width: '100%',
+    height: 152,
+    resizeMode: 'stretch',
+  },
   container: {
     flexDirection: 'column',
     justifyContent: 'space-between',
@@ -90,11 +166,16 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     fontSize: 30,
     textTransform: 'uppercase',
-    paddingHorizontal: 40,
+    paddingHorizontal: 60,
     textAlign: 'center',
+    color: 'black',
   },
   cumback: {
     textAlign: 'center',
+    fontSize: 17,
+    marginTop: 10,
+    marginBottom: 20,
+    color: 'black',
   },
   textActionContainer: {
     flexDirection: 'row',
@@ -108,4 +189,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginVertical: 16,
   },
+  error: {
+    color: "#87212b",
+    backgroundColor: "#f8d7da",
+    borderWidth: 1,
+    borderColor: "#f8d7da",
+    borderRadius: 5,
+    padding: 12,
+    marginBottom: 10
+  }
 });
