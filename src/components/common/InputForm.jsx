@@ -1,5 +1,6 @@
 import React from 'react';
 import { Text, View, StyleSheet, TextInput } from 'react-native';
+import Color from '../../constants';
 
 export default function InputForm({
   label,
@@ -30,15 +31,15 @@ const styles = StyleSheet.create({
   },
   label: {
     marginBottom: 6,
-    color: '#686868',
+    color: Color.gray,
     fontSize: 14,
   },
   error: {
-    color: '#dc3545',
+    color: Color.danger,
     fontSize: 12,
   },
   input: {
-    backgroundColor: '#EFF2F8',
+    backgroundColor: Color.ultraLightPrimary,
     borderRadius: 5,
     paddingHorizontal: 16,
     paddingVertical: 10,
@@ -46,6 +47,6 @@ const styles = StyleSheet.create({
     fontSize: 17,
   },
   errorInput: {
-    borderColor: '#dc3545',
+    borderColor: Color.danger,
   },
 });
