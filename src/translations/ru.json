@@ -5,6 +5,7 @@
     "password": "Пароль"
   },
   "common": {
-    "search": "Поиск"
+    "search": "Поиск",
+    "input-placeholder-prefix": "Введите"
   }
 }

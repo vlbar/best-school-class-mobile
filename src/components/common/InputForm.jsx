@@ -1,6 +1,10 @@
 import React from 'react';
 import { Text, View, StyleSheet, TextInput } from 'react-native';
 import Color from '../../constants';
+import { getI } from '../../utils/Internationalization';
+
+const pPrefixKey = 'common.input-placeholder-prefix';
+const pPostfixKey = 'common.input-placeholder-postfix';
 
 export default function InputForm({
   label,
@@ -8,8 +12,23 @@ export default function InputForm({
   onChange,
   style,
   inputRef,
+  placeholder,
+  autoplaceholder = true,
   ...props
 }) {
+  let placeholderText = placeholder;
+  if (!placeholderText && autoplaceholder) {
+    let placeholderPrefix = getI(pPrefixKey);
+    let placeholderPostfix = getI(pPostfixKey);
+
+    placeholderText =
+      (placeholderPrefix
+        ? placeholderPrefix + ' ' + label.toLowerCase()
+        : label) +
+      (placeholderPostfix ? ' ' + placeholderPostfix : '') +
+      '...';
+  }
+
   return (
     <View style={[styles.container, style]}>
       <Text style={styles.label}>{label}</Text>
@@ -17,6 +36,7 @@ export default function InputForm({
         style={[styles.input, errorMessage ? styles.errorInput : styles.input]}
         onChangeText={onChange}
         ref={inputRef}
+        placeholder={placeholderText}
         {...props}
       />
       {errorMessage && <Text style={styles.error}>{errorMessage}</Text>}
