@@ -1,5 +1,5 @@
 import axios from "axios";
-import Hateoas from "./Hateoas";
+import Hateoas from "./Hateoas.js";
 
 //Represents certain link with actions
 //Examples:

@@ -1,4 +1,4 @@
-import Hateoas from "./Hateoas";
+import Hateoas from "./Hateoas.js";
 
 //Href extracter for objects structured by hal principle
 export default class Hal {

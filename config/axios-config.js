@@ -1,6 +1,6 @@
 import createAuthRefreshInterceptor from 'axios-auth-refresh';
 import SecureStorage from 'react-native-secure-storage';
-import Resource from '../src/utils/Hateoas/Resource';
+import Resource from '../src/utils/Hateoas/Resource.js';
 import axios from 'axios';
 
 export const BASE_PATH = 'https://dss-course-work.herokuapp.com/api';
