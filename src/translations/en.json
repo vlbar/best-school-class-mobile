@@ -1,0 +1,10 @@
+{
+  "start": {
+    "comeback": "Welcome back!",
+    "username": "Username",
+    "password": "Password"
+  },
+  "common": {
+    "search": "Search"
+  }
+}
