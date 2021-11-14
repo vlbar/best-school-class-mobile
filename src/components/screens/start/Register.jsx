@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import {
   StyleSheet,
-  Text,
   View,
   TouchableWithoutFeedback,
   ScrollView,
@@ -10,6 +9,7 @@ import {
 } from 'react-native';
 import { getI } from '../../../utils/Internationalization';
 import Button from '../../common/Button';
+import Text from '../../common/Text';
 import Container from '../../common/Container';
 import FormGroup from '../../common/FormGroup';
 import InputForm from '../../common/InputForm';
@@ -18,6 +18,7 @@ import cumwave from '../../../assets/images/cumwave.png';
 import { Formik } from 'formik';
 import * as yup from 'yup';
 import axios from 'axios';
+import Color from '../../../constants';
 
 const registerSchema = yup.object().shape({
   email: yup
@@ -196,11 +197,11 @@ function Register({ navigation }) {
                 />
                 <TouchableWithoutFeedback onPress={onLogin}>
                   <View style={styles.loginActionContainer}>
-                    <Text>
+                    <Text style={styles.littleText}>
                       {getI('register.login-question', 'Уже есть аккаунт?')}
                     </Text>
                     <Text> </Text>
-                    <Text style={styles.textActionButton}>
+                    <Text style={[styles.littleText, styles.textActionButton]}>
                       {getI('login.login-button', 'Войти')}
                     </Text>
                   </View>
@@ -229,14 +230,18 @@ const styles = StyleSheet.create({
     marginVertical: 16,
   },
   textActionButton: {
-    color: '#298AE5',
+    color: Color.primary,
+  },  
+  littleText: {
+    fontSize: 14,
+    color: Color.gray,
   },
   cumwave: {
     width: '100%',
     height: 152,
     marginTop: -100,
     resizeMode: 'contain',
-    backgroundColor: '#E7EDF4',
+    backgroundColor: Color.background,
   },
 });
 

@@ -3,13 +3,13 @@ import {
   Image,
   SafeAreaView,
   StyleSheet,
-  Text,
   TouchableWithoutFeedback,
   View,
   ScrollView,
 } from 'react-native';
 import { getI } from '../../../utils/Internationalization';
 import Button from '../../common/Button';
+import Text from '../../common/Text';
 import Container from '../../common/Container';
 import InputForm from '../../common/InputForm';
 import {
@@ -23,6 +23,7 @@ import cumwave from '../../../assets/images/cumwave.png';
 import FormGroup from '../../common/FormGroup';
 import axios from 'axios';
 import SecureStorage from 'react-native-secure-storage';
+import Color from '../../../constants';
 
 function login(username, password) {
   const cridentials = {
@@ -91,9 +92,9 @@ function Login({ navigation }) {
             </FormGroup>
             <TouchableWithoutFeedback onPress={onForgotten}>
               <View style={styles.textActionContainer}>
-                <Text>{getI('login.forgot-question', 'Забыли пароль?')}</Text>
+                <Text style={styles.littleText}>{getI('login.forgot-question', 'Забыли пароль?')}</Text>
                 <Text> </Text>
-                <Text style={styles.textActionButton}>
+                <Text style={[styles.littleText, styles.textActionButton]}>
                   {getI('login.forgot-button', 'Восстановить пароль')}
                 </Text>
               </View>
@@ -108,9 +109,9 @@ function Login({ navigation }) {
                   styles.registerActionContainer,
                 ]}
               >
-                <Text>{getI('login.register-question', 'Нет аккаунта?')}</Text>
+                <Text style={styles.littleText}>{getI('login.register-question', 'Нет аккаунта?')}</Text>
                 <Text> </Text>
-                <Text style={styles.textActionButton}>
+                <Text style={[styles.littleText, styles.textActionButton]}>
                   {getI('login.register-button', 'Зарегистрироваться')}
                 </Text>
               </View>
@@ -127,7 +128,7 @@ export default Login;
 const styles = StyleSheet.create({
   logoContainer: {
     flex: 1,
-    backgroundColor: '#E7EDF4',
+    backgroundColor: Color.background,
     flexShrink: 0.6,
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -158,22 +159,26 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
     paddingHorizontal: 60,
     textAlign: 'center',
-    color: 'black',
+    color: Color.black,
   },
   cumback: {
     textAlign: 'center',
     fontSize: 17,
     marginTop: 10,
     marginBottom: 20,
-    color: 'black',
+    color: Color.black,
   },
   textActionContainer: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
     marginBottom: 16,
   },
+  littleText: {
+    fontSize: 14,
+    color: Color.gray,
+  },
   textActionButton: {
-    color: '#298AE5',
+    color: Color.primary,
   },
   registerActionContainer: {
     justifyContent: 'center',

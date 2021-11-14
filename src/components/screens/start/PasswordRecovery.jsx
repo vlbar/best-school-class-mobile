@@ -5,6 +5,7 @@ import Button from '../../common/Button';
 import Container from '../../common/Container';
 import InputForm from '../../common/InputForm';
 import cumwave from '../../../assets/images/cumwave.png';
+import Color from '../../../constants';
 
 export default function PasswordRecovery({ navigation }) {
   return (
@@ -55,6 +56,6 @@ const styles = StyleSheet.create({
     height: 152,
     marginTop: -100,
     resizeMode: 'contain',
-    backgroundColor: '#E7EDF4',
+    backgroundColor: Color.background,
   },
 });
