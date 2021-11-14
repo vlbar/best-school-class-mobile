@@ -1,5 +1,6 @@
 import React from 'react';
-import { Text, View, StyleSheet, TextInput } from 'react-native';
+import { View, StyleSheet, TextInput } from 'react-native';
+import Text from '../common/Text';
 import Color from '../../constants';
 import { getI } from '../../utils/Internationalization';
 
