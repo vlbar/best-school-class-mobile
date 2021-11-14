@@ -1,6 +1,6 @@
 import React from 'react';
 import { Image, SafeAreaView, StyleSheet, Text, View } from 'react-native';
-import getI from '../../../utils/Internationalization';
+import { getI } from '../../../utils/Internationalization';
 import Button from '../../common/Button';
 import Container from '../../common/Container';
 import InputForm from '../../common/InputForm';

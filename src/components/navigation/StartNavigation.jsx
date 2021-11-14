@@ -1,7 +1,7 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React, { createContext } from 'react';
-import getI from '../../utils/Internationalization';
+import { getI } from '../../utils/Internationalization';
 
 import Login from '../screens/start/Login';
 import PasswordRecovery from '../screens/start/PasswordRecovery';

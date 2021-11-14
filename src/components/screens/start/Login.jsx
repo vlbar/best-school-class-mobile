@@ -8,7 +8,7 @@ import {
   View,
   ScrollView,
 } from 'react-native';
-import getI from '../../../utils/Internationalization';
+import { getI } from '../../../utils/Internationalization';
 import Button from '../../common/Button';
 import Container from '../../common/Container';
 import InputForm from '../../common/InputForm';
@@ -74,26 +74,16 @@ function Login({ navigation }) {
         <Container style={styles.mainContainer}>
           <View>
             <Text style={styles.cumback}>
-              {getI('login.comeback', 'С возвращением!')}
+              {getI('start.comeback')}
             </Text>
-            {error && <Text style={styles.error}>
-              {error}
-            </Text>}
+            {error && <Text style={styles.error}>{error}</Text>}
             <FormGroup>
               <InputForm
-                label={getI('login.username', 'Имя пользователя')}
-                placeholder={getI(
-                  'login.username-placeholder',
-                  'Введите имя пользователя...',
-                )}
+                label={getI('start.username')}
                 onChange={setUsername}
               />
               <InputForm
-                label={getI('login.password', 'Пароль')}
-                placeholder={getI(
-                  'login.password-placeholder',
-                  'Введите пароль...',
-                )}
+                label={getI('start.password')}
                 style={{ marginBottom: 6 }}
                 secureTextEntry={true}
                 onChange={setPassword}
@@ -190,12 +180,12 @@ const styles = StyleSheet.create({
     marginVertical: 16,
   },
   error: {
-    color: "#87212b",
-    backgroundColor: "#f8d7da",
+    color: '#87212b',
+    backgroundColor: '#f8d7da',
     borderWidth: 1,
-    borderColor: "#f8d7da",
+    borderColor: '#f8d7da',
     borderRadius: 5,
     padding: 12,
-    marginBottom: 10
-  }
+    marginBottom: 10,
+  },
 });
