@@ -5,6 +5,8 @@
     "password": "Password"
   },
   "common": {
-    "search": "Search"
+    "search": "Search",
+    "input-placeholder-prefix": "Еnter",
+    "input-placeholder-postfix": ""
   }
 }
