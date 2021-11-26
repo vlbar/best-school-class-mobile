@@ -2,11 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { View } from 'react-native';
 import SplashScreen from 'react-native-splash-screen';
 
-import StartNavigation from './src/components/navigation/StartNavigation';
-import MainNavigation from './src/components/navigation/MainNavigation';
-import configureAxios from './config/axios-config';
+import StartNavigation from './src/components/navigation/StartNavigation.jsx';
+import MainNavigation from './src/components/navigation/MainNavigation.jsx';
+import configureAxios from './config/axios-config.js';
 import axios from 'axios';
-import { configureInternationalization } from './src/utils/Internationalization';
+import { configureInternationalization } from './src/utils/Internationalization.js';
 
 configureAxios(axios);
 

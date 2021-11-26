@@ -1,6 +1,6 @@
-import Hal from './Hal';
-import Hateoas from './Hateoas';
-import Link from './Link';
+import Hal from './Hal.js';
+import Hateoas from './Hateoas.js';
+import Link from './Link.js';
 
 //Class that add to objects utility functions
 //Uses href extracter
