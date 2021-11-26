@@ -5,6 +5,8 @@
     "password": "Mot de passe"
   },
   "common": {
-    "search": "Chercher"
+    "search": "Chercher",
+    "input-placeholder-prefix": "Entrer le",
+    "input-placeholder-postfix": ""
   }
 }

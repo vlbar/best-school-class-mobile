@@ -46,21 +46,22 @@ const resources = {
 };
 
 export async function configureInternationalization() {
-  initInternationalization(defaultLanguage);
-
-  AsyncStorage.getItem('@language')
+  let language = defaultLanguage
+  await AsyncStorage.getItem('@language')
     .then(lang => {
-      if (lang !== null) changeLanguage(lang);
-      else changeLanguage(getFallbackAvailableLanguage(getSystemLanguage()));
+      if (lang !== null) language = lang;
+      else language = getFallbackAvailableLanguage(getSystemLanguage());
     })
     .catch(err => {
       console.log(err);
-      changeLanguage(getFallbackAvailableLanguage(getSystemLanguage()));
-    });
+      language = getFallbackAvailableLanguage(getSystemLanguage());
+    })
+
+  return initInternationalization(language);
 }
 
 function initInternationalization(language) {
-  i18n.use(initReactI18next).init({
+  return i18n.use(initReactI18next).init({
     resources,
     lng: language,
     fallbackLng: defaultLanguage,

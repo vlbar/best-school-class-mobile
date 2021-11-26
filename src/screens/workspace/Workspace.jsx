@@ -12,7 +12,7 @@ export const WORKSPACE_SCREEN = 'workspace';
 function Workspace({ navigation }) {
   return (
     <>
-      <Header title={translate('screen.workspace.title')} headerRight={<IconButton name="add-outline" />} />
+      <Header title={translate('workspace.title')} headerRight={<IconButton name="add-outline" />} />
       <Container>
         <Text>Workspace...</Text>
         <Button title="Courses" onPress={() => navigation.navigate(navigatorNames.course)} />

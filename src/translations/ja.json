@@ -5,6 +5,8 @@
     "password": "パスワード"
   },
   "common": {
-    "search": "検索"
+    "search": "検索",
+    "input-placeholder-prefix": "",
+    "input-placeholder-postfix": "を入力してください"
   }
 }

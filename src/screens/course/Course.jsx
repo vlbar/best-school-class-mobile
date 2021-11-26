@@ -11,7 +11,7 @@ export const COURSE_SCREEN = 'course';
 function Course({ navigation }) {
   return (
     <>
-      <Header title={translate('screen.course.title')} />
+      <Header title={translate('course.title')} />
       <Container>
         <Text>Course...</Text>
         <Button title="Courses" onPress={() => navigation.navigate(TASKS_SCREEN)} />
