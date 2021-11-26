@@ -12,7 +12,9 @@ const retryAuth = async failedRequest => {
     .post(`v2/auth/tokens?refreshToken`, initialCridentials, {
       skipAuthRefresh: true,
     })
-    .then(() => {
+    .then((response) => {
+      SecureStorage.setItem('token', response.data.token);
+      SecureStorage.setItem('refreshToken', response.data.refreshToken);
       return Promise.resolve();
     })
     .catch(() => {
