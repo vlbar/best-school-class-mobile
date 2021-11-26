@@ -24,6 +24,7 @@ import FormGroup from '../../common/FormGroup';
 import axios from 'axios';
 import SecureStorage from 'react-native-secure-storage';
 import Color from '../../../constants';
+import ErrorAlert from '../../common/ErrorAlert';
 
 function login(username, password) {
   const cridentials = {
@@ -41,6 +42,7 @@ function Login({ navigation }) {
   const { onLoginSuccess } = useContext(TemporaryLoginContext);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   function onForgotten() {
@@ -52,16 +54,20 @@ function Login({ navigation }) {
   }
 
   function onLogin() {
+    setError(null);
+    setLoading(true);
     login(username, password)
       .then(data => {
-        SecureStorage.setItem('token', data.token);
-        SecureStorage.setItem('refreshToken', data.refreshToken);
-
-        onLoginSuccess();
+        Promise.all([
+          SecureStorage.setItem('token', data.token),
+          SecureStorage.setItem('refreshToken', data.refreshToken),
+        ]).then(onLoginSuccess);
       })
       .catch(err => {
-        setError(err.response.data.message);
-      });
+        if (err.response?.status == 401) setError('start.bad-credentials');
+        console.log(err);
+      })
+      .finally(() => setLoading(false));
   }
 
   return (
@@ -74,14 +80,15 @@ function Login({ navigation }) {
         </View>
         <Container style={styles.mainContainer}>
           <View>
-            <Text style={styles.cumback}>
-              {getI('start.comeback')}
-            </Text>
-            {error && <Text style={styles.error}>{error}</Text>}
+            <Text style={styles.cumback}>{getI('start.comeback')}</Text>
+            <ErrorAlert message={getI(error)}></ErrorAlert>
             <FormGroup>
               <InputForm
                 label={getI('start.username')}
                 onChange={setUsername}
+                textContentType="emailAddress"
+                autoComplete="email"
+                keyboardType="email-address"
               />
               <InputForm
                 label={getI('start.password')}
@@ -92,16 +99,22 @@ function Login({ navigation }) {
             </FormGroup>
             <TouchableWithoutFeedback onPress={onForgotten}>
               <View style={styles.textActionContainer}>
-                <Text style={styles.littleText}>{getI('login.forgot-question', 'Забыли пароль?')}</Text>
+                <Text style={styles.littleText}>
+                  {getI('start.forgot-question')}
+                </Text>
                 <Text> </Text>
                 <Text style={[styles.littleText, styles.textActionButton]}>
-                  {getI('login.forgot-button', 'Восстановить пароль')}
+                  {getI('start.forgot-button')}
                 </Text>
               </View>
             </TouchableWithoutFeedback>
           </View>
           <View>
-            <Button title={getI('login.button', 'Войти')} onPress={onLogin} />
+            <Button
+              title={getI('start.signin', 'Войти')}
+              onPress={onLogin}
+              disabled={loading}
+            />
             <TouchableWithoutFeedback onPress={onRegister}>
               <View
                 style={[
@@ -109,10 +122,12 @@ function Login({ navigation }) {
                   styles.registerActionContainer,
                 ]}
               >
-                <Text style={styles.littleText}>{getI('login.register-question', 'Нет аккаунта?')}</Text>
+                <Text style={styles.littleText}>
+                  {getI('start.register-question')}
+                </Text>
                 <Text> </Text>
                 <Text style={[styles.littleText, styles.textActionButton]}>
-                  {getI('login.register-button', 'Зарегистрироваться')}
+                  {getI('start.register-button')}
                 </Text>
               </View>
             </TouchableWithoutFeedback>
@@ -183,14 +198,5 @@ const styles = StyleSheet.create({
   registerActionContainer: {
     justifyContent: 'center',
     marginVertical: 16,
-  },
-  error: {
-    color: '#87212b',
-    backgroundColor: '#f8d7da',
-    borderWidth: 1,
-    borderColor: '#f8d7da',
-    borderRadius: 5,
-    padding: 12,
-    marginBottom: 10,
   },
 });

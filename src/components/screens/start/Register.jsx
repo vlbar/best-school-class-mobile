@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import {
   StyleSheet,
   View,
@@ -13,43 +13,18 @@ import Text from '../../common/Text';
 import Container from '../../common/Container';
 import FormGroup from '../../common/FormGroup';
 import InputForm from '../../common/InputForm';
-import { LOGIN_SCREEN } from '../../navigation/StartNavigation';
+import {
+  CONFIRMATION_SCREEN,
+  LOGIN_SCREEN,
+  TemporaryLoginContext,
+} from '../../navigation/StartNavigation';
 import cumwave from '../../../assets/images/cumwave.png';
 import { Formik } from 'formik';
 import * as yup from 'yup';
 import axios from 'axios';
 import Color from '../../../constants';
-
-const registerSchema = yup.object().shape({
-  email: yup
-    .string()
-    .trim()
-    .email('Неверный email')
-    .required('Вы не ввели email!'),
-  secondName: yup
-    .string()
-    .trim()
-    .min(3, 'Фамилия должна содержать минимум 3 буквы')
-    .max(50, 'Фамилия не может содержать больше 50 символов')
-    .required('Вы не ввели фамилию!'),
-  firstName: yup
-    .string()
-    .trim()
-    .min(2, 'Имя должно содержать минимум 2 буквы')
-    .max(30, 'Имя не может содержать больше 30 символов')
-    .required('Вы не ввели имя!'),
-  middleName: yup
-    .string()
-    .trim()
-    .nullable(true)
-    .min(3, 'Отчество должно содержать минимум 3 буквы')
-    .max(30, 'Отчество не может содержать больше 50 символов'),
-  password: yup
-    .string()
-    .min(8, 'Пароль должен быть не короче 8 символов!')
-    .max(20, 'Пароль не может превышать 20 символов!')
-    .required('Вы не ввели пароль!'),
-});
+import SecureStorage from 'react-native-secure-storage';
+import ErrorAlert from '../../common/ErrorAlert';
 
 function register(values) {
   return axios.post(`v2/accounts/`, values).then(response => {
@@ -58,24 +33,68 @@ function register(values) {
 }
 
 function Register({ navigation }) {
-  const [errorMessage, setErrorMessage] = useState(null);
+  const [error, setError] = useState(null);
+  const { onLoginSuccess } = useContext(TemporaryLoginContext);
+
+  const registerSchema = yup.object().shape({
+    email: yup
+      .string()
+      .trim()
+      .email(getI('register.validation.email-incorrect'))
+      .required(getI('register.validation.email-required')),
+    secondName: yup
+      .string()
+      .trim()
+      .min(3, getI('register.validation.second-name-min'))
+      .max(50, getI('register.validation.second-name-max'))
+      .required(getI('register.validation.second-name-required')),
+    firstName: yup
+      .string()
+      .trim()
+      .min(2, getI('register.validation.first-name-min'))
+      .max(30, getI('register.validation.first-name-max'))
+      .required(getI('register.validation.first-name-required')),
+    middleName: yup
+      .string()
+      .trim()
+      .nullable(true)
+      .min(3, getI('register.validation.middle-name-min'))
+      .max(30, getI('register.validation.middle-name-max')),
+    password: yup
+      .string()
+      .min(8, getI('register.validation.password-min'))
+      .max(20, getI('register.validation.password-max'))
+      .required(getI('register.validation.password-required')),
+  });
 
   function onLogin() {
     navigation.navigate(LOGIN_SCREEN);
   }
 
+  function afterConfirm(data) {
+    Promise.all([
+      SecureStorage.setItem('token', data.token),
+      SecureStorage.setItem('refreshToken', data.refreshToken),
+    ]).then(onLoginSuccess);
+  }
+
   function submit(values, { setSubmitting }) {
     if (values.middleName === '') values.middleName = null;
-    setErrorMessage(null);
+    setError(null);
     setSubmitting(true);
     register(values)
       .then(data => {
-        console.log(data);
+        navigation.navigate({
+          name: CONFIRMATION_SCREEN,
+          params: {
+            email: data.email,
+            onSuccess: afterConfirm.bind(this),
+          },
+        });
       })
       .catch(e => {
-        if (e.response.status === 409)
-          setErrorMessage('Email уже используется!');
-        else setErrorMessage(e.response.data.message);
+        if (e.request.status == 409) setError('register.email-already-in-use');
+        console.log(e);
       })
       .finally(() => {
         setSubmitting(false);
@@ -115,9 +134,8 @@ function Register({ navigation }) {
           }) => (
             <Container style={styles.container}>
               <View>
-                <Text style={styles.title}>
-                  {getI('register.title', 'Регистрация')}
-                </Text>
+                <Text style={styles.title}>{getI('register.title')}</Text>
+                <ErrorAlert message={getI(error)}></ErrorAlert>
                 <FormGroup>
                   <InputForm
                     onChange={handleChange('secondName')}
@@ -128,11 +146,8 @@ function Register({ navigation }) {
                       touched.secondName &&
                       errors.secondName
                     }
-                    label={getI('register.secondName', 'Фамилия')}
-                    placeholder={getI(
-                      'register.secondName-placeholder',
-                      'Введите фамилию...',
-                    )}
+                    label={getI('register.second-name')}
+                    placeholder={getI('register.second-name-placeholder')}
                   />
                   <InputForm
                     onChange={handleChange('firstName')}
@@ -141,11 +156,7 @@ function Register({ navigation }) {
                     errorMessage={
                       errors.firstName && touched.firstName && errors.firstName
                     }
-                    label={getI('register.firstName', 'Имя')}
-                    placeholder={getI(
-                      'register.firstName-placeholder',
-                      'Введите имя...',
-                    )}
+                    label={getI('register.first-name')}
                   />
                   <InputForm
                     onChange={handleChange('middleName')}
@@ -156,22 +167,18 @@ function Register({ navigation }) {
                       touched.middleName &&
                       errors.middleName
                     }
-                    label={getI('register.middleName', 'Отчество')}
-                    placeholder={getI(
-                      'register.middleName-placeholder',
-                      'Введите отвество...',
-                    )}
+                    label={getI('register.middle-name')}
                   />
                   <InputForm
                     onChange={handleChange('email')}
                     onBlur={handleBlur('email')}
                     value={values.email}
                     errorMessage={errors.email && touched.email && errors.email}
-                    label={getI('register.email', 'Электронная почта')}
-                    placeholder={getI(
-                      'register.email-placeholder',
-                      'Введите адрес электронной почты...',
-                    )}
+                    label={getI('register.email')}
+                    placeholder={getI('register.email-placeholder')}
+                    textContentType="emailAddress"
+                    autoComplete="email"
+                    keyboardType="email-address"
                   />
                   <InputForm
                     onChange={handleChange('password')}
@@ -180,29 +187,25 @@ function Register({ navigation }) {
                     errorMessage={
                       errors.password && touched.password && errors.password
                     }
-                    label={getI('register.password', 'Пароль')}
-                    placeholder={getI(
-                      'register.password-placeholder',
-                      'Введите пароль...',
-                    )}
+                    label={getI('register.password')}
                     secureTextEntry={true}
                   />
                 </FormGroup>
               </View>
               <View>
                 <Button
-                  title={getI('register.button', 'Зарегистрироваться')}
+                  title={getI('register.сontinue')}
                   disabled={!(dirty && isValid && !isSubmitting)}
                   onPress={handleSubmit}
                 />
                 <TouchableWithoutFeedback onPress={onLogin}>
                   <View style={styles.loginActionContainer}>
                     <Text style={styles.littleText}>
-                      {getI('register.login-question', 'Уже есть аккаунт?')}
+                      {getI('register.login-question')}
                     </Text>
                     <Text> </Text>
                     <Text style={[styles.littleText, styles.textActionButton]}>
-                      {getI('login.login-button', 'Войти')}
+                      {getI('register.login-button')}
                     </Text>
                   </View>
                 </TouchableWithoutFeedback>
@@ -231,7 +234,7 @@ const styles = StyleSheet.create({
   },
   textActionButton: {
     color: Color.primary,
-  },  
+  },
   littleText: {
     fontSize: 14,
     color: Color.gray,

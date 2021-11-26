@@ -2,7 +2,65 @@
   "start": {
     "comeback": "Welcome back!",
     "username": "Username",
-    "password": "Password"
+    "password": "Password",
+    "forgot-question": "Forgot your password?",
+    "forgot-button": "Restore password",
+    "register-question": "Don't have an account?",
+    "register-button": "Register now",
+    "signin": "Sign in",
+    "bad-credentials": "The username or password you entered is incorrect"
+  },
+  "register": {
+    "title": "Registration",
+    "second-name": "Second name",
+    "first-name": "First name",
+    "middle-name": "Middle name",
+    "email": "Email",
+    "password": "Password",
+    "сontinue": "Сontinue",
+    "login-question": "Already have an account?",
+    "login-button": "Sign in",
+    "email-already-in-use": "An account has already been registered for this email!",
+    "validation": {
+      "email-incorrect": "Invalid email",
+      "email-required": "You have not entered your email!",
+      "second-name-min": "Second name must contain at least 3 letters",
+      "second-name-max": "Second name cannot be more than 50 characters.",
+      "second-name-required": "You have not entered your second name!",
+      "first-name-min": "First name must contain at least 2 letters",
+      "first-name-max": "First name cannot exceed 30 characters",
+      "first-name-required": "You did not enter a first name!",
+      "middle-name-min": "Middle name must contain at least 3 letters",
+      "middle-name-max": "Middle name cannot contain more than 50 characters",
+      "password-min": "The password must be at least 8 characters long!",
+      "password-max": "The password cannot exceed 20 characters!",
+      "password-required": "You did not enter your password!"
+    }
+  },
+  "password-recovery": {
+    "title": "Password recovery",
+    "info": "Please enter your username or email associated with your account and we will send you a password reset code.",
+    "email": "Email",
+    "email-placeholder": "Enter your email...",
+    "account-not-found": "User with such username or email is not registered in the system",
+    "continue": "Continue"
+  },
+  "password-change": {
+    "title": "Password reset",
+    "info": "Enter your new account password. The old one will be discarded.",
+    "password": "Password",
+    "password-confirm": "Password Repeat",
+    "password-confirm-placeholder": "Repeat password...",
+    "restore": "Reset"
+  },
+  "confirmation": {
+    "title": "Confirmation",
+    "info": "To continue, please enter the confirmation code we send to your email address: {{email}}.",
+    "resend": "Resend the code",
+    "next": "Continue",
+    "wrong-code": "Incorrect code",
+    "account-not-found": "User with such username or email is not registered in the system",
+    "not-found": "The confirmation code has expired. Request code again"
   },
   "common": {
     "search": "Search",
