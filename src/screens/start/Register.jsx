@@ -1,30 +1,22 @@
 import React, { useContext, useState } from 'react';
-import {
-  StyleSheet,
-  View,
-  TouchableWithoutFeedback,
-  ScrollView,
-  Image,
-  SafeAreaView,
-} from 'react-native';
-import { getI } from '../../../utils/Internationalization';
-import Button from '../../common/Button';
-import Text from '../../common/Text';
-import Container from '../../common/Container';
-import FormGroup from '../../common/FormGroup';
-import InputForm from '../../common/InputForm';
-import {
-  CONFIRMATION_SCREEN,
-  LOGIN_SCREEN,
-  TemporaryLoginContext,
-} from '../../navigation/StartNavigation';
-import cumwave from '../../../assets/images/cumwave.png';
-import { Formik } from 'formik';
 import * as yup from 'yup';
 import axios from 'axios';
-import Color from '../../../constants';
 import SecureStorage from 'react-native-secure-storage';
-import ErrorAlert from '../../common/ErrorAlert';
+import { Formik } from 'formik';
+import { StyleSheet, View, TouchableWithoutFeedback, ScrollView, Image, SafeAreaView } from 'react-native';
+
+import Button from '../../components/common/Button';
+import Color from '../../constants';
+import Container from '../../components/common/Container';
+import cumwave from '../../assets/images/cumwave.png';
+import ErrorAlert from '../../components/common/ErrorAlert';
+import FormGroup from '../../components/common/FormGroup';
+import InputForm from '../../components/common/InputForm';
+import Text from '../../components/common/Text';
+import { CONFIRMATION_SCREEN } from './Confirmation';
+import { getI } from '../../utils/Internationalization';
+import { LOGIN_SCREEN } from './Login';
+import { TemporaryLoginContext } from '../../navigation/StartNavigation';
 
 function register(values) {
   return axios.post(`v2/accounts/`, values).then(response => {
@@ -32,6 +24,7 @@ function register(values) {
   });
 }
 
+export const REGISTER_SCREEN = 'Register';
 function Register({ navigation }) {
   const [error, setError] = useState(null);
   const { onLoginSuccess } = useContext(TemporaryLoginContext);

@@ -1,4 +1,10 @@
 {
+  "navigation": {
+    "workspace": "Главная",
+    "homeworks": "Задания",
+    "course": "Курс",
+    "groups": "Группы"
+  },
   "start": {
     "comeback": "С возвращением!",
     "username": "Имя пользователя",

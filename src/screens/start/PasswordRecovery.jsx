@@ -1,18 +1,17 @@
 import React, { useState } from 'react';
-import { Image, SafeAreaView, StyleSheet, View } from 'react-native';
-import { getI } from '../../../utils/Internationalization';
-import Button from '../../common/Button';
-import Text from '../../common/Text';
-import Container from '../../common/Container';
-import InputForm from '../../common/InputForm';
-import cumwave from '../../../assets/images/cumwave.png';
-import Color from '../../../constants';
-import {
-  CONFIRMATION_SCREEN,
-  PASSWORD_RESET_SCREEN,
-} from '../../navigation/StartNavigation';
 import axios from 'axios';
-import ErrorAlert from '../../common/ErrorAlert';
+import { Image, SafeAreaView, StyleSheet, View } from 'react-native';
+
+import Button from '../../components/common/Button';
+import Text from '../../components/common/Text';
+import Container from '../../components/common/Container';
+import InputForm from '../../components/common/InputForm';
+import cumwave from '../../assets/images/cumwave.png';
+import Color from '../../constants';
+import ErrorAlert from '../../components/common/ErrorAlert';
+import { CONFIRMATION_SCREEN } from './Confirmation';
+import { getI } from '../../utils/Internationalization';
+import { PASSWORD_RESET_SCREEN } from './PasswordChange';
 
 const tokens_url = 'v2/confirmation-tokens';
 
@@ -20,6 +19,7 @@ function send(email) {
   return axios.post(tokens_url, { email }).then(response => response.data);
 }
 
+export const PASSWORD_RECOVERY_SCREEN = 'PasswordRecovery';
 export default function PasswordRecovery({ navigation }) {
   const [email, setEmail] = useState('');
   const [error, setError] = useState(null);

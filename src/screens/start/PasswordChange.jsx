@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { Image, SafeAreaView, StyleSheet, View } from 'react-native';
-import cumwave from '../../../assets/images/cumwave.png';
-import Button from '../../common/Button';
-import Text from '../../common/Text';
-import Container from '../../common/Container';
-import InputForm from '../../common/InputForm';
-import Color from '../../../constants';
-import { getI } from '../../../utils/Internationalization';
 import axios from 'axios';
-import { LOGIN_SCREEN } from '../../navigation/StartNavigation';
 import SecureStorage from 'react-native-secure-storage';
-import FormGroup from '../../common/FormGroup';
+import { Image, SafeAreaView, StyleSheet, View } from 'react-native';
+
+import Button from '../../components/common/Button';
+import Color from '../../constants';
+import Container from '../../components/common/Container';
+import cumwave from '../../assets/images/cumwave.png';
+import FormGroup from '../../components/common/FormGroup';
+import InputForm from '../../components/common/InputForm';
+import Text from '../../components/common/Text';
+import { getI } from '../../utils/Internationalization';
+import { LOGIN_SCREEN } from './Login';
 
 const change_url = 'v2/accounts/my/password';
 
@@ -18,6 +19,7 @@ function changePassword(password) {
   return axios.put(change_url, { password });
 }
 
+export const PASSWORD_RESET_SCREEN = 'PasswordChange';
 export default function PasswordChange({ navigation, route }) {
   const [loading, setLoading] = useState(false);
   const [password, setPassword] = useState('');
