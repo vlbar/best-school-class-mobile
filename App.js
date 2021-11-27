@@ -12,7 +12,7 @@ configureAxios(axios);
 
 const App = () => {
 
-  const [isSignedIn, setIsSignedIn] = useState(true);
+  const [isSignedIn, setIsSignedIn] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
