@@ -4,3 +4,7 @@ export const navigatorNames = {
   course: 'CourseNavigator',
   groups: 'GroupsNavigator',
 };
+
+export const profileNavigatorNames = {
+  settings: 'SettingsNavigator',
+}

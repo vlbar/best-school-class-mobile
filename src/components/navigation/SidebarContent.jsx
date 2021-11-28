@@ -4,11 +4,11 @@ import { StyleSheet, View } from 'react-native';
 
 import Button from './../common/Button';
 import Check from './../common/Check';
-import SidebarHeader from '../sidebar/SidebarHeader';
-import { translate } from '../../utils/Internationalization';
-import { NOTIFICATIONS_SCREEN } from './../../screens/profile/Notifications';
+import SidebarHeader from './../sidebar/SidebarHeader';
 import { HELP_SCREEN } from './../../screens/profile/Help';
-import { SETTINGS_SCREEN } from './../../screens/profile/Settings';
+import { NOTIFICATIONS_SCREEN } from './../../screens/profile/Notifications';
+import { profileNavigatorNames } from '../../navigation/NavigationConstants';
+import { translate } from '../../utils/Internationalization';
 
 function SidebarContent({ navigation }) {
   const notificationSwitch = <Check type="switch" style={styles.notificationSwitch} />;
@@ -28,7 +28,7 @@ function SidebarContent({ navigation }) {
     {
       title: translate('sidebar.settings'),
       iconName: 'settings-outline',
-      screen: SETTINGS_SCREEN,
+      screen: profileNavigatorNames.settings,
     },
     {
       title: translate('sidebar.help'),

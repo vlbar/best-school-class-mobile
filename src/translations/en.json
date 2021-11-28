@@ -75,6 +75,14 @@
     "account-not-found": "User with such username or email is not registered in the system",
     "not-found": "The confirmation code has expired. Request code again"
   },
+  "profile": {
+    "settings": {
+      "title": "Settings",
+      "change-language": {
+        "title": "Change language"
+      }
+    }
+  },
   "common": {
     "search": "Search",
     "input-placeholder-prefix": "Еnter",
