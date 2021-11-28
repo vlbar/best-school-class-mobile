@@ -5,6 +5,13 @@
     "course": "Course",
     "groups": "Groups"
   },
+  "sidebar": {
+    "calendar": "Calendar",
+    "notifications": "Notifications",
+    "settings": "Settings",
+    "help": "Help",
+    "logout": "Logout"
+  },
   "start": {
     "comeback": "Welcome back!",
     "username": "Username",

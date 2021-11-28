@@ -5,6 +5,13 @@
     "course": "Курс",
     "groups": "Группы"
   },
+  "sidebar": {
+    "calendar": "Расписание",
+    "notifications": "Уведомления",
+    "settings": "Настройки",
+    "help": "Помощь",
+    "logout": "Выйти"
+  },
   "start": {
     "comeback": "С возвращением!",
     "username": "Имя пользователя",

@@ -2,9 +2,10 @@ import React from 'react';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { NavigationContainer } from '@react-navigation/native';
 
+import Color from './../constants';
 import Help, { HELP_SCREEN } from '../screens/profile/Help';
-import Notifications, { NOTIFICATIONS_SCREEN } from '../screens/profile/Notifications';
 import MainNavigation, { MAIN_NAVIGATION } from './MainNavigation';
+import Notifications, { NOTIFICATIONS_SCREEN } from '../screens/profile/Notifications';
 import Settings, { SETTINGS_SCREEN } from '../screens/profile/Settings';
 import SidebarContent from '../components/navigation/SidebarContent';
 
@@ -12,13 +13,14 @@ const Drawer = createDrawerNavigator();
 
 function ProfileNavigation() {
   return (
-    <NavigationContainer>
+    <NavigationContainer
+      theme={{ dark: false, colors: { background: Color.white } }}
+    >
       <Drawer.Navigator
         initialRouteName={MAIN_NAVIGATION}
-        drawerContent={SidebarContent}
+        drawerContent={props => <SidebarContent {...props} />}
         screenOptions={{
           headerShown: false,
-          drawerPosition: 'right',
           drawerType: 'slide',
           swipeEdgeWidth: 320,
         }}
