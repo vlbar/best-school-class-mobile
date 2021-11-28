@@ -81,6 +81,13 @@
       "change-language": {
         "title": "Change language"
       }
+    },
+    "help": {
+      "title": "Help",
+      "website": "Browser version",
+      "send-issue": "Report a problem",
+      "help-center": "Help-center",
+      "privacy": "Privacy Policy"
     }
   },
   "common": {
