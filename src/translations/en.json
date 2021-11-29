@@ -1,4 +1,10 @@
 {
+  "navigation": {
+    "workspace": "Workspace",
+    "homeworks": "Homeworks",
+    "course": "Course",
+    "groups": "Groups"
+  },
   "start": {
     "comeback": "Welcome back!",
     "username": "Username",

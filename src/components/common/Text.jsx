@@ -7,7 +7,7 @@ export const MEDIUM_WEIGHT = 'medium';
 export const NORMAL_WEIGHT = 'normal';
 export const LIGHT_WEIGHT = 'light';
 
-function Text({ children, weight = NORMAL_WEIGHT, style }) {
+function Text({ children, weight = NORMAL_WEIGHT, style, ...props }) {
   const getFontWidth = () => {
     switch(weight.toLowerCase()) {
       case BOLD_WEIGHT:
@@ -21,7 +21,7 @@ function Text({ children, weight = NORMAL_WEIGHT, style }) {
     }
   }
 
-  return <NativeText style={[styles.text, getFontWidth(), style]}>{children}</NativeText>;
+  return <NativeText style={[styles.text, { fontFamily: getFontWidth() }, style]} {...props}>{children}</NativeText>;
 }
 
 const styles = StyleSheet.create({

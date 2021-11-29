@@ -1,21 +1,15 @@
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React, { createContext } from 'react';
-import { getI } from '../../utils/Internationalization';
-import Confirmation from '../screens/start/Confirmation';
+import { createStackNavigator } from '@react-navigation/stack';
+import { NavigationContainer } from '@react-navigation/native';
 
-import Login from '../screens/start/Login';
-import PasswordChange from '../screens/start/PasswordChange';
-import PasswordRecovery from '../screens/start/PasswordRecovery';
-import Register from '../screens/start/Register';
+import Confirmation, { CONFIRMATION_SCREEN } from '../screens/start/Confirmation';
+import Login, { LOGIN_SCREEN } from '../screens/start/Login';
+import PasswordChange, { PASSWORD_RESET_SCREEN } from '../screens/start/PasswordChange';
+import PasswordRecovery, { PASSWORD_RECOVERY_SCREEN } from '../screens/start/PasswordRecovery';
+import Register, { REGISTER_SCREEN } from '../screens/start/Register';
+import { getI } from './../utils/Internationalization';
 
-const Stack = createNativeStackNavigator();
-
-export const LOGIN_SCREEN = 'Login';
-export const REGISTER_SCREEN = 'Register';
-export const PASSWORD_RECOVERY_SCREEN = 'PasswordRecovery';
-export const CONFIRMATION_SCREEN = 'Confirmation';
-export const PASSWORD_RESET_SCREEN = 'PasswordChange';
+const Stack = createStackNavigator();
 
 export const TemporaryLoginContext = createContext();
 

@@ -1,4 +1,5 @@
 import React, { useContext, useState } from 'react';
+import axios from 'axios';
 import {
   Image,
   SafeAreaView,
@@ -7,24 +8,21 @@ import {
   View,
   ScrollView,
 } from 'react-native';
-import { getI } from '../../../utils/Internationalization';
-import Button from '../../common/Button';
-import Text from '../../common/Text';
-import Container from '../../common/Container';
-import InputForm from '../../common/InputForm';
-import {
-  PASSWORD_RECOVERY_SCREEN,
-  REGISTER_SCREEN,
-  TemporaryLoginContext,
-} from '../../navigation/StartNavigation';
 
-import logo from '../../../assets/images/app_logo.png';
-import cumwave from '../../../assets/images/cumwave.png';
-import FormGroup from '../../common/FormGroup';
-import axios from 'axios';
+import Button from './../../components/common/Button';
+import Color from '../../constants';
+import Container from '../../components/common/Container';
+import cumwave from '../../assets/images/cumwave.png';
+import ErrorAlert from './../../components/common/ErrorAlert';
+import FormGroup from './../../components/common/FormGroup';
+import InputForm from './../../components/common/InputForm';
+import logo from '../../assets/images/app_logo.png';
 import SecureStorage from 'react-native-secure-storage';
-import Color from '../../../constants';
-import ErrorAlert from '../../common/ErrorAlert';
+import Text from '../../components/common/Text';
+import { getI } from '../../utils/Internationalization';
+import { TemporaryLoginContext } from '../../navigation/StartNavigation';
+import { PASSWORD_RECOVERY_SCREEN } from './PasswordRecovery';
+import { REGISTER_SCREEN } from './Register';
 
 function login(username, password) {
   const cridentials = {
@@ -38,6 +36,7 @@ function login(username, password) {
     });
 }
 
+export const LOGIN_SCREEN = 'Login';
 function Login({ navigation }) {
   const { onLoginSuccess } = useContext(TemporaryLoginContext);
   const [username, setUsername] = useState('');

@@ -1,27 +1,17 @@
 import axios from 'axios';
 import React, { useEffect, useRef, useState } from 'react';
-import {
-  Image,
-  SafeAreaView,
-  StyleSheet,
-  TouchableWithoutFeedback,
-  View,
-} from 'react-native';
-import {
-  CodeField,
-  Cursor,
-  useBlurOnFulfill,
-  useClearByFocusCell,
-} from 'react-native-confirmation-code-field';
-import cumwave from '../../../assets/images/cumwave.png';
-import Color from '../../../constants';
-import { getI, useTranslation } from '../../../utils/Internationalization';
-import Button from '../../common/Button';
-import Container from '../../common/Container';
-import Text from '../../common/Text';
-import moment from 'moment';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import ErrorAlert from '../../common/ErrorAlert';
+import moment from 'moment';
+import { CodeField, Cursor, useBlurOnFulfill, useClearByFocusCell } from 'react-native-confirmation-code-field';
+import { Image, SafeAreaView, StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
+
+import Button from '../../components/common/Button';
+import Color from '../../constants';
+import Container from '../../components/common/Container';
+import cumwave from '../../assets/images/cumwave.png'
+import ErrorAlert from '../../components/common/ErrorAlert';
+import Text from '../../components/common/Text';
+import { getI, useTranslation } from '../../utils/Internationalization';
 
 const tokens_url = 'v2/confirmation-tokens';
 const authorize_url = 'v2/auth/tokens?confirmationToken';
@@ -45,6 +35,7 @@ function authorize(email, code) {
 const CELL_COUNT = 6;
 const RESEND_TIMEOUT = 120;
 
+export const CONFIRMATION_SCREEN = 'Confirmation';
 export default function Confirmation({ route }) {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);

@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { View } from 'react-native';
-import SplashScreen from 'react-native-splash-screen';
-
-import StartNavigation from './src/components/navigation/StartNavigation';
-import MainNavigation from './src/components/navigation/MainNavigation';
-import configureAxios from './config/axios-config';
 import axios from 'axios';
+import SplashScreen from 'react-native-splash-screen';
+import { View } from 'react-native';
+
+import configureAxios from './config/axios-config';
+import ProfileNavigation from './src/navigation/ProfileNavigation';
+import StartNavigation from './src/navigation/StartNavigation';
 import { configureInternationalization } from './src/utils/Internationalization';
 
 configureAxios(axios);
@@ -22,7 +22,7 @@ const App = () => {
 
   if (!isInitialized) return <View />;
   else if (!isSignedIn) return <StartNavigation onLoginSuccess={() => setIsSignedIn(true)} />;
-  else return <MainNavigation />;
+  else return <ProfileNavigation />;
 };
 
 export default App;
