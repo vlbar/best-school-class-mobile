@@ -1,11 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import {
-  Animated,
-  Modal,
-  StyleSheet,
-  TouchableWithoutFeedback,
-  View,
-} from 'react-native';
+import { Animated, Modal, StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
 import Text from './Text';
 import IconButton from './IconButton';
 import Container from './Container';
@@ -46,26 +40,19 @@ function BottomPopup({ show = true, title, onClose, children }) {
     ],
   };
   return (
-    <Modal
-      animationType="fade"
-      transparent={true}
-      visible={show}
-      onRequestClose={onCloseHandler}
-    >
+    <Modal animationType="fade" transparent={true} visible={show} onRequestClose={onCloseHandler}>
       <View style={styles.backdrop}>
         <TouchableWithoutFeedback onPress={onCloseHandler}>
           <View style={styles.popOutside}></View>
         </TouchableWithoutFeedback>
         <Animated.View style={[styles.popup, transform]}>
           <View style={styles.header}>
-            <Text weight='medium' style={styles.title}>{title}</Text>
-            <IconButton
-              name="close"
-              onPress={onCloseHandler}
-              style={styles.close}
-            />
+            <Text weight="medium" style={styles.title}>
+              {title}
+            </Text>
+            <IconButton name="close" onPress={onCloseHandler} style={styles.close} />
           </View>
-          <Container>{children}</Container>
+          <View>{children}</View>
         </Animated.View>
       </View>
     </Modal>
@@ -85,7 +72,6 @@ const styles = StyleSheet.create({
     backgroundColor: Color.white,
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10,
-    minHeight: 200,
   },
   header: {
     flexDirection: 'row',

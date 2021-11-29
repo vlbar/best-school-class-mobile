@@ -12,7 +12,7 @@ const Drawer = createDrawerNavigator();
 
 function ProfileNavigation() {
   return (
-    <NavigationContainer>
+    <NavigationContainer theme={{ dark: false, colors: { background: 'white' } }}>
       <Drawer.Navigator
         initialRouteName={MAIN_NAVIGATION}
         drawerContent={SidebarContent}
