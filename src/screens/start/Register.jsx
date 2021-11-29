@@ -16,7 +16,7 @@ import Text from '../../components/common/Text';
 import { CONFIRMATION_SCREEN } from './Confirmation';
 import { getI } from '../../utils/Internationalization';
 import { LOGIN_SCREEN } from './Login';
-import { TemporaryLoginContext } from '../../navigation/StartNavigation';
+import { TemporaryLoginContext } from '../../../App';
 
 function register(values) {
   return axios.post(`v2/accounts/`, values).then(response => {
@@ -27,7 +27,7 @@ function register(values) {
 export const REGISTER_SCREEN = 'Register';
 function Register({ navigation }) {
   const [error, setError] = useState(null);
-  const { onLoginSuccess } = useContext(TemporaryLoginContext);
+  const { setIsSignedIn } = useContext(TemporaryLoginContext);
 
   const registerSchema = yup.object().shape({
     email: yup
@@ -68,7 +68,7 @@ function Register({ navigation }) {
     Promise.all([
       SecureStorage.setItem('token', data.token),
       SecureStorage.setItem('refreshToken', data.refreshToken),
-    ]).then(onLoginSuccess);
+    ]).then(() => setIsSignedIn(true));
   }
 
   function submit(values, { setSubmitting }) {
@@ -134,11 +134,7 @@ function Register({ navigation }) {
                     onChange={handleChange('secondName')}
                     onBlur={handleBlur('secondName')}
                     value={values.secondName}
-                    errorMessage={
-                      errors.secondName &&
-                      touched.secondName &&
-                      errors.secondName
-                    }
+                    errorMessage={errors.secondName && touched.secondName && errors.secondName}
                     label={getI('register.second-name')}
                     placeholder={getI('register.second-name-placeholder')}
                   />
@@ -146,20 +142,14 @@ function Register({ navigation }) {
                     onChange={handleChange('firstName')}
                     onBlur={handleBlur('firstName')}
                     value={values.firstName}
-                    errorMessage={
-                      errors.firstName && touched.firstName && errors.firstName
-                    }
+                    errorMessage={errors.firstName && touched.firstName && errors.firstName}
                     label={getI('register.first-name')}
                   />
                   <InputForm
                     onChange={handleChange('middleName')}
                     onBlur={handleBlur('middleName')}
                     value={values.middleName}
-                    errorMessage={
-                      errors.middleName &&
-                      touched.middleName &&
-                      errors.middleName
-                    }
+                    errorMessage={errors.middleName && touched.middleName && errors.middleName}
                     label={getI('register.middle-name')}
                   />
                   <InputForm
@@ -177,9 +167,7 @@ function Register({ navigation }) {
                     onChange={handleChange('password')}
                     onBlur={handleBlur('password')}
                     value={values.password}
-                    errorMessage={
-                      errors.password && touched.password && errors.password
-                    }
+                    errorMessage={errors.password && touched.password && errors.password}
                     label={getI('register.password')}
                     secureTextEntry={true}
                   />
@@ -193,13 +181,9 @@ function Register({ navigation }) {
                 />
                 <TouchableWithoutFeedback onPress={onLogin}>
                   <View style={styles.loginActionContainer}>
-                    <Text style={styles.littleText}>
-                      {getI('register.login-question')}
-                    </Text>
+                    <Text style={styles.littleText}>{getI('register.login-question')}</Text>
                     <Text> </Text>
-                    <Text style={[styles.littleText, styles.textActionButton]}>
-                      {getI('register.login-button')}
-                    </Text>
+                    <Text style={[styles.littleText, styles.textActionButton]}>{getI('register.login-button')}</Text>
                   </View>
                 </TouchableWithoutFeedback>
               </View>

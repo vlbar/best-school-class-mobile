@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Color from '../../constants';
 import { StyleSheet, View } from 'react-native';
 
@@ -9,8 +9,10 @@ import { HELP_SCREEN } from './../../screens/profile/Help';
 import { NOTIFICATIONS_SCREEN } from './../../screens/profile/Notifications';
 import { profileNavigatorNames } from '../../navigation/NavigationConstants';
 import { translate } from '../../utils/Internationalization';
+import { TemporaryLoginContext } from '../../../App';
 
 function SidebarContent({ navigation }) {
+  const { setIsSignedIn } = useContext(TemporaryLoginContext);
   const notificationSwitch = <Check type="switch" style={styles.notificationSwitch} />;
 
   const sidebarMenus = [
@@ -42,7 +44,7 @@ function SidebarContent({ navigation }) {
   };
 
   const onLogout = () => {
-    console.log('logged out :/');
+    setIsSignedIn(false);
   };
 
   return (

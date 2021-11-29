@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { StyleSheet, View, TouchableWithoutFeedback, Animated } from 'react-native';
 
@@ -7,6 +7,7 @@ import Color from '../../constants';
 import IconButton from '../common/IconButton';
 import Text from '../common/Text';
 import UserName from '../user/UserName';
+import Resource from '../../utils/Hateoas/Resource';
 
 const OPEN_STATE_LIST_HEIGHT = 135;
 
@@ -15,12 +16,19 @@ const types = {
   STUDENT: 'student',
   ASSISTANT: 'assistant',
 };
-const userEmail = 'kenekochan@mail.ru';
-const user = { firstName: 'Олег', secondName: 'Незабудкин', middleName: 'Прокопьевич' }
+//const userEmail = 'kenekochan@mail.ru';
+//const user = { firstName: 'Олег', secondName: 'Незабудкин', middleName: 'Прокопьевич' };
+
+const USER_URL = 'v1/users/me';
 
 function SidebarHeader({ navigation }) {
   const isStaetListShow = useRef(false);
   const stateListHeight = useRef(new Animated.Value(0)).current;
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    Resource.basedOnHref(USER_URL).link().fetch().then(setUser);
+  }, []);
 
   const openStateList = () => {
     Animated.timing(stateListHeight, {
@@ -74,7 +82,7 @@ function SidebarHeader({ navigation }) {
       <View style={styles.header}>
         <View style={styles.container}>
           <View style={styles.upPanel}>
-            <Avatar email={userEmail} size={72} />
+            {user && <Avatar email={user.email} size={72} />}
             <IconButton
               name="chevron-back-outline"
               size={32}
@@ -82,13 +90,7 @@ function SidebarHeader({ navigation }) {
               onPress={() => navigation.closeDrawer()}
             />
           </View>
-          <UserName
-            user={user}
-            short
-            textWeight="bold"
-            style={styles.username}
-            textSize={22}
-          />
+          {user && <UserName user={user} short textWeight="bold" style={styles.username} textSize={22} />}
           <TouchableWithoutFeedback onPress={onToggleStateList}>
             <View style={styles.statePicker}>
               <Text style={styles.currentStateText}>{'Преподаватель'}</Text>

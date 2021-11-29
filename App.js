@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { createContext, useEffect, useState } from 'react';
 import axios from 'axios';
 import SplashScreen from 'react-native-splash-screen';
 import { View } from 'react-native';
@@ -10,8 +10,9 @@ import { configureInternationalization } from './src/utils/Internationalization'
 
 configureAxios(axios);
 
-const App = () => {
+export const TemporaryLoginContext = createContext();
 
+const App = () => {
   const [isSignedIn, setIsSignedIn] = useState(true);
   const [isInitialized, setIsInitialized] = useState(false);
 
@@ -20,9 +21,13 @@ const App = () => {
     SplashScreen.hide();
   }, []);
 
-  if (!isInitialized) return <View />;
-  else if (!isSignedIn) return <StartNavigation onLoginSuccess={() => setIsSignedIn(true)} />;
-  else return <ProfileNavigation />;
+  return (
+    <TemporaryLoginContext.Provider value={{ setIsSignedIn }}>
+      {!isInitialized && <View />}
+      {isInitialized && !isSignedIn && <StartNavigation />}
+      {isInitialized && isSignedIn && <ProfileNavigation />}
+    </TemporaryLoginContext.Provider>
+  );
 };
 
 export default App;
