@@ -24,17 +24,23 @@ function HorizontalMenu({ children, style }) {
     });
   });
 
-  return <View style={[styles.container, style]}>{items}</View>;
+  return (
+    <View>
+      <View style={[styles.container, style]}>{items}</View>
+      <View>
+        {items.map((item, index) => {
+          return (
+            <View style={{ display: index === selected ? 'flex' : 'none'}} key={index}>
+              {item.props.children}
+            </View>
+          );
+        })}
+      </View>
+    </View>
+  );
 }
 
-function HorizontalMenuItem({
-  title,
-  onPress,
-  style,
-  __contextValue,
-  __contextSelected,
-  __contextOnPress,
-}) {
+function HorizontalMenuItem({ title, onPress, style, __contextValue, __contextSelected, __contextOnPress }) {
   const onPressHandler = () => {
     onPress?.();
     __contextOnPress?.();
@@ -43,9 +49,7 @@ function HorizontalMenuItem({
   let isActive = __contextValue === __contextSelected;
   return (
     <Pressable onPress={onPressHandler} style={[styles.item]}>
-      <Text style={[styles.title, isActive && styles.active, style]}>
-        {title}
-      </Text>
+      <Text style={[styles.title, isActive && styles.active, style]}>{title}</Text>
     </Pressable>
   );
 }
