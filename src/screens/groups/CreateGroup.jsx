@@ -71,9 +71,7 @@ export default function CreateGroup({ route, navigation }) {
         },
         setLoading,
       )
-      .then(() =>
-        navigation.goBack(),
-      );
+      .then(() => navigation.goBack());
   }
 
   return (
@@ -81,10 +79,8 @@ export default function CreateGroup({ route, navigation }) {
       <Header
         title={updatingGroup ? 'Изменить' : 'Создать' + ' группу'}
         canBack
-        backgroundColor={updatingGroup?.color ?? color}
-        headerRight={
-          <IconButton name="checkmark" color={getContrastColor(updatingGroup?.color ?? color)} onPress={onSubmit} />
-        }
+        backgroundColor={color}
+        headerRight={<IconButton name="checkmark" color={getContrastColor(color)} onPress={onSubmit} />}
       />
       <Container style={styles.container}>
         <View>

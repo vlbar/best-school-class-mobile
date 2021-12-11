@@ -8,6 +8,7 @@ import Container from '../../components/common/Container';
 import IconButton from '../../components/common/IconButton';
 import SearchBar from '../../components/common/SearchBar';
 import Text from '../../components/common/Text';
+import useDelay from '../../components/common/useDelay';
 import Header from '../../components/navigation/Header';
 import Color from '../../constants';
 import getContrastColor from '../../utils/ContrastColor';
@@ -21,6 +22,7 @@ const GROUPS_URL = 'v1/groups';
 
 export const GROUPS_SCREEN = 'groups';
 function Groups({ navigation }) {
+  const { onChange } = useDelay(onSearch);
   const [loading, setLoading] = useState(false);
   const [groups, setGroups] = useState([]);
   const pageRef = useRef(Resource.basedOnHref(GROUPS_URL));
@@ -91,7 +93,7 @@ function Groups({ navigation }) {
         <FlatList
           ListHeaderComponent={
             <View style={{ backgroundColor: Color.white }}>
-              <SearchBar placeholder="Введите название группы..." onChange={onSearch} />
+              <SearchBar placeholder="Введите название группы..." onChange={onChange} />
             </View>
           }
           stickyHeaderIndices={[0]}

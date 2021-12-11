@@ -10,6 +10,7 @@ import Link from '../../utils/Hateoas/Link';
 import Header from '../../components/navigation/Header';
 import IconButton from '../../components/common/IconButton';
 import { fromStateToName, types } from '../../utils/StateConvertions';
+import MemberPreview from '../../components/groups/join/MemberPreview';
 
 const INVITES_URL = 'v1/invites';
 
@@ -40,22 +41,20 @@ export default function JoinGroup({ route, navigation }) {
   }, [group]);
 
   function onJoin() {
+    console.log(memberPage);
     invite
       .link('accept')
       .post({}, setLoading)
       .then(member => {
-        navigation.navigate({
-          name: GROUPS_DETAILS_SCREEN,
-          params: {
-            fetchLink: member.link('group').href,
-          },
+        navigation.replace(GROUPS_DETAILS_SCREEN, {
+          fetchLink: member.link('group').href,
         });
       });
   }
 
   return (
     <>
-      <Header title="Присоединится к группе" canBack headerRight={<IconButton name="checkmark" onPress={onJoin} />} />
+      <Header title="Присоединиться к группе" canBack headerRight={<IconButton name="checkmark" onPress={onJoin} />} />
       <Container>
         {invite && group && creator && memberPage && (
           <View style={styles.container}>
@@ -65,31 +64,8 @@ export default function JoinGroup({ route, navigation }) {
               </Text>
               <Text style={styles.text}>приглашает Вас в группу</Text>
               <Text style={[styles.groupName, styles.text, { backgroundColor: group.color }]}>{group.name}</Text>
-              <View>
-                <View style={styles.membersIcons}>
-                  {memberPage.list('members').map((item, index) => {
-                    return (
-                      <View style={styles.iconWrapper} key={index}>
-                        <Image
-                          style={styles.icon}
-                          source={{
-                            uri: `http://cdn.libravatar.org/avatar/${md5(item.user.email)}?s=100&&d=${
-                              item.user.email ? 'identicon' : 'mm'
-                            }&&r=g`,
-                          }}
-                        ></Image>
-                      </View>
-                    );
-                  })}
-                </View>
-                <View>
-                  <Text style={styles.membersNames}>
-                    {memberPage
-                      .list('members')
-                      .map(member => member.user.secondName)
-                      .join(', ')}
-                  </Text>
-                </View>
+              <View style={styles.memberPreview}>
+                <MemberPreview members={memberPage.list('members')} total={memberPage.page.totalElements} />
               </View>
               <Text style={styles.text}>Приглашение на роль:</Text>
               <Text style={styles.role}>{fromStateToName(types[invite.role])}</Text>
@@ -111,26 +87,8 @@ const styles = StyleSheet.create({
   text: {
     textAlign: 'center',
   },
-  membersIcons: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-  },
-  membersNames: {
-    color: Color.gray,
-    textAlign: 'center',
-    marginTop: 10,
+  memberPreview: {
     marginBottom: 30,
-  },
-  iconWrapper: {
-    borderRadius: 50,
-    padding: 4,
-    backgroundColor: Color.white,
-    marginLeft: -10,
-  },
-  icon: {
-    borderRadius: 50,
-    width: 40,
-    height: 40,
   },
   role: {
     color: Color.primary,
