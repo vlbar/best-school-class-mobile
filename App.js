@@ -8,7 +8,7 @@ import StartNavigation from './src/components/navigation/StartNavigation';
 import { configureInternationalization } from './src/utils/Internationalization';
 
 const App = () => {
-  const [isSignedIn, setIsSignedIn] = useState(false);
+  const [isSignedIn, setIsSignedIn] = useState(true);
   const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
@@ -16,8 +16,11 @@ const App = () => {
       configureAxios(() => setIsSignedIn(false)),
       configureInternationalization(),
     ]).then(() => setIsInitialized(true));
-    SplashScreen.hide();
   }, []);
+
+  useEffect(() => {
+    if (isInitialized) SplashScreen.hide();
+  }, [isInitialized]);
 
   if (!isInitialized) return <View />;
   else if (!isSignedIn)
