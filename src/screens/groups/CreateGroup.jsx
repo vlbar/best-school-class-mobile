@@ -12,6 +12,8 @@ import IconButton from '../../components/common/IconButton';
 import { GROUPS_DETAILS_SCREEN } from './GroupDetails';
 import getContrastColor from '../../utils/ContrastColor';
 import Resource from '../../utils/Hateoas/Resource';
+import ColorPicker from '../../components/groups/ColorPicker';
+import Text from '../../components/common/Text';
 
 const GROUP_COLORS = [
   '#f44336',
@@ -102,25 +104,9 @@ export default function CreateGroup({ route, navigation }) {
         <View>
           <InputForm label="Название" onChange={setName} value={name} />
           <InputForm label="Предмет" onChange={setSubject} value={subject} />
-          <ColorPalette
-            onChange={setColor}
-            value={color}
-            defaultColor={color}
-            colors={GROUP_COLORS.slice(0, 6)}
-            icon={<Icon name="checkmark-outline" size={24} color={getContrastColor(color)}></Icon>}
-            scaleToWindow={true}
-            title="Цвет"
-            titleStyles={styles.label}
-          />
-          <ColorPalette
-            onChange={setColor}
-            value={color}
-            defaultColor={color}
-            colors={GROUP_COLORS.slice(6)}
-            icon={<Icon name="checkmark-outline" size={24} color={Color.darkGray}></Icon>}
-            scaleToWindow={true}
-            title={null}
-          />
+          <Text style={styles.label}>Цвет</Text>
+          <ColorPicker value={color} colors={GROUP_COLORS.slice(0, 6)} onChange={setColor} />
+          <ColorPicker value={color} colors={GROUP_COLORS.slice(6)} onChange={setColor} />
         </View>
         <Button title={updatingGroup ? 'Изменить' : 'Добавить'} disabled={loading} onPress={onSubmit}></Button>
       </Container>
