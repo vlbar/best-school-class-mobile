@@ -1,11 +1,9 @@
 import React, { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import ColorPalette from 'react-native-color-palette';
 import Color from '../../constants';
 import Button from '../../components/common/Button';
 import Container from '../../components/common/Container';
 import InputForm from '../../components/common/InputForm';
-import Icon from 'react-native-vector-icons/Ionicons';
 import Link from '../../utils/Hateoas/Link';
 import Header from '../../components/navigation/Header';
 import IconButton from '../../components/common/IconButton';
@@ -56,11 +54,8 @@ export default function CreateGroup({ route, navigation }) {
         setLoading,
       )
       .then(group => {
-        navigation.navigate({
-          name: GROUPS_DETAILS_SCREEN,
-          params: {
-            fetchLink: group.link().href,
-          },
+        navigation.replace(GROUPS_DETAILS_SCREEN, {
+          fetchLink: group.link().href,
         });
       });
   }
@@ -77,12 +72,7 @@ export default function CreateGroup({ route, navigation }) {
         setLoading,
       )
       .then(() =>
-        navigation.navigate({
-          name: GROUPS_DETAILS_SCREEN,
-          params: {
-            fetchLink: updatingGroup.link().href,
-          },
-        }),
+        navigation.goBack(),
       );
   }
 
@@ -91,13 +81,9 @@ export default function CreateGroup({ route, navigation }) {
       <Header
         title={updatingGroup ? 'Изменить' : 'Создать' + ' группу'}
         canBack
-        backgroundColor={updatingGroup?.color}
+        backgroundColor={updatingGroup?.color ?? color}
         headerRight={
-          <IconButton
-            name="checkmark"
-            color={getContrastColor(updatingGroup?.color ?? Color.white)}
-            onPress={onSubmit}
-          />
+          <IconButton name="checkmark" color={getContrastColor(updatingGroup?.color ?? color)} onPress={onSubmit} />
         }
       />
       <Container style={styles.container}>

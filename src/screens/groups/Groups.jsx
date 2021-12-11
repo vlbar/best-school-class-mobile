@@ -56,6 +56,7 @@ function Groups({ navigation }) {
   }
 
   function onJoinPress() {
+    setCreateModalShow(false);
     navigation.navigate({
       name: JOIN_GROUP_SCREEN,
       params: {
@@ -65,6 +66,7 @@ function Groups({ navigation }) {
   }
 
   function onCreatePress() {
+    setCreateModalShow(false);
     navigation.navigate({
       name: CREATE_GROUP_SCREEN,
       params: {
