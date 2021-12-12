@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Icon from 'react-native-vector-icons/Ionicons';
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import { StyleSheet, View, TouchableWithoutFeedback, Animated } from 'react-native';
 
 import Avatar from '../user/Avatar';
@@ -8,26 +9,22 @@ import IconButton from '../common/IconButton';
 import Text from '../common/Text';
 import UserName from '../user/UserName';
 import Resource from '../../utils/Hateoas/Resource';
+import { useContext } from 'react';
+import { ProfileContext } from '../../navigation/NavigationConstants';
+import { types } from '../state/State';
+import { getI } from '../../utils/Internationalization';
 
 const OPEN_STATE_LIST_HEIGHT = 135;
-
-const types = {
-  TEACHER: 'teacher',
-  STUDENT: 'student',
-  ASSISTANT: 'assistant',
-};
-//const userEmail = 'kenekochan@mail.ru';
-//const user = { firstName: 'Олег', secondName: 'Незабудкин', middleName: 'Прокопьевич' };
 
 const USER_URL = 'v1/users/me';
 
 function SidebarHeader({ navigation }) {
   const isStaetListShow = useRef(false);
   const stateListHeight = useRef(new Animated.Value(0)).current;
-  const [user, setUser] = useState(null);
+  const { user, setUser, state, setState } = useContext(ProfileContext);
 
   useEffect(() => {
-    Resource.basedOnHref(USER_URL).link().fetch().then(setUser);
+    if (!user) Resource.basedOnHref(USER_URL).link().fetch().then(setUser);
   }, []);
 
   const openStateList = () => {
@@ -52,8 +49,8 @@ function SidebarHeader({ navigation }) {
     else closeStateList();
   };
 
-  const onStateSelect = stateKey => {
-    // ...
+  const onStateSelect = state => {
+    setState(state);
     navigation.closeDrawer();
     isStaetListShow.current = false;
     closeStateList();
@@ -93,7 +90,8 @@ function SidebarHeader({ navigation }) {
           {user && <UserName user={user} short textWeight="bold" style={styles.username} textSize={22} />}
           <TouchableWithoutFeedback onPress={onToggleStateList}>
             <View style={styles.statePicker}>
-              <Text style={styles.currentStateText}>{'Преподаватель'}</Text>
+              <FontAwesome5 size={15} name={state.icon} />
+              <Text style={styles.currentStateText}>{getI(state.key)}</Text>
               <Animated.View style={stateArrowRotateAnim}>
                 <Icon name="chevron-down-outline" size={20} color={Color.silver} />
               </Animated.View>
@@ -102,8 +100,8 @@ function SidebarHeader({ navigation }) {
         </View>
       </View>
       <Animated.View style={[styles.stateContainer, stateListHeightAnim]}>
-        {Object.keys(types).map(key => {
-          return <StateButton key={key} value={key} isActive={false} text={types[key]} onPress={onStateSelect} />;
+        {Object.values(types).map(type => {
+          return <StateButton key={type.name} state={type} isActive={state === type} onPress={onStateSelect} />;
         })}
         <View style={styles.horizonLine} />
       </Animated.View>
@@ -111,11 +109,12 @@ function SidebarHeader({ navigation }) {
   );
 }
 
-function StateButton({ isActive, text, value, onPress, style }) {
+function StateButton({ isActive, state, onPress, style }) {
   return (
-    <TouchableWithoutFeedback onPress={() => !isActive && onPress(value)}>
+    <TouchableWithoutFeedback onPress={() => !isActive && onPress(state)}>
       <View style={[styles.state, isActive && styles.activeState, style]}>
-        <Text style={[styles.stateText, isActive && styles.activeStateText]}>{text}</Text>
+        <FontAwesome5 size={18} color={isActive ? Color.white : Color.gray} name={state.icon} />
+        <Text style={[styles.stateText, isActive && styles.activeStateText]}>{getI(state.key)}</Text>
       </View>
     </TouchableWithoutFeedback>
   );
@@ -142,11 +141,13 @@ const styles = StyleSheet.create({
   statePicker: {
     flexDirection: 'row',
     paddingVertical: 10,
+    alignItems: 'center',
   },
   currentStateText: {
     color: Color.silver,
     fontSize: 14,
     marginRight: 5,
+    marginLeft: 10,
   },
   stateContainer: {
     overflow: 'hidden',
@@ -154,8 +155,12 @@ const styles = StyleSheet.create({
   state: {
     paddingVertical: 10,
     paddingHorizontal: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
   },
-  stateText: {},
+  stateText: {
+    marginLeft: 10,
+  },
   activeState: {
     backgroundColor: Color.primary,
   },
