@@ -87,11 +87,16 @@
       "title": "Добавить курс",
       "name": "Название курса",
       "submit": "Добавить"
-    }
+    },
+    "empty": "Курсы еще не добавлены",
+    "delete-course-confirmation": "Вы действительно хотите удалить выбранные курсы?"
   },
   "common": {
     "search": "Поиск",
     "input-placeholder-prefix": "Введите",
-    "input-placeholder-postfix": ""
+    "input-placeholder-postfix": "",
+    "confirmation": "Подтверждение",
+    "ok": "Ок",
+    "cancel": "Отмена"
   }
 }

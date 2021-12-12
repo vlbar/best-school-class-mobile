@@ -85,11 +85,16 @@
       "title": "Add course",
       "name": "Course name",
       "submit": "Add"
-    }
+    },
+    "empty": "No courses have been added yet",
+    "delete-course-confirmation": "Are you sure you want to delete the selected courses?"
   },
   "common": {
     "search": "Search",
     "input-placeholder-prefix": "Еnter",
-    "input-placeholder-postfix": ""
+    "input-placeholder-postfix": "",
+    "confirmation": "Confirmation",
+    "ok": "Ok",
+    "cancel": "Cancel"
   }
 }

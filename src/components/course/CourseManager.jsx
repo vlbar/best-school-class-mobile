@@ -1,11 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { StyleSheet, Animated, BackHandler, TouchableNativeFeedback, View } from 'react-native';
-import Color from '../../constants';
+import { StyleSheet, Animated, BackHandler, TouchableNativeFeedback, View, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 
-import CourseList from './CourseList';
-import useBreadcrumbs from './useBreadcrumbs';
 import AddCoursePopup from './AddCoursePopup';
+import Color from '../../constants';
+import CourseList from './CourseList';
+import IconButton from '../common/IconButton';
+import translate from '../../utils/Internationalization';
+import useBreadcrumbs from './useBreadcrumbs';
 import useIsKeyboardShow from '../../utils/useIsKeyboardShow';
 
 function CourseManager() {
@@ -53,6 +55,35 @@ function CourseManager() {
   function forceRefresh() {
     courseListRef.current.refresh();
   }
+
+  //course actions
+  async function deleteSelectedCourses() {
+    const sadCourses = courseListRef.current.getSelected();
+    courseListRef.current.setIsFetching(true);
+    for await (const course of sadCourses) {
+      await course.link().delete();
+    }
+
+    forceRefresh();
+  }
+
+  const title = translate('common.confirmation');
+  const confirmation = translate('course.delete-course-confirmation');
+  const ok = translate('common.ok');
+  const cancel = translate('common.cancel');
+  function showDeleteCoursesAlert() {
+    Alert.alert(title, confirmation, [
+      {
+        text: cancel,
+        style: 'cancel',
+      },
+      { text: ok, onPress: () => deleteSelectedCourses() },
+    ]);
+  }
+
+  const courseActions = (
+    <IconButton name="trash-outline" size={24} style={styles.actionIcon} onPress={showDeleteCoursesAlert} />
+  );
 
   // bread
   const [jsCringe, setJsCringe] = useState(false);
@@ -111,7 +142,12 @@ function CourseManager() {
     <>
       <Breadcrumbs style={styles.breadcrumbs} />
       <Animated.View style={[styles.listContainer, transform]}>
-        <CourseList parentCourse={parentCourse} onCoursePress={onCoursePress} ref={courseListRef} />
+        <CourseList
+          parentCourse={parentCourse}
+          onCoursePress={onCoursePress}
+          actionMenuContent={courseActions}
+          ref={courseListRef}
+        />
       </Animated.View>
       {!isKeyboardShow && <ActionButton onPress={addCourse} />}
       <AddCoursePopup
@@ -158,6 +194,9 @@ const styles = StyleSheet.create({
   actionButton: {
     flex: 1,
     padding: 16,
+  },
+  actionIcon: {
+    marginLeft: 10,
   },
 });
 

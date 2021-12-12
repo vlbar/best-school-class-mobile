@@ -3,6 +3,7 @@ import { StyleSheet, FlatList, View, Pressable } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 import Color from '../../constants';
+import IconButton from './../common/IconButton';
 import ProcessView from './../common/ProcessView';
 import Resource from '../../utils/Hateoas/Resource';
 import SearchBar from '../common/SearchBar';
@@ -16,10 +17,14 @@ const pageLink = baseLink.fill('size', 20);
 
 const getSubCoursesLink = id => Resource.basedOnHref(`${baseUrl}/${id}/${subCoursesPartUrl}`).link();
 
-function CourseList({ parentCourse, parentCourseId, onCoursePress, headerContent }, ref) {
+function CourseList({ parentCourse, parentCourseId, onCoursePress, headerContent, actionMenuContent }, ref) {
   const [courses, setCourses] = useState([]);
   const [isFetching, setIsFetching] = useState(true);
   const nextPage = useRef(undefined);
+
+  const [refreshOffset, setRefreshOffset] = useState(0)
+  const [isActionMenuShow, setIsActionMenuShow] = useState(false);
+  const [selectedCourses, setSelectedCourses] = useState([]);
 
   useEffect(() => {
     refreshPage();
@@ -29,6 +34,13 @@ function CourseList({ parentCourse, parentCourseId, onCoursePress, headerContent
     refresh: () => {
       refreshPage();
     },
+    getSelected: () => {
+      return selectedCourses;
+    },
+    unselect: () => {
+        closeActionMenu();
+    },
+    setIsFetching: (value) => setIsFetching(value),
   }));
 
   function fetchCourses(link) {
@@ -46,6 +58,8 @@ function CourseList({ parentCourse, parentCourseId, onCoursePress, headerContent
 
   const refreshPage = () => {
     setCourses([]);
+    closeActionMenu();
+
     if (parentCourse) fetchCourses(parentCourse.link('subCourses'));
     else if (parentCourseId) fetchCourses(getSubCoursesLink(parentCourseId));
     else fetchCourses(pageLink);
@@ -55,10 +69,36 @@ function CourseList({ parentCourse, parentCourseId, onCoursePress, headerContent
     fetchCourses(nextPage.current);
   };
 
+  const courseLongPress = course => {
+    if (!actionMenuContent) return;
+
+    if (isActionMenuShow) {
+      if (selectedCourses.includes(course)) {
+        setSelectedCourses(selectedCourses.filter(x => x.id !== course.id));
+        if (selectedCourses.length === 1) setIsActionMenuShow(false);
+      } else {
+        setSelectedCourses([...selectedCourses, course]);
+      }
+    } else {
+      setIsActionMenuShow(true);
+      setSelectedCourses([course]);
+    }
+  };
+
+  const closeActionMenu = () => {
+    setIsActionMenuShow(false);
+    setSelectedCourses([]);
+  };
+
   // render
   const renderCourseItem = ({ item }) => {
+    const isSelected = selectedCourses.find(x => x.id === item.id) !== undefined;
     return (
-      <Pressable style={styles.course} onPress={() => onCoursePress?.(item)}>
+      <Pressable
+        style={[styles.course, isSelected && styles.selected]}
+        onPress={() => (isActionMenuShow ? courseLongPress(item) : onCoursePress?.(item))}
+        onLongPress={() => !isActionMenuShow && courseLongPress(item)}
+      >
         <View style={styles.arrowHolder}>
           {!item.isEmpty && <Icon name="caret-forward-outline" size={18} color={Color.darkGray} />}
         </View>
@@ -79,11 +119,28 @@ function CourseList({ parentCourse, parentCourseId, onCoursePress, headerContent
     );
   };
 
+  const headerLayoutHandler = (event) => {
+    setRefreshOffset(event.nativeEvent.layout.height);
+  }
+
   const listHeader = (
-    <>
+    <View onLayout={headerLayoutHandler}>
       {headerContent}
       <SearchBar placeholder={translate('course.search')} style={styles.searchBar} />
-    </>
+    </View>
+  );
+
+  const actionMenu = (
+    <View>
+      {headerContent}
+      <View style={[styles.actionMenu]}>
+        <View style={[styles.flexRow]}>
+          <IconButton name="close-outline" onPress={closeActionMenu} />
+          <Text style={[styles.selectedCount]}>{selectedCourses.length}</Text>
+        </View>
+        <View style={[styles.flexRow]}>{actionMenuContent}</View>
+      </View>
+    </View>
   );
 
   const emptyCourse = () => {
@@ -91,35 +148,42 @@ function CourseList({ parentCourse, parentCourseId, onCoursePress, headerContent
   };
 
   return (
-    <FlatList
-      data={courses}
-      renderItem={renderCourseItem}
-      keyExtractor={item => item.id}
-      refreshing={isFetching}
-      ListHeaderComponent={listHeader}
-      stickyHeaderIndices={[0]}
-      stickyHeaderHiddenOnScroll={true}
-      ListFooterComponent={loadingItemsIndicator}
-      ListEmptyComponent={emptyCourse}
-      onRefresh={refreshPage}
-      onEndReached={fetchNextPage}
-      onEndReachedThreshold={0.7}
-      style={[styles.coursesList]}
-    />
+    <View style={styles.listContainer}>
+      {isActionMenuShow && <View style={styles.actionHeader}>{actionMenu}</View>}
+      <FlatList
+        data={courses}
+        renderItem={renderCourseItem}
+        keyExtractor={item => item.id}
+        refreshing={isFetching}
+        ListHeaderComponent={listHeader}
+        stickyHeaderIndices={[0]}
+        stickyHeaderHiddenOnScroll={true}
+        ListFooterComponent={loadingItemsIndicator}
+        ListEmptyComponent={emptyCourse}
+        progressViewOffset={refreshOffset}
+        onRefresh={refreshPage}
+        onEndReached={fetchNextPage}
+        onEndReachedThreshold={0.7}
+        style={[styles.coursesList]}
+      />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  listContainer: {
+    flex: 1,
+  },
   coursesList: {
     marginTop: 0,
     flex: 1,
   },
   course: {
     flexDirection: 'row',
-    marginVertical: 6,
+    paddingVertical: 12,
+    marginVertical: 2,
     alignItems: 'center',
     width: '100%',
-    marginTop: 20,
   },
   arrowHolder: {
     minWidth: 40,
@@ -131,6 +195,31 @@ const styles = StyleSheet.create({
   },
   emptyCourse: {
     textAlign: 'center',
+  },
+  actionHeader: {
+    position: 'absolute',
+    width: '100%',
+    top: 0,
+    zIndex: 2,
+    elevation: 2,
+  },
+  actionMenu: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    height: 59,
+    backgroundColor: Color.white,
+  },
+  selectedCount: {
+    marginStart: 4,
+  },
+  flexRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  selected: {
+    backgroundColor: Color.ultraLightPrimary,
+    borderRadius: 10,
   },
 });
 
