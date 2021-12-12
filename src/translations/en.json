@@ -68,6 +68,17 @@
     "account-not-found": "User with such username or email is not registered in the system",
     "not-found": "The confirmation code has expired. Request code again"
   },
+  "workspace":{
+    "title": "Workspace",
+    "planned-lesson": {
+      "not-started": "It looks like the lesson has not started yet :/",
+      "nearest-from": "Nearest lesson in"
+    },
+    "timetable-today": {
+      "title": "Schedule for today",
+      "no-lessons": "There are no lessons for today"
+    }
+  },
   "common": {
     "search": "Search",
     "input-placeholder-prefix": "Еnter",

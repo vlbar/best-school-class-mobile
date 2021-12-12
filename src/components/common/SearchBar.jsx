@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { View, StyleSheet, TextInput } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import Color from '../../constants';
@@ -7,22 +7,59 @@ import IconButton from './IconButton';
 
 function SearchBar({
   placeholder = translate('common.search'),
+  delay = 1200,
+  emptyAfterValue,
   onChange,
+  onBlur,
   onSearch,
   onEmpty,
+  onDelayStart,
   style,
   children,
+  ...inputProps
 }) {
   const [value, setValue] = useState('');
   const [isEmpty, setIsEmpty] = useState(true);
 
-  const onChangeHandler = value => {
-    setValue(value);
-    onChange?.(value.trim());
+  const lastSubmitedValue = useRef(value);
+  const notSubmitAfterValue = useRef(undefined);
+  const delayTimer = useRef(undefined);
 
-    let isEmptyTarget =value.trim().length === 0
-    setIsEmpty(isEmptyTarget);
-    if(isEmptyTarget) onEmpty?.();
+  useEffect(() => {
+    notSubmitAfterValue.current = emptyAfterValue;
+  }, [emptyAfterValue]);
+
+  const forceSubmit = newValue => {
+    clearTimeout(delayTimer.current);
+    onSearch?.(newValue);
+  };
+
+  const onChangeHandler = newValue => {
+    setValue(newValue);
+    onChange?.(newValue.trim());
+
+    const isValueEmpty = newValue.trim().length === 0;
+    setIsEmpty(isValueEmpty);
+
+    if (isValueEmpty) {
+      onEmpty?.();
+      lastSubmitedValue.current = newValue;
+      clearTimeout(delayTimer.current);
+      return;
+    }
+
+    if (lastSubmitedValue.current !== newValue) {
+      if (!newValue.includes(notSubmitAfterValue.current)) {
+        notSubmitAfterValue.current = undefined;
+        lastSubmitedValue.current = newValue;
+        onDelayStart?.(newValue);
+
+        clearTimeout(delayTimer.current);
+        delayTimer.current = setTimeout(() => {
+          forceSubmit(newValue);
+        }, delay);
+      }
+    }
   };
 
   const onClearHandler = () => {
@@ -40,18 +77,12 @@ function SearchBar({
           placeholderTextColor={Color.lightGray}
           returnKeyType="search"
           onChangeText={onChangeHandler}
-          onSubmitEditing={e => onSearch?.(e.nativeEvent.text.trim())}
+          onBlur={onBlur}
+          onSubmitEditing={e => forceSubmit(e.nativeEvent.text.trim())}
           underlineColorAndroid="transparent"
-          clearButtonMode="always"
+          {...inputProps}
         />
-        {!isEmpty && (
-          <IconButton
-            name="close"
-            size={18}
-            style={styles.close}
-            onPress={onClearHandler}
-          />
-        )}
+        {!isEmpty && <IconButton name="close" size={18} style={styles.close} onPress={onClearHandler} />}
       </View>
       {children}
     </View>

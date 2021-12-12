@@ -1,52 +1,50 @@
 import i18n from 'i18next';
 import { NativeModules, Platform } from 'react-native';
-import {
-  initReactI18next,
-  useTranslation as useI18nTranslations,
-} from 'react-i18next';
+import { initReactI18next, useTranslation as useI18nTranslations } from 'react-i18next';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import en from './../translations/en.json';
-import ru from './../translations/ru.json';
-import de from './../translations/de.json';
-import fr from './../translations/fr.json';
-import ja from './../translations/ja.json';
-
 const defaultLanguage = 'en';
-export const availableLanguages = [
+const translations = [
   {
     name: 'en',
     displayName: 'English (US)',
+    translation: require('./../translations/en.json'),
   },
   {
     name: 'ru',
     displayName: 'Русский (Россия)',
+    translation: require('./../translations/ru.json'),
   },
   {
     name: 'de',
     displayName: 'Deutsch (Deutschland)',
+    translation: require('./../translations/de.json'),
   },
   {
     name: 'fr',
     displayName: 'Français (France)',
+    translation: require('./../translations/fr.json'),
   },
   {
     name: 'ja',
     displayName: '日本語 (日本)',
+    translation: require('./../translations/ja.json'),
   },
 ];
 
-// translation catalog
-const resources = {
-  en: { translation: en },
-  ru: { translation: ru },
-  de: { translation: de },
-  fr: { translation: fr },
-  ja: { translation: ja },
-};
+export const availableLanguages = translations.map(x => ({
+  name: x.name,
+  displayName: x.displayName,
+}));
 
 export async function configureInternationalization() {
-  let language = defaultLanguage
+  let resources = {};
+  translations.forEach(x => {
+    const translation = x.translation;
+    resources[x.name] = { translation };
+  });
+
+  let language = defaultLanguage;
   await AsyncStorage.getItem('@language')
     .then(lang => {
       if (lang !== null) language = lang;
@@ -55,12 +53,12 @@ export async function configureInternationalization() {
     .catch(err => {
       console.log(err);
       language = getFallbackAvailableLanguage(getSystemLanguage());
-    })
+    });
 
-  return initInternationalization(language);
+  return initInternationalization(language, resources);
 }
 
-function initInternationalization(language) {
+function initInternationalization(language, resources) {
   return i18n.use(initReactI18next).init({
     resources,
     lng: language,
@@ -114,14 +112,27 @@ export function useTranslation() {
   return { translate: t, options: i18n };
 }
 
-export function translate(key) {
+/*
+  Examples of using:
+  translate('jabroni.cringe');
+  translate('jabroni.cringe', 'Jabromi Cringme');
+  translate('jabroni.cringe', {name: 'Master'});
+  translate('jabroni.cringe', 'Jabromi Cringme is {{name}}', {name: 'Slave'});
+*/
+export function translate(key, defaultValueOrOptions, options) {
   if (!i18n.isInitialized) return key;
+  let defaultValue = undefined;
+
+  if (defaultValueOrOptions instanceof String || typeof defaultValueOrOptions === 'string')
+    defaultValue = defaultValueOrOptions;
+  else options = defaultValueOrOptions;
+
   const { t } = useI18nTranslations();
-  return t(key);
+  return t(key, defaultValue, options);
 }
 
-export function getI(key, defaultValue) {
-  return translate(key);
+export function getI(key, defaultValueOrOptions, options) {
+  return translate(key, defaultValueOrOptions, options);
 }
 
-export default i18n;
+export default translate;
