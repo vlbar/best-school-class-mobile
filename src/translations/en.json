@@ -79,6 +79,14 @@
       "no-lessons": "There are no lessons for today"
     }
   },
+  "course": {
+    "title": "Course",
+    "add": {
+      "title": "Add course",
+      "name": "Course name",
+      "submit": "Add"
+    }
+  },
   "common": {
     "search": "Search",
     "input-placeholder-prefix": "Еnter",

@@ -81,6 +81,14 @@
       "no-lessons": "Занятий на сегодня не назначено"
     }
   },
+  "course": {
+    "title": "Курс",
+    "add": {
+      "title": "Добавить курс",
+      "name": "Название курса",
+      "submit": "Добавить"
+    }
+  },
   "common": {
     "search": "Поиск",
     "input-placeholder-prefix": "Введите",

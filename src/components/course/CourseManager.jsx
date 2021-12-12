@@ -1,12 +1,20 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { StyleSheet, Animated, BackHandler } from 'react-native';
+import { StyleSheet, Animated, BackHandler, TouchableNativeFeedback, View } from 'react-native';
+import Color from '../../constants';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 import CourseList from './CourseList';
 import useBreadcrumbs from './useBreadcrumbs';
+import AddCoursePopup from './AddCoursePopup';
+import useIsKeyboardShow from '../../utils/useIsKeyboardShow';
 
 function CourseManager() {
   const [parentCourse, setParentCourse] = useState(undefined);
   const [pushCourse, popCourse, Breadcrumbs] = useBreadcrumbs('Курсы', onCourseSelect);
+
+  const courseListRef = useRef();
+  const [isAddCoursePopupShow, setIsAddCoursePopupShow] = useState(false);
+  const isKeyboardShow = useIsKeyboardShow();
 
   useEffect(() => {
     BackHandler.addEventListener('hardwareBackPress', onBackPress);
@@ -15,6 +23,7 @@ function CourseManager() {
     };
   }, []);
 
+  // travel
   function onCourseSelect(course) {
     if (!course.id) setParentCourse(undefined);
     else setParentCourse(course);
@@ -26,6 +35,23 @@ function CourseManager() {
     setParentCourse(course);
 
     subcoursesOutAnimation();
+  }
+
+  // popits
+  function addCourse() {
+    setIsAddCoursePopupShow(true);
+  }
+
+  function editCourse(course) {
+    setIsAddCoursePopupShow(true);
+  }
+
+  function closeAddCoursePopup() {
+    setIsAddCoursePopupShow(false);
+  }
+
+  function forceRefresh() {
+    courseListRef.current.refresh();
   }
 
   // bread
@@ -85,15 +111,53 @@ function CourseManager() {
     <>
       <Breadcrumbs style={styles.breadcrumbs} />
       <Animated.View style={[styles.listContainer, transform]}>
-        <CourseList parentCourse={parentCourse} onCoursePress={onCoursePress} />
+        <CourseList parentCourse={parentCourse} onCoursePress={onCoursePress} ref={courseListRef} />
       </Animated.View>
+      {!isKeyboardShow && <ActionButton onPress={addCourse} />}
+      <AddCoursePopup
+        show={isAddCoursePopupShow}
+        parentCourse={parentCourse}
+        onClose={closeAddCoursePopup}
+        onSuccess={forceRefresh}
+      />
     </>
+  );
+}
+
+export function ActionButton({ name = 'add-outline', color = Color.primary, iconColor = Color.white, onPress }) {
+  return (
+    <View style={[styles.actionButtonContainer]}>
+      <TouchableNativeFeedback onPress={onPress} style={styles.tocuhableFeedback}>
+        <View style={[styles.actionButton]}>
+          <Icon name={name} size={24} color={iconColor} />
+        </View>
+      </TouchableNativeFeedback>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   listContainer: {
     flex: 1,
+  },
+  actionButtonContainer: {
+    position: 'absolute',
+    bottom: 16,
+    right: 16,
+    width: 56,
+    height: 56,
+    backgroundColor: Color.primary,
+    borderRadius: 999,
+    overflow: 'hidden',
+    zIndex: 2,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+  },
+  actionButton: {
+    flex: 1,
+    padding: 16,
   },
 });
 

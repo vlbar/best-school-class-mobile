@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { StyleSheet, FlatList, View, Pressable } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 
@@ -16,7 +16,7 @@ const pageLink = baseLink.fill('size', 20);
 
 const getSubCoursesLink = id => Resource.basedOnHref(`${baseUrl}/${id}/${subCoursesPartUrl}`).link();
 
-function CourseList({ parentCourse, parentCourseId, onCoursePress, headerContent }) {
+function CourseList({ parentCourse, parentCourseId, onCoursePress, headerContent }, ref) {
   const [courses, setCourses] = useState([]);
   const [isFetching, setIsFetching] = useState(true);
   const nextPage = useRef(undefined);
@@ -24,6 +24,12 @@ function CourseList({ parentCourse, parentCourseId, onCoursePress, headerContent
   useEffect(() => {
     refreshPage();
   }, [parentCourse, parentCourseId]);
+
+  useImperativeHandle(ref, () => ({
+    refresh: () => {
+      refreshPage();
+    },
+  }));
 
   function fetchCourses(link) {
     link
@@ -128,4 +134,5 @@ const styles = StyleSheet.create({
   },
 });
 
+CourseList = forwardRef(CourseList);
 export default CourseList;
