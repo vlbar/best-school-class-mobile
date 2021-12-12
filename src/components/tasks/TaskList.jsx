@@ -1,11 +1,22 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { StyleSheet, View, FlatList, TouchableNativeFeedback } from 'react-native';
 
+import Bandage from './filters/Bandage';
 import Color from '../../constants';
 import ProcessView from '../common/ProcessView';
 import SearchBar from './../common/SearchBar';
 import Text from '../common/Text';
 import { translate } from '../../utils/Internationalization';
+
+// colors
+const taskTypesColors = ['#69c44d', '#007bff', '#db4242', '#2cc7b2', '#8000ff', '#e68e29', '#d4d5d9', '#38c7d1'];
+export function getTaskTypeColor(id) {
+  return taskTypesColors[id % taskTypesColors.length];
+}
+
+export function clearHtmlTags(htmlString) {
+  return htmlString.replace(/<[^>]*>?/gm, '');
+}
 
 function TaskList({ data, parentCourse, autoFetch = true, showHeader = true, headerContent }) {
   const [tasks, setTasks] = useState([]);
@@ -21,8 +32,9 @@ function TaskList({ data, parentCourse, autoFetch = true, showHeader = true, hea
       lastParentCourse.current = parentCourse;
     }
 
-    if(!autoFetch && !data && parentCourse && lastParentCourse.current !== parentCourse) {
+    if (!autoFetch && !data && parentCourse && lastParentCourse.current !== parentCourse) {
       setIsFetching(true);
+      setTasks([]);
     }
   }, [parentCourse, autoFetch]);
 
@@ -53,11 +65,14 @@ function TaskList({ data, parentCourse, autoFetch = true, showHeader = true, hea
     return (
       <TouchableNativeFeedback>
         <View style={styles.task} onPress={() => !item.isEmpty && onCoursePress(item)}>
-          <Text weight="medium" style={styles.name}>
-            {item.name}
-          </Text>
+          <View style={styles.titleRow}>
+            <Text weight="medium" style={styles.title}>
+              {item.name}
+            </Text>
+            {item.taskType && <Bandage color={getTaskTypeColor(item.taskType.id)} title={item.taskType.name} />}
+          </View>
           <Text style={styles.description} numberOfLines={1}>
-            {item.description}
+            {clearHtmlTags(item.description)}
           </Text>
         </View>
       </TouchableNativeFeedback>
@@ -88,7 +103,9 @@ function TaskList({ data, parentCourse, autoFetch = true, showHeader = true, hea
   const listHeader = (
     <View onLayout={headerLayoutHandler} style={[styles.listHeader]}>
       {headerContent}
-      <SearchBar placeholder={translate('tasks.search')} style={styles.searchBar} />
+      <SearchBar placeholder={translate('tasks.search')} style={styles.searchBar}>
+        <SearchBar.IconButton name='filter-outline' />
+      </SearchBar>
     </View>
   );
 
@@ -141,6 +158,14 @@ const styles = StyleSheet.create({
   },
   task: {
     paddingVertical: 10,
+  },
+  titleRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    alignItems: 'center',
+  },
+  title: {
+    marginRight: 10,
   },
   description: {
     color: Color.silver,
