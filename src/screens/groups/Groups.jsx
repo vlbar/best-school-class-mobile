@@ -1,6 +1,7 @@
 import moment from 'moment';
 import 'moment/locale/ru';
 import React, { useEffect, useRef, useState } from 'react';
+import { useContext } from 'react';
 import { FlatList, RefreshControl, StyleSheet, TextInput, TouchableNativeFeedback, View } from 'react-native';
 import BottomPopup from '../../components/common/BottomPopup';
 import Button from '../../components/common/Button';
@@ -11,6 +12,7 @@ import Text from '../../components/common/Text';
 import useDelay from '../../components/common/useDelay';
 import Header from '../../components/navigation/Header';
 import Color from '../../constants';
+import { ProfileContext } from '../../navigation/NavigationConstants';
 import getContrastColor from '../../utils/ContrastColor';
 import Resource from '../../utils/Hateoas/Resource';
 import { getCurrentLanguage } from '../../utils/Internationalization';
@@ -23,6 +25,7 @@ const GROUPS_URL = 'v1/groups';
 
 export const GROUPS_SCREEN = 'groups';
 function Groups({ navigation }) {
+  const { state } = useContext(ProfileContext);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState('');
   const [groups, setGroups] = useState([]);
@@ -32,8 +35,8 @@ function Groups({ navigation }) {
   const currentLanguage = getCurrentLanguage();
 
   useEffect(() => {
-    fetchPage(pageRef.current.link());
-  }, []);
+    fetchPage(pageRef.current.link().fill('roles', state.name));
+  }, [state]);
 
   function onSearch(search) {
     setSearch(search);

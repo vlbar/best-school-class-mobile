@@ -7,7 +7,7 @@ import BottomPopup from '../../common/BottomPopup';
 import SearchBar from '../../common/SearchBar';
 import Text from '../../common/Text';
 
-export default function MemberList({ fetchLink, searchPlaceholder }) {
+export default function MemberList({ fetchLink, searchPlaceholder, currentUser, onLeave }) {
   const [search, setSearch] = useState('');
   const memberPage = useRef(null);
   const [members, setMembers] = useState([]);
@@ -48,8 +48,9 @@ export default function MemberList({ fetchLink, searchPlaceholder }) {
       .link()
       .remove(setLoading)
       .then(() => {
-        setMembers(members.filter(member => member != members[itemContextMenu]));
+        if (currentUser?.id == members[itemContextMenu].user.id) onLeave?.();
         setItemContextMenu(null);
+        setMembers(members.filter(member => member != members[itemContextMenu]));
       });
   }
 
@@ -98,7 +99,9 @@ export default function MemberList({ fetchLink, searchPlaceholder }) {
         <BottomPopup onClose={() => setItemContextMenu(null)} title="Действия">
           <TouchableNativeFeedback onPress={onKick}>
             <View style={{ borderTopWidth: StyleSheet.hairlineWidth }}>
-              <Text style={{ color: Color.danger, textAlign: 'center', padding: 15 }}>Выгнать</Text>
+              <Text style={{ color: Color.danger, textAlign: 'center', padding: 15 }}>
+                {currentUser?.id == members[itemContextMenu]?.user.id ? 'Выйти' : 'Выгнать'}
+              </Text>
             </View>
           </TouchableNativeFeedback>
         </BottomPopup>

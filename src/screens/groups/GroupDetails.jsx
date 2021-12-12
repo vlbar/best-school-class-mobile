@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { SafeAreaView, StyleSheet, View } from 'react-native';
+import { useContext } from 'react';
+import { StyleSheet, View } from 'react-native';
 import BottomPopup from '../../components/common/BottomPopup';
 import Container from '../../components/common/Container';
 import HorizontalMenu from '../../components/common/HorizontalMenu';
@@ -11,11 +12,14 @@ import MemberList from '../../components/groups/members/MemberList';
 import MemberSettings from '../../components/groups/members/MemberSettings';
 import Header from '../../components/navigation/Header';
 import Color from '../../constants';
+import { ProfileContext } from '../../navigation/NavigationConstants';
 import Link from '../../utils/Hateoas/Link';
 import { CREATE_GROUP_SCREEN } from './CreateGroup';
+import { GROUPS_SCREEN } from './Groups';
 
 export const GROUPS_DETAILS_SCREEN = 'groupDetails';
 export default function GroupDetails({ route, navigation }) {
+  const { user, state } = useContext(ProfileContext);
   const fetchLink = new Link(route.params.fetchLink);
   const [loading, setLoading] = useState(false);
   const [group, setGroup] = useState(null);
@@ -23,6 +27,12 @@ export default function GroupDetails({ route, navigation }) {
   useEffect(() => {
     fetchLink.fetch(setLoading).then(setGroup);
   }, [route]);
+
+  useEffect(() => {
+    if (loading || group) {
+      navigation.navigate(GROUPS_SCREEN);
+    }
+  }, [state]);
 
   function onEdit() {
     navigation.navigate({
@@ -33,6 +43,11 @@ export default function GroupDetails({ route, navigation }) {
     });
   }
 
+  function onLeave() {
+    navigation.navigate(GROUPS_SCREEN);
+  }
+
+  let isCreator = group?.creatorId == user?.id;
   return (
     <>
       <Header
@@ -40,12 +55,14 @@ export default function GroupDetails({ route, navigation }) {
         backgroundColor={group?.color}
         canBack
         headerRight={
-          <IconButton
-            name="settings-outline"
-            color={Color.darkGray}
-            onPress={onEdit}
-            style={{ backgroundColor: Color.white, borderRadius: 50, padding: 4 }}
-          />
+          isCreator && (
+            <IconButton
+              name="settings-outline"
+              color={Color.darkGray}
+              onPress={onEdit}
+              style={{ backgroundColor: Color.white, borderRadius: 50, padding: 4 }}
+            />
+          )
         }
       />
 
@@ -60,30 +77,34 @@ export default function GroupDetails({ route, navigation }) {
             <View style={styles.members}>
               <View style={styles.row}>
                 <Text>Участники</Text>
-                <View style={styles.row}>
-                  {!group.closed && (
-                    <ModalTrigger
-                      modal={
-                        <BottomPopup title="Настройка доступа">
-                          <View style={{ padding: 20, flexGrow: 1 }}>
-                            <InviteList fetchLink={group.link('groupInvites')} />
-                          </View>
-                        </BottomPopup>
-                      }
-                    >
-                      <IconButton name="link-outline" color={Color.darkGray} />
+                {isCreator && (
+                  <View style={styles.row}>
+                    {!group.closed && (
+                      <ModalTrigger
+                        modal={
+                          <BottomPopup title="Настройка доступа">
+                            <View style={{ padding: 20, flexGrow: 1 }}>
+                              <InviteList fetchLink={group.link('groupInvites')} />
+                            </View>
+                          </BottomPopup>
+                        }
+                      >
+                        <IconButton name="link-outline" color={Color.darkGray} />
+                      </ModalTrigger>
+                    )}
+                    <ModalTrigger modal={<MemberSettings group={group} onGroupEdit={setGroup} />}>
+                      <IconButton name="settings-outline" color={Color.darkGray} />
                     </ModalTrigger>
-                  )}
-                  <ModalTrigger modal={<MemberSettings group={group} onGroupEdit={setGroup} />}>
-                    <IconButton name="settings-outline" color={Color.darkGray} />
-                  </ModalTrigger>
-                </View>
+                  </View>
+                )}
               </View>
               <View>
                 <HorizontalMenu>
                   <HorizontalMenu.Item title="Ученики">
                     <View style={styles.memberList}>
                       <MemberList
+                        currentUser={user}
+                        onLeave={onLeave}
                         fetchLink={group.link('groupMembers').fill('roles', 'student')}
                         searchPlaceholder="Введите имя ученика..."
                       />
@@ -92,6 +113,8 @@ export default function GroupDetails({ route, navigation }) {
                   <HorizontalMenu.Item title="Преподаватели">
                     <View style={styles.memberList}>
                       <MemberList
+                        currentUser={user}
+                        onLeave={onLeave}
                         fetchLink={group.link('groupMembers').fill('roles', 'teacher,assistant')}
                         searchPlaceholder="Введите имя преподавателя..."
                       />
