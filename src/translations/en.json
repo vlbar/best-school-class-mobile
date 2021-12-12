@@ -90,6 +90,14 @@
       "privacy": "Privacy Policy"
     }
   },
+  "user": {
+    "self": "You"
+  },
+  "state": {
+    "teacher": "Teacher",
+    "student": "Student",
+    "assistant": "Assistant" 
+  },
   "common": {
     "search": "Search",
     "input-placeholder-prefix": "Еnter",

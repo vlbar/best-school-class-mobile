@@ -92,6 +92,14 @@
       "privacy": "Политика конфиденциальности"
     }
   },
+  "user": {
+    "self": "Вы"
+  },
+  "state": {
+    "teacher": "Преподаватель",
+    "student": "Ученик",
+    "assistant": "Помощник" 
+  },
   "common": {
     "search": "Поиск",
     "input-placeholder-prefix": "Введите",
