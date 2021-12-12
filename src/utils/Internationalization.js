@@ -1,9 +1,6 @@
 import i18n from 'i18next';
 import { NativeModules, Platform } from 'react-native';
-import {
-  initReactI18next,
-  useTranslation as useI18nTranslations,
-} from 'react-i18next';
+import { initReactI18next, useTranslation as useI18nTranslations } from 'react-i18next';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import en from './../translations/en.json';
@@ -114,14 +111,27 @@ export function useTranslation() {
   return { translate: t, options: i18n };
 }
 
-export function translate(key) {
+/*
+  Examples of using:
+  translate('jabroni.cringe');
+  translate('jabroni.cringe', 'Jabromi Cringme');
+  translate('jabroni.cringe', {name: 'Master'});
+  translate('jabroni.cringe', 'Jabromi Cringme is {{name}}', {name: 'Slave'});
+*/
+export function translate(key, defaultValueOrOptions, options) {
   if (!i18n.isInitialized) return key;
+  let defaultValue = undefined;
+
+  if (defaultValueOrOptions instanceof String || typeof defaultValueOrOptions === 'string')
+    defaultValue = defaultValueOrOptions;
+  else options = defaultValueOrOptions;
+
   const { t } = useI18nTranslations();
-  return t(key);
+  return t(key, defaultValue, options);
 }
 
-export function getI(key, defaultValue) {
-  return translate(key);
+export function getI(key, defaultValueOrOptions, options) {
+  return translate(key, defaultValueOrOptions, options);
 }
 
-export default i18n;
+export default translate;
