@@ -12,8 +12,9 @@ configureAxios(axios);
 
 export const TemporaryLoginContext = createContext();
 
+
 const App = () => {
-  const [isSignedIn, setIsSignedIn] = useState(true);
+  const [isSignedIn, setIsSignedIn] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {

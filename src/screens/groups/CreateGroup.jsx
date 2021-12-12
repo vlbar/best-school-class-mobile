@@ -1,17 +1,17 @@
 import React, { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import ColorPalette from 'react-native-color-palette';
 import Color from '../../constants';
 import Button from '../../components/common/Button';
 import Container from '../../components/common/Container';
 import InputForm from '../../components/common/InputForm';
-import Icon from 'react-native-vector-icons/Ionicons';
 import Link from '../../utils/Hateoas/Link';
 import Header from '../../components/navigation/Header';
 import IconButton from '../../components/common/IconButton';
 import { GROUPS_DETAILS_SCREEN } from './GroupDetails';
 import getContrastColor from '../../utils/ContrastColor';
 import Resource from '../../utils/Hateoas/Resource';
+import ColorPicker from '../../components/groups/ColorPicker';
+import Text from '../../components/common/Text';
 
 const GROUP_COLORS = [
   '#f44336',
@@ -54,11 +54,8 @@ export default function CreateGroup({ route, navigation }) {
         setLoading,
       )
       .then(group => {
-        navigation.navigate({
-          name: GROUPS_DETAILS_SCREEN,
-          params: {
-            fetchLink: group.link().href,
-          },
+        navigation.replace(GROUPS_DETAILS_SCREEN, {
+          fetchLink: group.link().href,
         });
       });
   }
@@ -74,14 +71,7 @@ export default function CreateGroup({ route, navigation }) {
         },
         setLoading,
       )
-      .then(() =>
-        navigation.navigate({
-          name: GROUPS_DETAILS_SCREEN,
-          params: {
-            fetchLink: updatingGroup.link().href,
-          },
-        }),
-      );
+      .then(() => navigation.goBack());
   }
 
   return (
@@ -89,38 +79,16 @@ export default function CreateGroup({ route, navigation }) {
       <Header
         title={updatingGroup ? 'Изменить' : 'Создать' + ' группу'}
         canBack
-        backgroundColor={updatingGroup?.color}
-        headerRight={
-          <IconButton
-            name="checkmark"
-            color={getContrastColor(updatingGroup?.color ?? Color.white)}
-            onPress={onSubmit}
-          />
-        }
+        backgroundColor={color}
+        headerRight={<IconButton name="checkmark" color={getContrastColor(color)} onPress={onSubmit} />}
       />
       <Container style={styles.container}>
         <View>
           <InputForm label="Название" onChange={setName} value={name} />
           <InputForm label="Предмет" onChange={setSubject} value={subject} />
-          <ColorPalette
-            onChange={setColor}
-            value={color}
-            defaultColor={color}
-            colors={GROUP_COLORS.slice(0, 6)}
-            icon={<Icon name="checkmark-outline" size={24} color={getContrastColor(color)}></Icon>}
-            scaleToWindow={true}
-            title="Цвет"
-            titleStyles={styles.label}
-          />
-          <ColorPalette
-            onChange={setColor}
-            value={color}
-            defaultColor={color}
-            colors={GROUP_COLORS.slice(6)}
-            icon={<Icon name="checkmark-outline" size={24} color={Color.darkGray}></Icon>}
-            scaleToWindow={true}
-            title={null}
-          />
+          <Text style={styles.label}>Цвет</Text>
+          <ColorPicker value={color} colors={GROUP_COLORS.slice(0, 6)} onChange={setColor} />
+          <ColorPicker value={color} colors={GROUP_COLORS.slice(6)} onChange={setColor} />
         </View>
         <Button title={updatingGroup ? 'Изменить' : 'Добавить'} disabled={loading} onPress={onSubmit}></Button>
       </Container>

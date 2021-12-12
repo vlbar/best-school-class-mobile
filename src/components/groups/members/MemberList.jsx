@@ -8,6 +8,7 @@ import SearchBar from '../../common/SearchBar';
 import Text from '../../common/Text';
 
 export default function MemberList({ fetchLink, searchPlaceholder }) {
+  const [search, setSearch] = useState('');
   const memberPage = useRef(null);
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -34,6 +35,7 @@ export default function MemberList({ fetchLink, searchPlaceholder }) {
   }
 
   function onSearch(search) {
+    setSearch(search);
     fetchPage(memberPage.current.link('first').fill('name', search));
   }
 
@@ -56,17 +58,19 @@ export default function MemberList({ fetchLink, searchPlaceholder }) {
       <FlatList
         ListHeaderComponent={
           <View style={{ backgroundColor: Color.white }}>
-            {members.length > 0 && (
-              <SearchBar
-                placeholder={searchPlaceholder ?? 'Введите имя...'}
-                style={styles.memberSearch}
-                onChange={onSearch}
-              />
-            )}
+            <SearchBar
+              placeholder={searchPlaceholder ?? 'Введите имя...'}
+              style={styles.memberSearch}
+              onSearch={onSearch}
+              emptyAfterValue={members.length == 0 ? search : undefined}
+              onEmpty={() => onSearch('')}
+            />
           </View>
         }
         ListEmptyComponent={<Text style={{ textAlign: 'center' }}>Похоже, тут пока никого нет :(</Text>}
         onEndReached={onNext}
+        onRefresh={onRefresh}
+        refreshing={loading}
         onEndReachedThreshold={0.2}
         data={members}
         renderItem={({ item, index }) => {
@@ -81,7 +85,7 @@ export default function MemberList({ fetchLink, searchPlaceholder }) {
                     }&&r=g`,
                   }}
                 ></Image>
-                <Text>
+                <Text style={styles.memberName}>
                   {item.user.secondName} {item.user.firstName} {item.user.middleName ?? ''}
                 </Text>
               </View>
@@ -117,5 +121,9 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     marginRight: 20,
+  },
+  memberName: {
+    flexWrap: 'wrap',
+    flex: 1,
   },
 });

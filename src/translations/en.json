@@ -98,6 +98,17 @@
     "student": "Student",
     "assistant": "Assistant" 
   },
+  "workspace":{
+    "title": "Workspace",
+    "planned-lesson": {
+      "not-started": "It looks like the lesson has not started yet :/",
+      "nearest-from": "Nearest lesson in"
+    },
+    "timetable-today": {
+      "title": "Schedule for today",
+      "no-lessons": "There are no lessons for today"
+    }
+  },
   "common": {
     "search": "Search",
     "input-placeholder-prefix": "Еnter",

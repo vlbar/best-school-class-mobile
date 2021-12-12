@@ -100,6 +100,17 @@
     "student": "Ученик",
     "assistant": "Помощник" 
   },
+  "workspace":{
+    "title": "Рабочая область",
+    "planned-lesson": {
+      "not-started": "Похоже занятие еще не началось :/",
+      "nearest-from": "Ближайшее занятие через"
+    },
+    "timetable-today": {
+      "title": "Расписание на сегодня",
+      "no-lessons": "Занятий на сегодня не назначено"
+    }
+  },
   "common": {
     "search": "Поиск",
     "input-placeholder-prefix": "Введите",
