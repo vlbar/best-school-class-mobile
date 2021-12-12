@@ -1,17 +1,11 @@
 import React, { useEffect, useRef } from 'react';
-import {
-  Animated,
-  Modal,
-  StyleSheet,
-  TouchableWithoutFeedback,
-  View,
-} from 'react-native';
+import { Animated, Modal, StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
 import Text from './Text';
 import IconButton from './IconButton';
 import Container from './Container';
 import Color from '../../constants';
 
-function BottomPopup({ show = true, title, onClose, children }) {
+function BottomPopup({ show = true, title, canClose = true, onClose, children }) {
   const translateY = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -26,13 +20,15 @@ function BottomPopup({ show = true, title, onClose, children }) {
   }, [show]);
 
   const onCloseHandler = () => {
-    translateY.setValue(1);
-    Animated.timing(translateY, {
-      toValue: 0,
-      duration: 100,
-      useNativeDriver: true,
-    }).start();
-    onClose?.();
+    if (canClose) {
+      translateY.setValue(1);
+      Animated.timing(translateY, {
+        toValue: 0,
+        duration: 100,
+        useNativeDriver: true,
+      }).start();
+      onClose?.();
+    }
   };
 
   let transform = {
@@ -46,24 +42,17 @@ function BottomPopup({ show = true, title, onClose, children }) {
     ],
   };
   return (
-    <Modal
-      animationType="fade"
-      transparent={true}
-      visible={show}
-      onRequestClose={onCloseHandler}
-    >
+    <Modal animationType="fade" transparent={true} visible={show} onRequestClose={onCloseHandler}>
       <View style={styles.backdrop}>
         <TouchableWithoutFeedback onPress={onCloseHandler}>
           <View style={styles.popOutside}></View>
         </TouchableWithoutFeedback>
         <Animated.View style={[styles.popup, transform]}>
           <View style={styles.header}>
-            <Text weight='medium' style={styles.title}>{title}</Text>
-            <IconButton
-              name="close"
-              onPress={onCloseHandler}
-              style={styles.close}
-            />
+            <Text weight="medium" style={styles.title}>
+              {title}
+            </Text>
+            <IconButton name="close" onPress={onCloseHandler} style={styles.close} />
           </View>
           <Container>{children}</Container>
         </Animated.View>

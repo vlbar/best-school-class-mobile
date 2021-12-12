@@ -96,7 +96,12 @@
     "title": "Tasks",
     "search": "Enter a task name",
     "empty": "Tasks list is empty",
-    "course-not-selected": "Select a course to display its tasks"
+    "course-not-selected": "Select a course to display its tasks",
+    "add": {
+      "title": "Add task",
+      "name": "Task name",
+      "submit": "Add"
+    }
   },
   "common": {
     "search": "Search",

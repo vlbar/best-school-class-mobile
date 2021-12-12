@@ -3,6 +3,7 @@ import { StyleSheet, Animated, BackHandler, TouchableNativeFeedback, View, Alert
 import Icon from 'react-native-vector-icons/Ionicons';
 
 import AddCoursePopup from './AddCoursePopup';
+import AddTaskPopup from '../tasks/AddTaskPopup';
 import Color from '../../constants';
 import CourseList from './CourseList';
 import TaskList from '../tasks/TaskList';
@@ -22,6 +23,8 @@ function CourseManager() {
   const courseListRef = useRef();
   const [isAddCoursePopupShow, setIsAddCoursePopupShow] = useState(false);
   const isKeyboardShow = useIsKeyboardShow();
+
+  const [isAddTaskPopupShow, setIsAddTaskPopupShow] = useState(false);
 
   const [currentTab, setCurrentTab] = useState(SUB_COURSES_TAB);
 
@@ -61,6 +64,19 @@ function CourseManager() {
 
   function forceRefresh() {
     courseListRef.current.refresh();
+  }
+
+  function addTask() {
+    setIsAddTaskPopupShow(true);
+  }
+
+  function editTask(task) {
+    console.log(task);
+    setIsAddTaskPopupShow(false);
+  }
+
+  function closeAddTask() {
+    setIsAddTaskPopupShow(false);
   }
 
   //course actions
@@ -163,10 +179,11 @@ function CourseManager() {
     </OldSchoolHorizontalMenu>
   );
 
+  const isCoursesTab = currentTab === SUB_COURSES_TAB;
   return (
     <>
       <Breadcrumbs style={styles.breadcrumbs} />
-      <View style={[styles.listContainer, currentTab !== SUB_COURSES_TAB && styles.hidden]}>
+      <View style={[styles.listContainer, !isCoursesTab && styles.hidden]}>
         <Animated.View style={[styles.listContainer, transform]}>
           <CourseList
             parentCourse={parentCourse}
@@ -184,14 +201,14 @@ function CourseManager() {
           onSuccess={forceRefresh}
         />
       </View>
-      <View style={[styles.listContainer, currentTab !== TASKS_TAB && styles.hidden]}>
-        <TaskList parentCourse={parentCourse} headerContent={horizontalMenu} autoFetch={currentTab === TASKS_TAB} />
-        {!isKeyboardShow && <ActionButton onPress={addCourse} />}
-        <AddCoursePopup
-          show={isAddCoursePopupShow}
+      <View style={[styles.listContainer, isCoursesTab && styles.hidden]}>
+        <TaskList parentCourse={parentCourse} headerContent={horizontalMenu} autoFetch={!isCoursesTab} />
+        {!isKeyboardShow && parentCourse && <ActionButton onPress={addTask} />}
+        <AddTaskPopup
+          show={isAddTaskPopupShow}
           parentCourse={parentCourse}
-          onClose={closeAddCoursePopup}
-          onSuccess={forceRefresh}
+          onClose={closeAddTask}
+          onSuccess={editTask}
         />
       </View>
     </>
