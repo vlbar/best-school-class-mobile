@@ -1,22 +1,29 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { StyleSheet, Animated, BackHandler, TouchableNativeFeedback, View, Alert } from 'react-native';
+import { StyleSheet, Animated, BackHandler, TouchableNativeFeedback, View, Alert, Pressable } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 import AddCoursePopup from './AddCoursePopup';
 import Color from '../../constants';
 import CourseList from './CourseList';
+import TaskList from '../tasks/TaskList';
 import IconButton from '../common/IconButton';
+import Text from '../common/Text';
 import translate from '../../utils/Internationalization';
 import useBreadcrumbs from './useBreadcrumbs';
 import useIsKeyboardShow from '../../utils/useIsKeyboardShow';
 
+const SUB_COURSES_TAB = 'subcoursesTab';
+const TASKS_TAB = 'tasksTab';
+
 function CourseManager() {
   const [parentCourse, setParentCourse] = useState(undefined);
-  const [pushCourse, popCourse, Breadcrumbs] = useBreadcrumbs('Курсы', onCourseSelect);
+  const [pushCourse, popCourse, Breadcrumbs] = useBreadcrumbs(translate('course.root'), onCourseSelect);
 
   const courseListRef = useRef();
   const [isAddCoursePopupShow, setIsAddCoursePopupShow] = useState(false);
   const isKeyboardShow = useIsKeyboardShow();
+
+  const [currentTab, setCurrentTab] = useState(SUB_COURSES_TAB);
 
   useEffect(() => {
     BackHandler.addEventListener('hardwareBackPress', onBackPress);
@@ -138,24 +145,55 @@ function CourseManager() {
     }),
   };
 
+  // render
+  const horizontalMenu = (
+    <OldSchoolHorizontalMenu style={{ marginBottom: 10 }}>
+      <OldSchoolHorizontalMenu.Item
+        title={translate('course.sub-courses')}
+        value={SUB_COURSES_TAB}
+        selectedValue={currentTab}
+        onPress={setCurrentTab}
+      />
+      <OldSchoolHorizontalMenu.Item
+        title={translate('tasks.title')}
+        value={TASKS_TAB}
+        selectedValue={currentTab}
+        onPress={setCurrentTab}
+      />
+    </OldSchoolHorizontalMenu>
+  );
+
   return (
     <>
       <Breadcrumbs style={styles.breadcrumbs} />
-      <Animated.View style={[styles.listContainer, transform]}>
-        <CourseList
+      <View style={[styles.listContainer, currentTab !== SUB_COURSES_TAB && styles.hidden]}>
+        <Animated.View style={[styles.listContainer, transform]}>
+          <CourseList
+            parentCourse={parentCourse}
+            onCoursePress={onCoursePress}
+            actionMenuContent={courseActions}
+            headerContent={horizontalMenu}
+            ref={courseListRef}
+          />
+        </Animated.View>
+        {!isKeyboardShow && <ActionButton onPress={addCourse} />}
+        <AddCoursePopup
+          show={isAddCoursePopupShow}
           parentCourse={parentCourse}
-          onCoursePress={onCoursePress}
-          actionMenuContent={courseActions}
-          ref={courseListRef}
+          onClose={closeAddCoursePopup}
+          onSuccess={forceRefresh}
         />
-      </Animated.View>
-      {!isKeyboardShow && <ActionButton onPress={addCourse} />}
-      <AddCoursePopup
-        show={isAddCoursePopupShow}
-        parentCourse={parentCourse}
-        onClose={closeAddCoursePopup}
-        onSuccess={forceRefresh}
-      />
+      </View>
+      <View style={[styles.listContainer, currentTab !== TASKS_TAB && styles.hidden]}>
+        <TaskList parentCourse={parentCourse} headerContent={horizontalMenu} autoFetch={currentTab === TASKS_TAB} />
+        {!isKeyboardShow && <ActionButton onPress={addCourse} />}
+        <AddCoursePopup
+          show={isAddCoursePopupShow}
+          parentCourse={parentCourse}
+          onClose={closeAddCoursePopup}
+          onSuccess={forceRefresh}
+        />
+      </View>
     </>
   );
 }
@@ -172,9 +210,34 @@ export function ActionButton({ name = 'add-outline', color = Color.primary, icon
   );
 }
 
+function OldSchoolHorizontalMenuContainer({ children, style }) {
+  return <View style={[horizontalMenuStyles.container, style]}>{children}</View>;
+}
+
+function OldSchoolHorizontalMenuItem({ selectedValue, value, title, onPress, style }) {
+  const onPressHandler = () => {
+    onPress?.(value);
+  };
+
+  const isActive = selectedValue === value;
+  return (
+    <Pressable onPress={onPressHandler} style={[horizontalMenuStyles.item]}>
+      <Text style={[horizontalMenuStyles.title, isActive && horizontalMenuStyles.active, style]}>{title}</Text>
+    </Pressable>
+  );
+}
+
+var OldSchoolHorizontalMenu = OldSchoolHorizontalMenuContainer;
+OldSchoolHorizontalMenu.Item = OldSchoolHorizontalMenuItem;
+
 const styles = StyleSheet.create({
   listContainer: {
     flex: 1,
+  },
+  hidden: {
+    height: 0,
+    overflow: 'hidden',
+    position: 'absolute',
   },
   actionButtonContainer: {
     position: 'absolute',
@@ -197,6 +260,28 @@ const styles = StyleSheet.create({
   },
   actionIcon: {
     marginLeft: 10,
+  },
+});
+
+const horizontalMenuStyles = StyleSheet.create({
+  container: {
+    width: '100%',
+    backgroundColor: Color.ultraLightPrimary,
+    borderRadius: 999,
+    flexDirection: 'row',
+  },
+  item: {
+    flex: 1,
+  },
+  title: {
+    textAlign: 'center',
+    color: Color.darkGray,
+    paddingVertical: 6,
+    borderRadius: 999,
+  },
+  active: {
+    backgroundColor: Color.lightPrimary,
+    color: Color.white,
   },
 });
 

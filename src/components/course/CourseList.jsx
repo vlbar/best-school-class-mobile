@@ -22,7 +22,7 @@ function CourseList({ parentCourse, parentCourseId, onCoursePress, headerContent
   const [isFetching, setIsFetching] = useState(true);
   const nextPage = useRef(undefined);
 
-  const [refreshOffset, setRefreshOffset] = useState(0)
+  const [refreshOffset, setRefreshOffset] = useState(0);
   const [isActionMenuShow, setIsActionMenuShow] = useState(false);
   const [selectedCourses, setSelectedCourses] = useState([]);
 
@@ -38,9 +38,9 @@ function CourseList({ parentCourse, parentCourseId, onCoursePress, headerContent
       return selectedCourses;
     },
     unselect: () => {
-        closeActionMenu();
+      closeActionMenu();
     },
-    setIsFetching: (value) => setIsFetching(value),
+    setIsFetching: value => setIsFetching(value),
   }));
 
   function fetchCourses(link) {
@@ -119,19 +119,19 @@ function CourseList({ parentCourse, parentCourseId, onCoursePress, headerContent
     );
   };
 
-  const headerLayoutHandler = (event) => {
+  const headerLayoutHandler = event => {
     setRefreshOffset(event.nativeEvent.layout.height);
-  }
+  };
 
   const listHeader = (
-    <View onLayout={headerLayoutHandler}>
+    <View onLayout={headerLayoutHandler} style={[styles.listHeader]}>
       {headerContent}
       <SearchBar placeholder={translate('course.search')} style={styles.searchBar} />
     </View>
   );
 
   const actionMenu = (
-    <View>
+    <View style={[styles.listHeader]}>
       {headerContent}
       <View style={[styles.actionMenu]}>
         <View style={[styles.flexRow]}>
@@ -194,7 +194,14 @@ const styles = StyleSheet.create({
     marginStart: 40,
   },
   emptyCourse: {
+    paddingTop: 10,
     textAlign: 'center',
+  },
+  listHeader: {
+    backgroundColor: Color.white,
+  },
+  searchBar: {
+    marginBottom: 0,
   },
   actionHeader: {
     position: 'absolute',
@@ -207,7 +214,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    height: 59,
+    height: 52,
     backgroundColor: Color.white,
   },
   selectedCount: {

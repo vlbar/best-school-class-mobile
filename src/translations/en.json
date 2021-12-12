@@ -68,7 +68,7 @@
     "account-not-found": "User with such username or email is not registered in the system",
     "not-found": "The confirmation code has expired. Request code again"
   },
-  "workspace":{
+  "workspace": {
     "title": "Workspace",
     "planned-lesson": {
       "not-started": "It looks like the lesson has not started yet :/",
@@ -81,13 +81,22 @@
   },
   "course": {
     "title": "Course",
+    "root": "Courses",
+    "search": "Enter a name of course",
+    "sub-courses": "Subcourses",
     "add": {
       "title": "Add course",
       "name": "Course name",
       "submit": "Add"
     },
-    "empty": "No courses have been added yet",
+    "empty": "Courses not yet added",
     "delete-course-confirmation": "Are you sure you want to delete the selected courses?"
+  },
+  "tasks": {
+    "title": "Tasks",
+    "search": "Enter a task name",
+    "empty": "Tasks list is empty",
+    "course-not-selected": "Select a course to display its tasks"
   },
   "common": {
     "search": "Search",
