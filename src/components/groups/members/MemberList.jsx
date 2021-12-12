@@ -6,10 +6,9 @@ import Resource from '../../../utils/Hateoas/Resource';
 import BottomPopup from '../../common/BottomPopup';
 import SearchBar from '../../common/SearchBar';
 import Text from '../../common/Text';
-import useDelay from '../../common/useDelay';
 
 export default function MemberList({ fetchLink, searchPlaceholder }) {
-  const { onChange } = useDelay(onSearch);
+  const [search, setSearch] = useState('');
   const memberPage = useRef(null);
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -36,6 +35,7 @@ export default function MemberList({ fetchLink, searchPlaceholder }) {
   }
 
   function onSearch(search) {
+    setSearch(search);
     fetchPage(memberPage.current.link('first').fill('name', search));
   }
 
@@ -61,7 +61,9 @@ export default function MemberList({ fetchLink, searchPlaceholder }) {
             <SearchBar
               placeholder={searchPlaceholder ?? 'Введите имя...'}
               style={styles.memberSearch}
-              onChange={onChange}
+              onSearch={onSearch}
+              emptyAfterValue={members.length == 0 ? search : undefined}
+              onEmpty={() => onSearch('')}
             />
           </View>
         }

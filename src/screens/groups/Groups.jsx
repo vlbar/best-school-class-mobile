@@ -13,6 +13,7 @@ import Header from '../../components/navigation/Header';
 import Color from '../../constants';
 import getContrastColor from '../../utils/ContrastColor';
 import Resource from '../../utils/Hateoas/Resource';
+import { getCurrentLanguage } from '../../utils/Internationalization';
 
 import { CREATE_GROUP_SCREEN } from './CreateGroup';
 import { GROUPS_DETAILS_SCREEN } from './GroupDetails';
@@ -22,18 +23,20 @@ const GROUPS_URL = 'v1/groups';
 
 export const GROUPS_SCREEN = 'groups';
 function Groups({ navigation }) {
-  const { onChange } = useDelay(onSearch);
   const [loading, setLoading] = useState(false);
+  const [search, setSearch] = useState('');
   const [groups, setGroups] = useState([]);
   const pageRef = useRef(Resource.basedOnHref(GROUPS_URL));
   const [inviteCode, setInviteCode] = useState('');
   const [createModalShow, setCreateModalShow] = useState(false);
+  const currentLanguage = getCurrentLanguage();
 
   useEffect(() => {
     fetchPage(pageRef.current.link());
   }, []);
 
   function onSearch(search) {
+    setSearch(search);
     fetchPage(pageRef.current.link('first').fill('name', search));
   }
 
@@ -93,7 +96,14 @@ function Groups({ navigation }) {
         <FlatList
           ListHeaderComponent={
             <View style={{ backgroundColor: Color.white }}>
-              <SearchBar placeholder="Введите название группы..." onChange={onChange} />
+              <SearchBar
+                placeholder="Введите название группы..."
+                onSearch={onSearch}
+                emptyAfterValue={groups.length == 0 ? search : undefined}
+                onEmpty={() => {
+                  onSearch('');
+                }}
+              />
             </View>
           }
           stickyHeaderIndices={[0]}
@@ -107,7 +117,7 @@ function Groups({ navigation }) {
                 <View style={[styles.card, { backgroundColor: item.color }]}>
                   <Text style={[styles.cardHeader, { color: getContrastColor(item.color) }]}>{item.name}</Text>
                   <Text style={styles.cardBody}>
-                    {moment(new Date(item.membership.joinDate), undefined, 'ru').fromNow()}
+                    {moment(new Date(item.membership.joinDate), undefined, currentLanguage.languageName).fromNow()}
                   </Text>
                 </View>
               </TouchableNativeFeedback>

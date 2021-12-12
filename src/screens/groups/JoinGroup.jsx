@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Image, StyleSheet, View } from 'react-native';
-import md5 from 'md5';
+import { StyleSheet, View } from 'react-native';
 import { GROUPS_DETAILS_SCREEN } from './GroupDetails';
 import Color from '../../constants';
 import Container from '../../components/common/Container';
