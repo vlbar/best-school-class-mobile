@@ -1,13 +1,6 @@
 import React, { useContext, useState } from 'react';
 import axios from 'axios';
-import {
-  Image,
-  SafeAreaView,
-  StyleSheet,
-  TouchableWithoutFeedback,
-  View,
-  ScrollView,
-} from 'react-native';
+import { Image, SafeAreaView, StyleSheet, TouchableWithoutFeedback, View, ScrollView } from 'react-native';
 
 import Button from './../../components/common/Button';
 import Color from '../../constants';
@@ -20,25 +13,23 @@ import logo from '../../assets/images/app_logo.png';
 import SecureStorage from 'react-native-secure-storage';
 import Text from '../../components/common/Text';
 import { getI } from '../../utils/Internationalization';
-import { TemporaryLoginContext } from '../../navigation/StartNavigation';
 import { PASSWORD_RECOVERY_SCREEN } from './PasswordRecovery';
 import { REGISTER_SCREEN } from './Register';
+import { TemporaryLoginContext } from '../../../App';
 
 function login(username, password) {
   const cridentials = {
     username,
     password,
   };
-  return axios
-    .post('v2/auth/tokens/', cridentials, { skipAuthRefresh: true })
-    .then(response => {
-      return response.data;
-    });
+  return axios.post('v2/auth/tokens/', cridentials, { skipAuthRefresh: true }).then(response => {
+    return response.data;
+  });
 }
 
 export const LOGIN_SCREEN = 'Login';
 function Login({ navigation }) {
-  const { onLoginSuccess } = useContext(TemporaryLoginContext);
+  const { setIsSignedIn } = useContext(TemporaryLoginContext);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -60,7 +51,7 @@ function Login({ navigation }) {
         Promise.all([
           SecureStorage.setItem('token', data.token),
           SecureStorage.setItem('refreshToken', data.refreshToken),
-        ]).then(onLoginSuccess);
+        ]).then(() => setIsSignedIn(true));
       })
       .catch(err => {
         if (err.response?.status == 401) setError('start.bad-credentials');
@@ -98,36 +89,19 @@ function Login({ navigation }) {
             </FormGroup>
             <TouchableWithoutFeedback onPress={onForgotten}>
               <View style={styles.textActionContainer}>
-                <Text style={styles.littleText}>
-                  {getI('start.forgot-question')}
-                </Text>
+                <Text style={styles.littleText}>{getI('start.forgot-question')}</Text>
                 <Text> </Text>
-                <Text style={[styles.littleText, styles.textActionButton]}>
-                  {getI('start.forgot-button')}
-                </Text>
+                <Text style={[styles.littleText, styles.textActionButton]}>{getI('start.forgot-button')}</Text>
               </View>
             </TouchableWithoutFeedback>
           </View>
           <View>
-            <Button
-              title={getI('start.signin', 'Войти')}
-              onPress={onLogin}
-              disabled={loading}
-            />
+            <Button title={getI('start.signin', 'Войти')} onPress={onLogin} disabled={loading} />
             <TouchableWithoutFeedback onPress={onRegister}>
-              <View
-                style={[
-                  styles.textActionContainer,
-                  styles.registerActionContainer,
-                ]}
-              >
-                <Text style={styles.littleText}>
-                  {getI('start.register-question')}
-                </Text>
+              <View style={[styles.textActionContainer, styles.registerActionContainer]}>
+                <Text style={styles.littleText}>{getI('start.register-question')}</Text>
                 <Text> </Text>
-                <Text style={[styles.littleText, styles.textActionButton]}>
-                  {getI('start.register-button')}
-                </Text>
+                <Text style={[styles.littleText, styles.textActionButton]}>{getI('start.register-button')}</Text>
               </View>
             </TouchableWithoutFeedback>
           </View>

@@ -4,12 +4,12 @@ import Resource from '../src/utils/Hateoas/Resource';
 import axios from 'axios';
 
 export const BASE_PATH = 'https://dss-course-work.herokuapp.com/api';
-
+//http://10.0.2.2:8080/bestschoolclass/api
 const retryAuth = async failedRequest => {
   const refreshToken = await SecureStorage.getItem('refreshToken');
   const initialCridentials = { refreshToken };
   return await axios
-    .post(`v2/auth/tokens?refreshToken`, initialCridentials, {
+    .post(`v1/auth/token/refresh`, initialCridentials, {
       skipAuthRefresh: true,
     })
     .then((response) => {

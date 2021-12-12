@@ -8,23 +8,9 @@ export const RADIO_TYPE = 'radio';
 export const CHECKBOX_TYPE = 'checkbox';
 export const SWITCH_TYPE = 'switch';
 
-function Item({
-  type,
-  title,
-  subtitle,
-  color,
-  borderColor,
-  disabled,
-  readonly,
-  name,
-  checked,
-  onChange,
-  style,
-}) {
+function Item({ type, title, subtitle, color, borderColor, disabled, readonly, name, checked, onChange, style }) {
   const { contextSelected, contextOnChange } = useCheckContext(CheckContext);
-  const [isChecked, setIsChecked] = useState(
-    checked != undefined ? checked : false,
-  );
+  const [isChecked, setIsChecked] = useState(checked != undefined ? checked : false);
 
   if (name == undefined) {
     name = title;
@@ -61,18 +47,14 @@ function Item({
   };
 
   return (
-    <Pressable style={[styles.item, style]} onPress={onPressHandler}>
+    <Pressable style={[styles.item, (title || subtitle) && styles.titledItem, style]} onPress={onPressHandler}>
       {getCheckIndicator()}
-      <View style={styles.titleContainer}>
-        <Text style={[styles.title, disabled && styles.disabled]}>
-          {title ? title : name}
-        </Text>
-        {subtitle && (
-          <Text style={[styles.subtitle, disabled && styles.disabled]}>
-            {subtitle}
-          </Text>
-        )}
-      </View>
+      {(title || subtitle) && (
+        <View style={styles.titleContainer}>
+          {title && <Text style={[styles.title, disabled && styles.disabled]}>{title ? title : name}</Text>}
+          {subtitle && <Text style={[styles.subtitle, disabled && styles.disabled]}>{subtitle}</Text>}
+        </View>
+      )}
     </Pressable>
   );
 }
@@ -106,14 +88,7 @@ function useCheckContext() {
 }
 
 // Check marks
-export function Checkbox({
-  size = 24,
-  active,
-  disabled,
-  color = Color.primary,
-  borderColor = Color.secondary,
-  style,
-}) {
+export function Checkbox({ size = 24, active, disabled, color = Color.primary, borderColor = Color.secondary, style }) {
   const checkbox = StyleSheet.create({
     normal: {
       width: size,
@@ -133,14 +108,7 @@ export function Checkbox({
   });
 
   return (
-    <View
-      style={[
-        checkbox.normal,
-        active && checkbox.active,
-        disabled && styles.disabled,
-        style,
-      ]}
-    >
+    <View style={[checkbox.normal, active && checkbox.active, disabled && styles.disabled, style]}>
       {active && <Icon name="checkmark" size={20} color={Color.white} />}
     </View>
   );
@@ -170,26 +138,10 @@ export function Radiomark({
     },
   });
 
-  return (
-    <View
-      style={[
-        radio.normal,
-        active && radio.active,
-        disabled && styles.disabled,
-        style,
-      ]}
-    />
-  );
+  return <View style={[radio.normal, active && radio.active, disabled && styles.disabled, style]} />;
 }
 
-export function Switch({
-  size = 24,
-  active,
-  disabled,
-  color = Color.primary,
-  borderColor = Color.secondary,
-  style,
-}) {
+export function Switch({ size = 24, active, disabled, color = Color.primary, borderColor = Color.secondary, style }) {
   const switchStyle = StyleSheet.create({
     normal: {
       width: size * 2,
@@ -220,14 +172,7 @@ export function Switch({
     },
   });
   return (
-    <View
-      style={[
-        switchStyle.normal,
-        active && switchStyle.active,
-        disabled && styles.disabled,
-        style,
-      ]}
-    >
+    <View style={[switchStyle.normal, active && switchStyle.active, disabled && styles.disabled, style]}>
       <View style={[switchStyle.circle, active && switchStyle.activeCircle]} />
     </View>
   );
@@ -235,10 +180,12 @@ export function Switch({
 
 const styles = StyleSheet.create({
   item: {
-    width: '100%',
-    paddingVertical: 16,
     flexDirection: 'row',
     alignItems: 'center',
+  },
+  titledItem: {
+    width: '100%',
+    paddingVertical: 16,
   },
   titleContainer: {
     marginLeft: 20,
@@ -255,7 +202,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Check = {
-  Item,
-  Group,
-};
+const Check = Item;
+Check.Item = Item;
+Check.Group = Group;
+export default Check;
