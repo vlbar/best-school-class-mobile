@@ -101,10 +101,31 @@
       "title": "Add task",
       "name": "Task name",
       "submit": "Add"
+    },
+    "sortBy": {
+      "title": "Sort by",
+      "name": "By name",
+      "newest": "Newest",
+      "oldest": "Oldest",
+      "completed": "Completed"
+    },
+    "filters": {
+      "task-types": {
+        "title": "Task types",
+        "add": "Add new"
+      }
     }
+  },
+  "task-types": {
+    "search": "Enter name of task type"
   },
   "common": {
     "search": "Search",
+    "filters": {
+      "title": "Filters",
+      "apply": "Apply",
+      "cancel-all": "Cancel All"
+    },
     "input-placeholder-prefix": "Еnter",
     "input-placeholder-postfix": "",
     "confirmation": "Confirmation",

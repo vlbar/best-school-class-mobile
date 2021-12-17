@@ -7,11 +7,20 @@ import Text from '../../common/Text';
 
 function Bandage({ title, color = Color.primary, size = 14 }) {
   return (
-    <View>
-      <Text fontSize={size} style={[styles.bandage, { backgroundColor: color, color: getContrastColor(color) }]}>
-        {title}
-      </Text>
-    </View>
+    <Text
+      fontSize={size}
+      style={[
+        styles.bandage,
+        {
+          paddingHorizontal: size,
+          paddingVertical: size / 6,
+          backgroundColor: color,
+          color: getContrastColor(color),
+        },
+      ]}
+    >
+      {title}
+    </Text>
   );
 }
 

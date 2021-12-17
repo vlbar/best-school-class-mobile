@@ -5,6 +5,7 @@ import Bandage from './filters/Bandage';
 import Color from '../../constants';
 import ProcessView from '../common/ProcessView';
 import SearchBar from './../common/SearchBar';
+import TaskFilterPopup from './filters/TaskFilterPopup';
 import Text from '../common/Text';
 import { translate } from '../../utils/Internationalization';
 
@@ -15,8 +16,11 @@ export function getTaskTypeColor(id) {
 }
 
 export function clearHtmlTags(htmlString) {
+  if (!htmlString) return;
   return htmlString.replace(/<[^>]*>?/gm, '');
 }
+
+export const defaultOrder = 'name-asc';
 
 function TaskList({ data, parentCourse, autoFetch = true, showHeader = true, headerContent }) {
   const [tasks, setTasks] = useState([]);
@@ -25,18 +29,27 @@ function TaskList({ data, parentCourse, autoFetch = true, showHeader = true, hea
   const lastParentCourse = useRef(undefined);
 
   const [refreshOffset, setRefreshOffset] = useState(0);
+  const [isTaskFiltersShow, setIsTaskFiltersShow] = useState(false);
+
+  const filterParams = useRef({
+    name: '',
+    taskTypeId: null,
+    orderBy: defaultOrder,
+  });
 
   useEffect(() => {
     if (parentCourse && lastParentCourse.current !== parentCourse && autoFetch) {
-      fetchTasks(parentCourse.link('tasks'));
+      fetchFirstPage();
       lastParentCourse.current = parentCourse;
     }
+  }, [parentCourse, autoFetch]);
 
-    if (!autoFetch && !data && parentCourse && lastParentCourse.current !== parentCourse) {
+  useEffect(() => {
+    if (!data && parentCourse) {
       setIsFetching(true);
       setTasks([]);
     }
-  }, [parentCourse, autoFetch]);
+  }, [parentCourse]);
 
   function fetchTasks(link) {
     link
@@ -56,8 +69,39 @@ function TaskList({ data, parentCourse, autoFetch = true, showHeader = true, hea
     fetchTasks(parentCourse.link('tasks'));
   };
 
+  const fetchFirstPage = () => {
+    if  (!parentCourse) {
+      setTasks([]);
+      return;
+    }
+
+    fetchTasks(
+      parentCourse
+        .link('tasks')
+        .fill('name', filterParams.current.name ?? "")
+        .fill('taskTypeId', filterParams.current.taskTypeId ?? null)
+        .fill('order', filterParams.current.orderBy),
+    );
+  };
+
   const fetchNextPage = () => {
     fetchTasks(nextPage.current);
+  };
+
+  const setFilterParams = params => {
+    setIsTaskFiltersShow(false);
+    filterParams.current = params;
+    fetchFirstPage();
+    console.log(filterParams.current);
+  };
+
+  const searchByName = (name) => {
+    filterParams.current.name = name;
+    fetchFirstPage();
+  }
+
+  const addTaskType = () => {
+    setIsTaskFiltersShow(false);
   };
 
   // render
@@ -100,11 +144,13 @@ function TaskList({ data, parentCourse, autoFetch = true, showHeader = true, hea
     setRefreshOffset(event.nativeEvent.layout.height);
   };
 
+  const isHasFilters = filterParams.current.taskTypeId !== null || filterParams.current.orderBy !== defaultOrder;
   const listHeader = (
     <View onLayout={headerLayoutHandler} style={[styles.listHeader]}>
       {headerContent}
-      <SearchBar placeholder={translate('tasks.search')} style={styles.searchBar}>
-        <SearchBar.IconButton name='filter-outline' />
+      <SearchBar placeholder={translate('tasks.search')} style={styles.searchBar} onSearch={searchByName}>
+        <SearchBar.IconButton name="filter-outline" onPress={() => setIsTaskFiltersShow(true)} />
+        {isHasFilters && <View style={styles.hasFilters} />}
       </SearchBar>
     </View>
   );
@@ -141,6 +187,12 @@ function TaskList({ data, parentCourse, autoFetch = true, showHeader = true, hea
         onEndReachedThreshold={0.7}
         style={[styles.coursesList]}
       />
+      <TaskFilterPopup
+        show={isTaskFiltersShow}
+        onApply={setFilterParams}
+        onClose={() => setIsTaskFiltersShow(false)}
+        onAddTaskType={addTaskType}
+      />
     </View>
   );
 }
@@ -176,6 +228,15 @@ const styles = StyleSheet.create({
   fetchingView: {
     height: 21,
     marginVertical: 5,
+  },
+  hasFilters: {
+    position: 'absolute',
+    right: 6,
+    top: 6,
+    width: 10,
+    height: 10,
+    borderRadius: 10,
+    backgroundColor: Color.primary,
   },
 });
 

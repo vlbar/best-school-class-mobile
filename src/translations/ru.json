@@ -22,7 +22,7 @@
     "second-name-placeholder": "Введите фамилию...",
     "first-name": "Имя",
     "middle-name": "Отчество",
-    "email": "Электронная почта",   
+    "email": "Электронная почта",
     "email-placeholder": "Введите электронную почту...",
     "password": "Пароль",
     "сontinue": "Продолжить",
@@ -70,7 +70,7 @@
     "account-not-found": "Пользователь с таким именем пользователя или почтой не зарегистрирован в системе",
     "not-found": "Код подтверждения истёк. Запросите код повторно"
   },
-  "workspace":{
+  "workspace": {
     "title": "Рабочая область",
     "planned-lesson": {
       "not-started": "Похоже занятие еще не началось :/",
@@ -103,10 +103,31 @@
       "title": "Добавить задание",
       "name": "Название задания",
       "submit": "Добавить"
+    },
+    "sortBy": {
+      "title": "Сортировка",
+      "name": "По имени",
+      "newest": "Сначала новые",
+      "oldest": "Сначала старые",
+      "completed": "Завершенные"
+    },
+    "filters": {
+      "task-types": {
+        "title": "Типы заданий",
+        "add": "Добавить новый"
+      }
     }
+  },
+  "task-types": {
+    "search": "Введите название типа задания"
   },
   "common": {
     "search": "Поиск",
+    "filters": {
+      "title": "Фильтрация",
+      "apply": "Применить",
+      "cancel-all": "Отменить все"
+    },
     "input-placeholder-prefix": "Введите",
     "input-placeholder-postfix": "",
     "confirmation": "Подтверждение",
