@@ -21,7 +21,9 @@ function CourseManager() {
   const [pushCourse, popCourse, Breadcrumbs] = useBreadcrumbs(translate('course.root'), onCourseSelect);
 
   const courseListRef = useRef();
-  const [isAddCoursePopupShow, setIsAddCoursePopupShow] = useState(false);
+  const [selectedCourses, setSelectedCourses] = useState([]);
+  const [courseToEdit, setCourseToEdit] = useState(undefined);
+  const [isModifyCoursePopupShow, setIsModifyCoursePopupShow] = useState(false);
   const isKeyboardShow = useIsKeyboardShow();
 
   const [isAddTaskPopupShow, setIsAddTaskPopupShow] = useState(false);
@@ -39,33 +41,39 @@ function CourseManager() {
   function onCourseSelect(course) {
     if (!course.id) setParentCourse(undefined);
     else setParentCourse(course);
+    setCurrentTab(SUB_COURSES_TAB);
+
     subcoursesInAnimation();
   }
 
   function onCoursePress(course) {
     pushCourse(course);
     setParentCourse(course);
+    if (course.isEmpty) setCurrentTab(TASKS_TAB);
 
     subcoursesOutAnimation();
   }
 
-  // popits
+  // popits - courses
   function addCourse() {
-    setIsAddCoursePopupShow(true);
+    setCourseToEdit(undefined);
+    setIsModifyCoursePopupShow(true);
   }
 
   function editCourse(course) {
-    setIsAddCoursePopupShow(true);
+    setCourseToEdit(course);
+    setIsModifyCoursePopupShow(true);
   }
 
   function closeAddCoursePopup() {
-    setIsAddCoursePopupShow(false);
+    setIsModifyCoursePopupShow(false);
   }
 
   function forceRefresh() {
     courseListRef.current.refresh();
   }
 
+  // popits - tasks
   function addTask() {
     setIsAddTaskPopupShow(true);
   }
@@ -81,19 +89,23 @@ function CourseManager() {
 
   //course actions
   async function deleteSelectedCourses() {
-    const sadCourses = courseListRef.current.getSelected();
     courseListRef.current.setIsFetching(true);
-    for await (const course of sadCourses) {
+    for await (const course of selectedCourses) {
       await course.link().delete();
     }
 
     forceRefresh();
   }
 
+  function onCoursesSelectHandler(course, courses) {
+    setSelectedCourses(courses);
+  }
+
   const title = translate('common.confirmation');
   const confirmation = translate('course.delete-course-confirmation');
   const ok = translate('common.ok');
   const cancel = translate('common.cancel');
+
   function showDeleteCoursesAlert() {
     Alert.alert(title, confirmation, [
       {
@@ -105,7 +117,17 @@ function CourseManager() {
   }
 
   const courseActions = (
-    <IconButton name="trash-outline" size={24} style={styles.actionIcon} onPress={showDeleteCoursesAlert} />
+    <>
+      {selectedCourses?.length === 1 && (
+        <IconButton
+          name="create-outline"
+          size={24}
+          style={styles.actionIcon}
+          onPress={() => editCourse(selectedCourses[0])}
+        />
+      )}
+      <IconButton name="trash-outline" size={24} style={styles.actionIcon} onPress={showDeleteCoursesAlert} />
+    </>
   );
 
   // bread
@@ -190,13 +212,15 @@ function CourseManager() {
             onCoursePress={onCoursePress}
             actionMenuContent={courseActions}
             headerContent={horizontalMenu}
+            onCourseSelect={onCoursesSelectHandler}
             ref={courseListRef}
           />
         </Animated.View>
         {!isKeyboardShow && <ActionButton onPress={addCourse} />}
         <AddCoursePopup
-          show={isAddCoursePopupShow}
+          show={isModifyCoursePopupShow}
           parentCourse={parentCourse}
+          courseToEdit={courseToEdit}
           onClose={closeAddCoursePopup}
           onSuccess={forceRefresh}
         />
@@ -259,7 +283,7 @@ const styles = StyleSheet.create({
   actionButtonContainer: {
     position: 'absolute',
     bottom: 16,
-    right: 16,
+    right: -4,
     width: 56,
     height: 56,
     backgroundColor: Color.primary,

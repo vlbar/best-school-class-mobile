@@ -17,7 +17,7 @@ const pageLink = baseLink.fill('size', 20);
 
 const getSubCoursesLink = id => Resource.basedOnHref(`${baseUrl}/${id}/${subCoursesPartUrl}`).link();
 
-function CourseList({ parentCourse, parentCourseId, onCoursePress, headerContent, actionMenuContent }, ref) {
+function CourseList({ parentCourse, parentCourseId, onCoursePress, headerContent, actionMenuContent, onCourseSelect }, ref) {
   const [courses, setCourses] = useState([]);
   const [isFetching, setIsFetching] = useState(true);
   const nextPage = useRef(undefined);
@@ -33,9 +33,6 @@ function CourseList({ parentCourse, parentCourseId, onCoursePress, headerContent
   useImperativeHandle(ref, () => ({
     refresh: () => {
       refreshPage();
-    },
-    getSelected: () => {
-      return selectedCourses;
     },
     unselect: () => {
       closeActionMenu();
@@ -72,17 +69,23 @@ function CourseList({ parentCourse, parentCourseId, onCoursePress, headerContent
   const courseLongPress = course => {
     if (!actionMenuContent) return;
 
+    let targetSelectedCourses = []
     if (isActionMenuShow) {
       if (selectedCourses.includes(course)) {
-        setSelectedCourses(selectedCourses.filter(x => x.id !== course.id));
-        if (selectedCourses.length === 1) setIsActionMenuShow(false);
+        targetSelectedCourses = selectedCourses.filter(x => x.id !== course.id);
+        setSelectedCourses(targetSelectedCourses);
+        if (targetSelectedCourses.length === 0) setIsActionMenuShow(false);
       } else {
-        setSelectedCourses([...selectedCourses, course]);
+        targetSelectedCourses = [...selectedCourses, course];
+        setSelectedCourses(targetSelectedCourses);
       }
     } else {
       setIsActionMenuShow(true);
-      setSelectedCourses([course]);
+      targetSelectedCourses = [course]
+      setSelectedCourses(targetSelectedCourses);
     }
+
+    onCourseSelect?.(course, targetSelectedCourses);
   };
 
   const closeActionMenu = () => {

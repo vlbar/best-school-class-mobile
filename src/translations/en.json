@@ -84,10 +84,12 @@
     "root": "Courses",
     "search": "Enter a name of course",
     "sub-courses": "Subcourses",
-    "add": {
-      "title": "Add course",
+    "modify": {
+      "add-title": "Add course",
+      "edit-title": "Edit course",
       "name": "Course name",
-      "submit": "Add"
+      "add-submit": "Add",
+      "edit-submit": "Edit"
     },
     "empty": "Courses not yet added",
     "delete-course-confirmation": "Are you sure you want to delete the selected courses?"

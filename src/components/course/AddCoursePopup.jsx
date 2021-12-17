@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import BottomPopup from '../common/BottomPopup';
 import InputForm from './../common/InputForm';
@@ -25,13 +25,19 @@ const courseValidationSchema = {
   },
 };
 
-function AddCoursePopup({ show = true, parentCourse, onSuccess, onFailure, onClose }) {
+function AddCoursePopup({ show = true, parentCourse, courseToEdit, onSuccess, onFailure, onClose }) {
   const [isCourseSaving, setIsCourseSaving] = useState(false);
   const [course, setCourse] = useState(initialCourse);
 
   const courseValidation = useBestValidation(courseValidationSchema);
 
   const setName = name => setCourse({ ...course, name: name });
+
+  useEffect(() => {
+    if (show && courseToEdit) {
+      setCourse(courseToEdit);
+    }
+  }, [show]);
 
   const submitHandle = () => {
     if (!courseValidation.validate(course)) return;
@@ -40,8 +46,11 @@ function AddCoursePopup({ show = true, parentCourse, onSuccess, onFailure, onClo
     courseToAdd.name = courseToAdd.name.trim();
     courseToAdd.parentCourseId = parentCourse?.id || null;
 
-    baseLink
-      .post(courseToAdd, setIsCourseSaving)
+    const request = courseToEdit
+      ? courseToEdit.link().put(courseToAdd, setIsCourseSaving)
+      : baseLink.post(courseToAdd, setIsCourseSaving);
+
+    request
       .then(() => {
         setCourse(initialCourse);
 
@@ -52,18 +61,27 @@ function AddCoursePopup({ show = true, parentCourse, onSuccess, onFailure, onClo
   };
 
   return (
-    <BottomPopup title={translate('course.add.title')} show={show} onClose={onClose}>
+    <BottomPopup
+      title={courseToEdit ? translate('course.modify.edit-title') : translate('course.modify.add-title')}
+      show={show}
+      onClose={onClose}
+    >
       <View style={styles.container}>
         <InputForm
-          label={translate('course.add.name')}
+          label={translate('course.modify.name')}
           value={course.name}
           errorMessage={courseValidation.errors.name}
           onChange={value => {
             courseValidation.changeHandle('name', value);
             setName(value);
           }}
+          autoFocus={true}
         />
-        <Button title={translate('course.add.submit')} disabled={isCourseSaving} onPress={submitHandle} />
+        <Button
+          title={courseToEdit ? translate('course.modify.edit-submit') : translate('course.modify.add-submit')}
+          disabled={isCourseSaving}
+          onPress={submitHandle}
+        />
       </View>
     </BottomPopup>
   );
@@ -71,6 +89,7 @@ function AddCoursePopup({ show = true, parentCourse, onSuccess, onFailure, onClo
 
 const styles = StyleSheet.create({
   container: {
+    marginHorizontal: 20,
     marginBottom: 20,
   },
 });
