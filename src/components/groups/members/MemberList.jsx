@@ -101,7 +101,6 @@ export default function MemberList({
               style={styles.memberSearch}
               onSearch={onSearch}
               emptyAfterValue={members.length == 0 ? search : undefined}
-              onEmpty={() => onSearch('')}
             />
           </View>
         }

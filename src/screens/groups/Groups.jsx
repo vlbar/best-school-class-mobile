@@ -125,9 +125,6 @@ function Groups({ navigation }) {
               placeholder={translate('groups.searchPlaceholder')}
               onSearch={onSearch}
               emptyAfterValue={groups.length == 0 ? search : undefined}
-              onEmpty={() => {
-                onSearch('');
-              }}
             />
           </View>
         }
