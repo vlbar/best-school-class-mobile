@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { CommonActions } from '@react-navigation/routers';
 import { Keyboard, StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
 
 import Color from '../../constants';
@@ -18,6 +17,8 @@ function BottomTabNavigator({ navigation, navigatorTabs, initialRouteName }) {
     routes: [{ name: initialRouteName, state: { index: 0, routes: [] } }],
   });
 
+  const navigationStateList = useRef([]);
+
   useEffect(() => {
     const showSubscription = Keyboard.addListener('keyboardDidShow', () => setIsKeyboardShow(true));
     const hideSubscription = Keyboard.addListener('keyboardDidHide', () => setIsKeyboardShow(false));
@@ -30,6 +31,7 @@ function BottomTabNavigator({ navigation, navigatorTabs, initialRouteName }) {
 
   // только не спрашивайте потом, почему undefined... прошу...
   useEffect(() => {
+    console.log(navigation.getState());
     if (!navigation.getState().routes[0].state) return;
 
     let currentNavigationState = navigation.getState().routes[0].state;
@@ -38,10 +40,18 @@ function BottomTabNavigator({ navigation, navigatorTabs, initialRouteName }) {
     let isFirstScreen = screenIndex === 0 && currentNavigatorRoute.params?.screen === undefined;
     let currentScreenRoutes = currentNavigatorRoute?.state?.routes?.[currentNavigatorRoute.state.routes.length - 1];
     let isScreenNeedBottomTabs = currentScreenRoutes?.params?.tabBarVisible;
-    setIsVisible((isFirstScreen || isScreenNeedBottomTabs) && isScreenNeedBottomTabs !== false);
+    setIsVisible(true || ((isFirstScreen || isScreenNeedBottomTabs) && isScreenNeedBottomTabs !== false));
 
     setNavigationState(currentNavigationState);
   }, [navigation.getState().routes]);
+
+  const saveLastNavigationState = () => {
+    const targetRoute = { ...navigationState?.routes?.[navigationState.routes.length - 1] };
+    if (!targetRoute) return;
+    const existsIndex = navigationStateList.current.findIndex(x => x.name === targetRoute.name);
+    if (existsIndex > -1) navigationStateList.current.splice(existsIndex, 1);
+    navigationStateList.current = [...navigationStateList.current, targetRoute];
+  };
 
   if (isVisible && !isKeyboardShow)
     return (
@@ -56,6 +66,8 @@ function BottomTabNavigator({ navigation, navigatorTabs, initialRouteName }) {
               focusedIconName={tab.focusedIconName}
               navigationState={navigationState}
               navigationRef={navigation}
+              onPress={saveLastNavigationState}
+              navigationStates={navigationStateList.current}
             />
           );
         })}
@@ -64,7 +76,16 @@ function BottomTabNavigator({ navigation, navigatorTabs, initialRouteName }) {
   else return <View></View>;
 }
 
-function BottomMenuTab({ name, title, iconName, focusedIconName, navigationState, navigationRef }) {
+function BottomMenuTab({
+  name,
+  title,
+  iconName,
+  focusedIconName,
+  navigationState,
+  navigationRef,
+  onPress,
+  navigationStates,
+}) {
   const [focused, setFocused] = useState(false);
 
   useEffect(() => {
@@ -72,12 +93,9 @@ function BottomMenuTab({ name, title, iconName, focusedIconName, navigationState
   }, [navigationState]);
 
   const onPressHandler = () => {
-    navigationRef.dispatch(
-      CommonActions.reset({
-        index: 0,
-        routes: [{ name }],
-      }),
-    );
+    const previousState = navigationStates.find(x => x.name === name);
+    navigationRef.navigate(previousState ?? name);
+    onPress?.(name);
   };
 
   return (
