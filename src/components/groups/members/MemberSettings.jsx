@@ -5,8 +5,10 @@ import Color from '../../../constants';
 import Text from '../../common/Text';
 import Button from '../../common/Button';
 import BottomPopup from '../../common/BottomPopup';
+import Check from '../../common/Check';
+import { getI } from '../../../utils/Internationalization';
 
-export default function MemberSettings({ group, onGroupEdit, onClose }) {
+export default function MemberSettings({ group, onGroupEdit }) {
   const [closed, setClosed] = useState(group.closed);
   const [limit, setLimit] = useState(group.studentsLimit);
 
@@ -18,9 +20,7 @@ export default function MemberSettings({ group, onGroupEdit, onClose }) {
   }
 
   function updateLimit(limit) {
-    return group
-      .link('groupLimit')
-      .put({ studentsLimit: limit }, setLimitLoading);
+    return group.link('groupLimit').put({ studentsLimit: limit }, setLimitLoading);
   }
 
   function onApply() {
@@ -38,41 +38,31 @@ export default function MemberSettings({ group, onGroupEdit, onClose }) {
   }
 
   return (
-    <BottomPopup title="Настройки участников" onClose={onClose}>
-      <View style={{ padding: 20, paddingTop: 10 }}>
-        <View style={styles.closed}>
-          <Switch
-            value={!closed}
-            onValueChange={() => setClosed(!closed)}
-            thumbColor={closed ? Color.veryLightGray : Color.primary}
-          />
-          <Text style={{ textAlign: 'center' }}>
-            Группа {closed ? 'закрыта' : 'открыта'}
-          </Text>
+    <View style={{ padding: 20, paddingTop: 10 }}>
+      <View style={styles.closed}>
+        <Check type="switch" style={styles.notificationSwitch} checked={!closed} onChange={() => setClosed(!closed)} />
+        <Text style={{ textAlign: 'center' }}>
+          {getI(closed ? 'groups.groupDetails.groupClosed' : 'groups.groupDetails.groupOpened')}
+        </Text>
+      </View>
+      <View style={styles.limit}>
+        <View style={styles.row}>
+          <Text style={styles.label}>{getI('groups.groupDetails.studentsLimit')}</Text>
+          <Text style={styles.label}>{limit}</Text>
         </View>
-        <View style={styles.limit}>
-          <View style={styles.row}>
-            <Text style={styles.label}>Ограничение количества учеников</Text>
-            <Text style={styles.label}>{limit}</Text>
-          </View>
-          <Slider
-            onValueChange={setLimit}
-            minimumValue={group.studentsCount}
-            maximumValue={50}
-            value={group.studentsLimit}
-            disabled={closed}
-            thumbTintColor={Color.primary}
-            step={1}
-            style={{ width: '106%', marginHorizontal: '-3%' }}
-          />
-        </View>
-        <Button
-          title="Применить"
-          onPress={onApply}
-          disabled={limitLoading || closedLoading}
+        <Slider
+          onValueChange={setLimit}
+          minimumValue={group.studentsCount}
+          maximumValue={50}
+          value={group.studentsLimit}
+          disabled={closed}
+          thumbTintColor={Color.primary}
+          step={1}
+          style={{ width: '106%', marginHorizontal: '-3%' }}
         />
       </View>
-    </BottomPopup>
+      <Button title={getI('groups.groupDetails.apply')} onPress={onApply} disabled={limitLoading || closedLoading} />
+    </View>
   );
 }
 

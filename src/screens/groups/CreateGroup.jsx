@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Color from '../../constants';
 import Button from '../../components/common/Button';
@@ -9,9 +9,10 @@ import Header from '../../components/navigation/Header';
 import IconButton from '../../components/common/IconButton';
 import { GROUPS_DETAILS_SCREEN } from './GroupDetails';
 import getContrastColor from '../../utils/ContrastColor';
-import Resource from '../../utils/Hateoas/Resource';
 import ColorPicker from '../../components/groups/ColorPicker';
 import Text from '../../components/common/Text';
+import { GroupsContext } from '../../navigation/main/GroupsNavigationConstants';
+import { useTranslation } from '../../utils/Internationalization';
 
 const GROUP_COLORS = [
   '#f44336',
@@ -31,11 +32,16 @@ const GROUP_COLORS = [
 export const CREATE_GROUP_SCREEN = 'createGroup';
 export default function CreateGroup({ route, navigation }) {
   const createLink = new Link(route.params.createLink ?? '');
-  const updatingGroup = JSON.parse(route.params.updatingGroup ?? null);
+  const updatingGroup = route.params.updatingGroup;
+  const { translate } = useTranslation();
 
-  const [name, setName] = useState(updatingGroup?.name ?? '');
-  const [subject, setSubject] = useState(updatingGroup?.subject ?? '');
-  const [color, setColor] = useState(updatingGroup?.color ?? GROUP_COLORS[0]);
+  const { groups, onCreate, onUpdate } = useContext(GroupsContext);
+
+  const group = useMemo(() => (updatingGroup ? groups.find(g => g.id == updatingGroup) : null), [route]);
+
+  const [name, setName] = useState(group?.name ?? '');
+  const [subject, setSubject] = useState(group?.subject ?? '');
+  const [color, setColor] = useState(group?.color ?? GROUP_COLORS[0]);
   const [loading, setLoading] = useState(false);
 
   function onSubmit() {
@@ -54,14 +60,15 @@ export default function CreateGroup({ route, navigation }) {
         setLoading,
       )
       .then(group => {
+        onCreate({ ...group, membership: { joinDate: new Date().getTime() }, full: false });
         navigation.replace(GROUPS_DETAILS_SCREEN, {
-          fetchLink: group.link().href,
+          groupId: group.id,
         });
       });
   }
 
   function updateGroup() {
-    Resource.wrap(updatingGroup)
+    group
       .link()
       .put(
         {
@@ -71,26 +78,33 @@ export default function CreateGroup({ route, navigation }) {
         },
         setLoading,
       )
-      .then(() => navigation.goBack());
+      .then(() => {
+        onUpdate({ ...group, name, subject, color });
+        navigation.goBack();
+      });
   }
 
   return (
     <>
       <Header
-        title={updatingGroup ? 'Изменить' : 'Создать' + ' группу'}
+        title={translate(updatingGroup ? 'groups.groupCreate.updateGroup' : 'groups.groupCreate.createGroup')}
         canBack
         backgroundColor={color}
         headerRight={<IconButton name="checkmark" color={getContrastColor(color)} onPress={onSubmit} />}
       />
       <Container style={styles.container}>
         <View>
-          <InputForm label="Название" onChange={setName} value={name} />
-          <InputForm label="Предмет" onChange={setSubject} value={subject} />
-          <Text style={styles.label}>Цвет</Text>
+          <InputForm label={translate('groups.groupCreate.name')} onChange={setName} value={name} />
+          <InputForm label={translate('groups.groupCreate.subject')} onChange={setSubject} value={subject} />
+          <Text style={styles.label}>{translate('groups.groupCreate.color')}</Text>
           <ColorPicker value={color} colors={GROUP_COLORS.slice(0, 6)} onChange={setColor} />
           <ColorPicker value={color} colors={GROUP_COLORS.slice(6)} onChange={setColor} />
         </View>
-        <Button title={updatingGroup ? 'Изменить' : 'Добавить'} disabled={loading} onPress={onSubmit}></Button>
+        <Button
+          title={translate(updatingGroup ? 'groups.groupCreate.update' : 'groups.groupCreate.create')}
+          disabled={loading}
+          onPress={onSubmit}
+        ></Button>
       </Container>
     </>
   );

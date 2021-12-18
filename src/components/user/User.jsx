@@ -33,7 +33,7 @@ function User({
     return (
       <View style={[styles.container, iconPlacement === 'right' && styles.right]}>
         <View {...props}>
-          <Avatar email={finalUser.email} iconSize={iconSize} />
+          <Avatar email={finalUser.email} size={iconSize} />
         </View>
         <View style={[styles.nameContainer, iconPlacement === 'right' && styles.rightName, containerStyle]}>
           <UserName user={finalUser} short={short} withCurrent={showCurrent} style={nameStyle} />
