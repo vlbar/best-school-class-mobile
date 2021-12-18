@@ -109,9 +109,71 @@
       "no-lessons": "There are no lessons for today"
     }
   },
+  "course": {
+    "title": "Course",
+    "root": "Courses",
+    "search": "Enter a name of course",
+    "sub-courses": "Subcourses",
+    "modify": {
+      "add-title": "Add course",
+      "edit-title": "Edit course",
+      "name": "Course name",
+      "add-submit": "Add",
+      "edit-submit": "Edit"
+    },
+    "empty": "Courses not yet added",
+    "delete-course-confirmation": "Are you sure you want to delete the selected courses?"
+  },
+  "tasks": {
+    "title": "Tasks",
+    "search": "Enter a task name",
+    "empty": "Tasks list is empty",
+    "course-not-selected": "Select a course to display its tasks",
+    "add": {
+      "title": "Add task",
+      "name": "Task name",
+      "submit": "Add"
+    },
+    "sortBy": {
+      "title": "Sort by",
+      "name": "By name",
+      "newest": "Newest",
+      "oldest": "Oldest",
+      "completed": "Completed"
+    },
+    "filters": {
+      "task-types": {
+        "title": "Task types",
+        "add": "Add new"
+      }
+    },
+    "action": {
+      "delete-confirmation": "Are you sure you want to delete the selected tasks?"
+    }
+  },
+  "task-types": {
+    "search": "Enter name of task type",
+    "modify": {
+      "add-title":"Add new task type",
+      "edit-title":"Edit task type",
+      "name":"Task type name",
+      "add-submit":"Add",
+      "edit-submit":"Update",
+      "delete": "Delete",
+      "delete-confirmation": "Are you sure you want to delete this task type?"
+    }
+  },
   "common": {
     "search": "Search",
+    "filters": {
+      "title": "Filters",
+      "apply": "Apply",
+      "cancel-all": "Cancel All"
+    },
     "input-placeholder-prefix": "Еnter",
-    "input-placeholder-postfix": ""
+    "input-placeholder-postfix": "",
+    "confirmation": "Confirmation",
+    "ok": "Ok",
+    "cancel": "Cancel"
   }
 }

@@ -5,7 +5,7 @@ import Color from '../../constants';
 function ProcessView({
   height = 50,
   width = '100%',
-  backgroundColor = Color.ultraLightPrimary,
+  backgroundColor = Color.grayPrimary,
   borderRadius = 10,
   style,
 }) {

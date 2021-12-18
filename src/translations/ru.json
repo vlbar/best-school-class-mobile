@@ -29,7 +29,7 @@
     "second-name-placeholder": "Введите фамилию...",
     "first-name": "Имя",
     "middle-name": "Отчество",
-    "email": "Электронная почта",   
+    "email": "Электронная почта",
     "email-placeholder": "Введите электронную почту...",
     "password": "Пароль",
     "сontinue": "Продолжить",
@@ -111,9 +111,59 @@
       "no-lessons": "Занятий на сегодня не назначено"
     }
   },
+  "course": {
+    "title": "Курс",
+    "root": "Курсы",
+    "search": "Введите название курса",
+    "sub-courses": "Подкурсы",
+    "modify": {
+      "add-title": "Добавить курс",
+      "edit-title": "Изменить курс",
+      "name": "Название курса",
+      "add-submit": "Добавить",
+      "edit-submit": "Изменить"
+    },
+    "empty": "Курсы еще не добавлены",
+    "delete-course-confirmation": "Вы действительно хотите удалить выбранные курсы?"
+  },
+  "tasks": {
+    "title": "Задания",
+    "search": "Введите название задания",
+    "empty": "Список заданий пуст",
+    "course-not-selected": "Выберите курс, чтобы отобразить его задания",
+    "add": {
+      "title": "Добавить задание",
+      "name": "Название задания",
+      "submit": "Добавить"
+    },
+    "sortBy": {
+      "title": "Сортировка",
+      "name": "По имени",
+      "newest": "Сначала новые",
+      "oldest": "Сначала старые",
+      "completed": "Завершенные"
+    },
+    "filters": {
+      "task-types": {
+        "title": "Типы заданий",
+        "add": "Добавить новый"
+      }
+    }
+  },
+  "task-types": {
+    "search": "Введите название типа задания"
+  },
   "common": {
     "search": "Поиск",
+    "filters": {
+      "title": "Фильтрация",
+      "apply": "Применить",
+      "cancel-all": "Отменить все"
+    },
     "input-placeholder-prefix": "Введите",
-    "input-placeholder-postfix": ""
+    "input-placeholder-postfix": "",
+    "confirmation": "Подтверждение",
+    "ok": "Ок",
+    "cancel": "Отмена"
   }
 }
