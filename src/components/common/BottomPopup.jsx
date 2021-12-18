@@ -5,7 +5,7 @@ import IconButton from './IconButton';
 import Container from './Container';
 import Color from '../../constants';
 
-function BottomPopup({ show = true, title, onClose, children }) {
+function BottomPopup({ show = true, title, canClose = true, onClose, children }) {
   const translateY = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -20,13 +20,15 @@ function BottomPopup({ show = true, title, onClose, children }) {
   }, [show]);
 
   const onCloseHandler = () => {
-    translateY.setValue(1);
-    Animated.timing(translateY, {
-      toValue: 0,
-      duration: 100,
-      useNativeDriver: true,
-    }).start();
-    onClose?.();
+    if (canClose) {
+      translateY.setValue(1);
+      Animated.timing(translateY, {
+        toValue: 0,
+        duration: 100,
+        useNativeDriver: true,
+      }).start();
+      onClose?.();
+    }
   };
 
   let transform = {

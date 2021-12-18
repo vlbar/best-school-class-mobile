@@ -2,6 +2,7 @@ const Color = {};
 // Primary
 Color.primary = '#298AE5';
 Color.lightPrimary = '#51A3FD';
+Color.grayPrimary = '#e4e8ed';
 Color.ultraLightPrimary = '#EFF2F8';
 
 Color.background = '#E7EDF4';

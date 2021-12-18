@@ -42,7 +42,8 @@ function SearchBar({
     setIsEmpty(isValueEmpty);
 
     if (isValueEmpty) {
-      onEmpty?.();
+      if (onEmpty) onEmpty();
+      else onSearch('');
       lastSubmitedValue.current = newValue;
       clearTimeout(delayTimer.current);
       return;
@@ -64,6 +65,8 @@ function SearchBar({
 
   const onClearHandler = () => {
     onChangeHandler('');
+    if (onEmpty) onEmpty();
+    else onSearch('');
   };
 
   return (
