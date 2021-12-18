@@ -40,7 +40,7 @@ function BottomTabNavigator({ navigation, navigatorTabs, initialRouteName }) {
     let isFirstScreen = screenIndex === 0 && currentNavigatorRoute.params?.screen === undefined;
     let currentScreenRoutes = currentNavigatorRoute?.state?.routes?.[currentNavigatorRoute.state.routes.length - 1];
     let isScreenNeedBottomTabs = currentScreenRoutes?.params?.tabBarVisible;
-    setIsVisible(true || ((isFirstScreen || isScreenNeedBottomTabs) && isScreenNeedBottomTabs !== false));
+    setIsVisible((isFirstScreen || isScreenNeedBottomTabs) && isScreenNeedBottomTabs !== false);
 
     setNavigationState(currentNavigationState);
   }, [navigation.getState().routes]);
