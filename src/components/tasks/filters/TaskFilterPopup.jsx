@@ -16,7 +16,7 @@ const baseUrl = '/v1/task-types';
 const baseLink = Resource.basedOnHref(baseUrl).link();
 const pageLink = baseLink.fill('size', 20);
 
-function TaskFilterPopup({ show, onApply, onClose, onAddTaskType }) {
+function TaskFilterPopup({ show, onApply, onClose, onAddTaskType, isNeedRefesh = false }) {
   const orders = {
     'name-asc': translate('tasks.sortBy.name'),
     'createdAt-desc': translate('tasks.sortBy.newest'),
@@ -36,7 +36,7 @@ function TaskFilterPopup({ show, onApply, onClose, onAddTaskType }) {
   });
 
   useEffect(() => {
-    if (show && !taskTypes.length) fetchFirstPage();
+    if ((show && !taskTypes.length) || isNeedRefesh) fetchFirstPage();
   }, [show]);
 
   const fetchFirstPage = () => {

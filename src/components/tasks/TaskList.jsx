@@ -8,6 +8,8 @@ import SearchBar from './../common/SearchBar';
 import TaskFilterPopup from './filters/TaskFilterPopup';
 import Text from '../common/Text';
 import { translate } from '../../utils/Internationalization';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
+import { MODIFY_TASK_TYPE_SCREEN } from '../../screens/course/ModifyTaskType';
 
 // colors
 const taskTypesColors = ['#69c44d', '#007bff', '#db4242', '#2cc7b2', '#8000ff', '#e68e29', '#d4d5d9', '#38c7d1'];
@@ -23,12 +25,16 @@ export function clearHtmlTags(htmlString) {
 export const defaultOrder = 'name-asc';
 
 function TaskList({ data, parentCourse, canFetch = true, showHeader = true, headerContent }) {
+  const navigation = useNavigation();
+  const isFocused = useIsFocused();
+
   const [tasks, setTasks] = useState([]);
   const [isFetching, setIsFetching] = useState(false);
   const nextPage = useRef(undefined);
   const lastParentCourse = useRef(undefined);
 
   const [refreshOffset, setRefreshOffset] = useState(0);
+  const needOpenPopupAfterMount = useRef(false);
   const [isTaskFiltersShow, setIsTaskFiltersShow] = useState(false);
 
   const filterParams = useRef({
@@ -36,6 +42,18 @@ function TaskList({ data, parentCourse, canFetch = true, showHeader = true, head
     taskTypeId: null,
     orderBy: defaultOrder,
   });
+
+  useEffect(() => {
+    if (isFocused) {
+      if (needOpenPopupAfterMount.current) {
+        setIsTaskFiltersShow(true);
+      }
+    }
+  }, [isFocused]);
+
+  useEffect(() => {
+    if (isTaskFiltersShow) needOpenPopupAfterMount.current = false;
+  }, [isTaskFiltersShow]);
 
   useEffect(() => {
     if (lastParentCourse.current !== parentCourse && canFetch) {
@@ -106,6 +124,8 @@ function TaskList({ data, parentCourse, canFetch = true, showHeader = true, head
 
   const addTaskType = () => {
     setIsTaskFiltersShow(false);
+    needOpenPopupAfterMount.current = true;
+    navigation.navigate(MODIFY_TASK_TYPE_SCREEN);
   };
 
   // render
@@ -196,6 +216,7 @@ function TaskList({ data, parentCourse, canFetch = true, showHeader = true, head
         onApply={setFilterParams}
         onClose={() => setIsTaskFiltersShow(false)}
         onAddTaskType={addTaskType}
+        isNeedRefesh={needOpenPopupAfterMount.current}
       />
     </View>
   );
