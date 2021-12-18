@@ -185,11 +185,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     paddingVertical: 12,
     marginVertical: 2,
+    paddingHorizontal: 10,
     alignItems: 'center',
     width: '100%',
   },
   arrowHolder: {
-    minWidth: 40,
+    minWidth: 30,
   },
   processView: {
     height: 20,
@@ -202,6 +203,7 @@ const styles = StyleSheet.create({
   },
   listHeader: {
     backgroundColor: Color.white,
+    marginHorizontal: 10,
   },
   searchBar: {
     marginBottom: 0,
@@ -228,7 +230,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   selected: {
-    backgroundColor: Color.ultraLightPrimary,
+    backgroundColor: Color.grayPrimary,
     borderRadius: 10,
   },
 });

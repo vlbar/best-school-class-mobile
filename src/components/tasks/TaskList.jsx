@@ -325,6 +325,10 @@ function TaskList({
 }
 
 const styles = StyleSheet.create({
+  smallContainer: {
+    flex: 1,
+    marginHorizontal: 10,
+  },
   container: {
     flex: 1,
   },
@@ -373,6 +377,10 @@ const styles = StyleSheet.create({
     height: 10,
     borderRadius: 10,
     backgroundColor: Color.primary,
+  },
+  listHeader: {
+    backgroundColor: Color.white,
+    marginHorizontal: 10,
   },
   actionHeader: {
     position: 'absolute',

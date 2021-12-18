@@ -272,6 +272,9 @@ var OldSchoolHorizontalMenu = OldSchoolHorizontalMenuContainer;
 OldSchoolHorizontalMenu.Item = OldSchoolHorizontalMenuItem;
 
 const styles = StyleSheet.create({
+  breadcrumbs: {
+    marginHorizontal: 10,
+  },
   listContainer: {
     flex: 1,
   },
@@ -283,7 +286,7 @@ const styles = StyleSheet.create({
   actionButtonContainer: {
     position: 'absolute',
     bottom: 16,
-    right: -4,
+    right: 6,
     width: 56,
     height: 56,
     backgroundColor: Color.primary,

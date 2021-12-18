@@ -65,6 +65,7 @@ function AddTaskPopup({ show = true, parentCourse, onSuccess, onFailure, onClose
             taskValidation.changeHandle('name', value);
             setName(value);
           }}
+          autoFocus={true}
         />
         <Button title={translate('tasks.add.submit')} disabled={isTaskSaving} onPress={submitHandle} />
       </View>
@@ -74,6 +75,7 @@ function AddTaskPopup({ show = true, parentCourse, onSuccess, onFailure, onClose
 
 const styles = StyleSheet.create({
   container: {
+    marginHorizontal: 20,
     marginBottom: 20,
   },
 });
