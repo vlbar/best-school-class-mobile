@@ -33,7 +33,6 @@ function useBreadcrumbs(initialBreadcrumb, onPressCallback, displayField = 'name
   }
 
   const onPress = item => {
-    console.log(item);
     const index = items.indexOf(item);
     if (index === items.length - 1) return;
 

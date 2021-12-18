@@ -17,7 +17,7 @@ const SUB_COURSES_TAB = 'subcoursesTab';
 const TASKS_TAB = 'tasksTab';
 
 function CourseManager() {
-  const [parentCourse, setParentCourse] = useState(undefined);
+  const [parentCourse, setParentCourse] = useState(null);
   const [pushCourse, popCourse, Breadcrumbs] = useBreadcrumbs(translate('course.root'), onCourseSelect);
 
   const courseListRef = useRef();
@@ -39,7 +39,7 @@ function CourseManager() {
 
   // travel
   function onCourseSelect(course) {
-    if (!course.id) setParentCourse(undefined);
+    if (!course.id) setParentCourse(null);
     else setParentCourse(course);
     setCurrentTab(SUB_COURSES_TAB);
 
@@ -226,7 +226,7 @@ function CourseManager() {
         />
       </View>
       <View style={[styles.listContainer, isCoursesTab && styles.hidden]}>
-        <TaskList parentCourse={parentCourse} headerContent={horizontalMenu} autoFetch={!isCoursesTab} />
+        <TaskList parentCourse={parentCourse} headerContent={horizontalMenu} canFetch={!isCoursesTab} />
         {!isKeyboardShow && parentCourse && <ActionButton onPress={addTask} />}
         <AddTaskPopup
           show={isAddTaskPopupShow}

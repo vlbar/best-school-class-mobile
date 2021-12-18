@@ -27,6 +27,7 @@ function CourseList({ parentCourse, parentCourseId, onCoursePress, headerContent
   const [selectedCourses, setSelectedCourses] = useState([]);
 
   useEffect(() => {
+    setCourses([]);
     refreshPage();
   }, [parentCourse, parentCourseId]);
 
@@ -44,7 +45,7 @@ function CourseList({ parentCourse, parentCourseId, onCoursePress, headerContent
     link
       ?.fetch(setIsFetching)
       .then(page => {
-        let fetchedCourses = page.list('courses');
+        let fetchedCourses = page.list('courses') ?? [];
         nextPage.current = page.link('next');
 
         if (page.page.number == 1) setCourses(fetchedCourses);
@@ -54,7 +55,6 @@ function CourseList({ parentCourse, parentCourseId, onCoursePress, headerContent
   }
 
   const refreshPage = () => {
-    setCourses([]);
     closeActionMenu();
 
     if (parentCourse) fetchCourses(parentCourse.link('subCourses'));
@@ -111,7 +111,7 @@ function CourseList({ parentCourse, parentCourseId, onCoursePress, headerContent
   };
 
   const loadingItemsIndicator = () => {
-    return isFetching ? (
+    return isFetching && !courses.length ? (
       <View>
         <ProcessView style={[styles.processView, { width: '70%' }]} />
         <ProcessView style={[styles.processView, { width: '50%' }]} />
@@ -193,8 +193,8 @@ const styles = StyleSheet.create({
   },
   processView: {
     height: 20,
-    marginVertical: 12,
-    marginStart: 40,
+    marginVertical: 16,
+    marginStart: 32,
   },
   emptyCourse: {
     paddingTop: 10,

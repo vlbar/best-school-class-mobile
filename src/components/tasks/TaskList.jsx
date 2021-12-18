@@ -22,7 +22,7 @@ export function clearHtmlTags(htmlString) {
 
 export const defaultOrder = 'name-asc';
 
-function TaskList({ data, parentCourse, autoFetch = true, showHeader = true, headerContent }) {
+function TaskList({ data, parentCourse, canFetch = true, showHeader = true, headerContent }) {
   const [tasks, setTasks] = useState([]);
   const [isFetching, setIsFetching] = useState(false);
   const nextPage = useRef(undefined);
@@ -38,15 +38,20 @@ function TaskList({ data, parentCourse, autoFetch = true, showHeader = true, hea
   });
 
   useEffect(() => {
-    if (parentCourse && lastParentCourse.current !== parentCourse && autoFetch) {
-      fetchFirstPage();
+    if (lastParentCourse.current !== parentCourse && canFetch) {
       lastParentCourse.current = parentCourse;
+      if (parentCourse !== null) {
+        fetchFirstPage();
+      } else {
+        setTasks([]);
+        setIsFetching(false);
+      }
     }
-  }, [parentCourse, autoFetch]);
+  }, [parentCourse, canFetch]);
 
   useEffect(() => {
-    if (!data && parentCourse) {
-      setIsFetching(true);
+    if (!data && !canFetch) {
+      if (parentCourse !== null) setIsFetching(true);
       setTasks([]);
     }
   }, [parentCourse]);
@@ -55,7 +60,7 @@ function TaskList({ data, parentCourse, autoFetch = true, showHeader = true, hea
     link
       ?.fetch(setIsFetching)
       .then(page => {
-        let fetchedTasks = page.list('tasks');
+        let fetchedTasks = page.list('tasks') ?? [];
         nextPage.current = page.link('next');
 
         if (page.page.number == 1) setTasks(fetchedTasks);
@@ -65,12 +70,12 @@ function TaskList({ data, parentCourse, autoFetch = true, showHeader = true, hea
   }
 
   const refreshPage = () => {
-    setTasks([]);
+    if (!parentCourse) setTasks([]);
     fetchTasks(parentCourse.link('tasks'));
   };
 
   const fetchFirstPage = () => {
-    if  (!parentCourse) {
+    if (!parentCourse) {
       setTasks([]);
       return;
     }
@@ -78,7 +83,7 @@ function TaskList({ data, parentCourse, autoFetch = true, showHeader = true, hea
     fetchTasks(
       parentCourse
         .link('tasks')
-        .fill('name', filterParams.current.name ?? "")
+        .fill('name', filterParams.current.name ?? '')
         .fill('taskTypeId', filterParams.current.taskTypeId ?? null)
         .fill('order', filterParams.current.orderBy),
     );
@@ -92,13 +97,12 @@ function TaskList({ data, parentCourse, autoFetch = true, showHeader = true, hea
     setIsTaskFiltersShow(false);
     filterParams.current = params;
     fetchFirstPage();
-    console.log(filterParams.current);
   };
 
-  const searchByName = (name) => {
+  const searchByName = name => {
     filterParams.current.name = name;
     fetchFirstPage();
-  }
+  };
 
   const addTaskType = () => {
     setIsTaskFiltersShow(false);
@@ -124,7 +128,7 @@ function TaskList({ data, parentCourse, autoFetch = true, showHeader = true, hea
   };
 
   const loadingItemsIndicator = () => {
-    return isFetching ? (
+    return isFetching && !tasks.length ? (
       <View>
         <View style={[styles.fetchingViewContainer]}>
           <ProcessView style={[styles.fetchingView, { width: '70%' }]} />
@@ -223,11 +227,11 @@ const styles = StyleSheet.create({
     color: Color.silver,
   },
   fetchingViewContainer: {
-    marginVertical: 12,
+    marginVertical: 8,
   },
   fetchingView: {
     height: 21,
-    marginVertical: 5,
+    marginVertical: 3,
   },
   hasFilters: {
     position: 'absolute',
