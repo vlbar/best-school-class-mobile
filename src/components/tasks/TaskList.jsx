@@ -3,14 +3,14 @@ import { StyleSheet, View, FlatList, TouchableNativeFeedback, Alert } from 'reac
 
 import Bandage from './filters/Bandage';
 import Color from '../../constants';
+import IconButton from '../common/IconButton';
 import ProcessView from '../common/ProcessView';
 import SearchBar from './../common/SearchBar';
 import TaskFilterPopup from './filters/TaskFilterPopup';
 import Text from '../common/Text';
+import { MODIFY_TASK_TYPE_SCREEN } from '../../screens/course/ModifyTaskType';
 import { translate } from '../../utils/Internationalization';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
-import { MODIFY_TASK_TYPE_SCREEN } from '../../screens/course/ModifyTaskType';
-import IconButton from '../common/IconButton';
 
 // colors
 const taskTypesColors = ['#69c44d', '#007bff', '#db4242', '#2cc7b2', '#8000ff', '#e68e29', '#d4d5d9', '#38c7d1'];
@@ -136,10 +136,10 @@ function TaskList({
     fetchFirstPage();
   };
 
-  const addTaskType = () => {
+  const addTaskType = taskType => {
     setIsTaskFiltersShow(false);
     needOpenPopupAfterMount.current = true;
-    navigation.navigate(MODIFY_TASK_TYPE_SCREEN);
+    navigation.navigate(MODIFY_TASK_TYPE_SCREEN, { taskTypeName: taskType.name, taskTypeId: taskType.id });
   };
 
   // action menu
@@ -255,12 +255,7 @@ function TaskList({
   const defaultActionMenu = (
     <>
       {selectedTasks?.length === 1 && (
-        <IconButton
-          name="create-outline"
-          size={24}
-          style={styles.actionIcon}
-          onPress={() => {}}
-        />
+        <IconButton name="create-outline" size={24} style={styles.actionIcon} onPress={() => {}} />
       )}
       <IconButton name="trash-outline" size={24} style={styles.actionIcon} onPress={showDeleteTasksAlert} />
     </>

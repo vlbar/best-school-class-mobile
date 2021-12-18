@@ -124,7 +124,12 @@ function TaskFilterPopup({ show, onApply, onClose, onAddTaskType, isNeedRefesh =
           {!isFetching &&
             taskTypes.map(taskType => {
               return (
-                <Pressable key={taskType.id} style={[styles.bandage]} onPress={() => selectType(taskType)}>
+                <Pressable
+                  key={taskType.id}
+                  style={[styles.bandage]}
+                  onPress={() => selectType(taskType)}
+                  onLongPress={() => onAddTaskType(taskType)}
+                >
                   <Bandage
                     title={taskType.name}
                     size={18}

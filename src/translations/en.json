@@ -116,10 +116,22 @@
         "title": "Task types",
         "add": "Add new"
       }
+    },
+    "action": {
+      "delete-confirmation": "Are you sure you want to delete the selected tasks?"
     }
   },
   "task-types": {
-    "search": "Enter name of task type"
+    "search": "Enter name of task type",
+    "modify": {
+      "add-title":"Add new task type",
+      "edit-title":"Edit task type",
+      "name":"Task type name",
+      "add-submit":"Add",
+      "edit-submit":"Update",
+      "delete": "Delete",
+      "delete-confirmation": "Are you sure you want to delete this task type?"
+    }
   },
   "common": {
     "search": "Search",
