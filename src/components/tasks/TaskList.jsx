@@ -85,6 +85,7 @@ function TaskList({
     if (!data && !canFetch) {
       if (parentCourse !== null) setIsFetching(true);
       setTasks([]);
+      closeActionMenu();
     }
   }, [parentCourse]);
 
@@ -149,9 +150,7 @@ function TaskList({
   };
 
   const taskLongPress = task => {
-    console.log(canSelect);
     if (canSelect === false) return;
-    console.log('ok');
 
     let targetSelectedTasks = [];
     if (isActionMenuShow) {
