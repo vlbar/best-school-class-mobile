@@ -132,7 +132,14 @@
       "update": "Update",
       "name": "Name",
       "subject": "Subject",
-      "color": "Color"
+      "color": "Color",
+      "validation": {
+        "nameTooSmall": "Group name is too short",
+        "nameTooLarge": "Group name is too long",
+        "nameRequired": "Group name is required",
+        "subjectTooSmall": "Subject name is too short",
+        "subjectTooLarge": "Subject name is too large"
+      }
     },
     "groupJoin": {
       "title": "Join the group",
@@ -141,7 +148,9 @@
       "members": "Members:",
       "accept": "Accept",
       "notFound": "No invitations found for this code :(",
-      "somethingWentWrong": "Something went wrong :/"
+      "somethingWentWrong": "Something went wrong :/",
+      "alreadyMember": "You are already a member of this group",
+      "limitExceeded": "You cannot join the group because it has reached the member limit"
     },
     "groupDetails": {
       "emptyNews": "Nothing new :(",
@@ -167,12 +176,18 @@
       "emptySearchMembers": "There is no one with such name here :/",
       "actions": "Actions",
       "leave": "Leave",
-      "kick": "Kick"
+      "kick": "Kick",
+      "leaveConfirmation": "Are you sure you want to leave the group?",
+      "kickConfirmation" : "Are you sure you want to kick the member?"
     }
   },
   "common": {
     "search": "Search",
     "input-placeholder-prefix": "Еnter a",
-    "input-placeholder-postfix": ""
+    "input-placeholder-postfix": "",
+    
+    "confirmation": "Confirmation",
+    "ok": "Ok",
+    "cancel": "Cancel"
   }
 }

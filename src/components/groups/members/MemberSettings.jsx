@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
-import { StyleSheet, Switch, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import Slider from '@react-native-community/slider';
 import Color from '../../../constants';
 import Text from '../../common/Text';
 import Button from '../../common/Button';
-import BottomPopup from '../../common/BottomPopup';
 import Check from '../../common/Check';
 import { getI } from '../../../utils/Internationalization';
 
@@ -28,13 +27,9 @@ export default function MemberSettings({ group, onGroupEdit }) {
     if (group.closed != closed) updates.push(updateClosed(closed));
     if (group.studentsLimit != limit) updates.push(updateLimit(limit));
 
-    if (updates.length == 0) onClose();
-    else {
-      Promise.all(updates).then(() => {
-        onGroupEdit({ ...group, studentsLimit: limit, closed: closed });
-        onClose();
-      });
-    }
+    Promise.all(updates).then(() => {
+      onGroupEdit({ ...group, studentsLimit: limit, closed: closed });
+    });
   }
 
   return (

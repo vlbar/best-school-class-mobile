@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { GROUPS_DETAILS_SCREEN } from './GroupDetails';
 import Color from '../../constants';
 import Container from '../../components/common/Container';
@@ -35,25 +35,32 @@ export default function JoinGroup({ route, navigation }) {
   const [memberPage, setMemberPage] = useState(null);
 
   useEffect(() => {
+    setLoading(true);
     inviteLink
-      .fetch(setLoading)
+      .fetch()
       .then(setInvite)
       .catch(err => {
-        if (err.response?.status === 404) setError(translate('groups.groupJoin.notFound'));
-        else setError(err.response?.data?.message ?? translate('groups.groupJoin.somethingWentWrong'));
+        if (err.response?.status === 404) setError('groups.groupJoin.notFound');
+        else setError('groups.groupJoin.somethingWentWrong');
       });
-  }, []);
+  }, [route]);
 
   useEffect(() => {
-    if (invite) invite.link('group').fetch(setLoading).then(setGroup);
+    if (invite) invite.link('group').fetch().then(setGroup);
   }, [invite]);
 
   useEffect(() => {
-    if (group) group.link('creator').fetch(setLoading).then(setCreator);
+    if (group) group.link('creator').fetch().then(setCreator);
   }, [group]);
 
   useEffect(() => {
-    if (group) group.link('groupMembers').fill('size', 5).fetch(setLoading).then(setMemberPage);
+    if (group)
+      group
+        .link('groupMembers')
+        .fill('size', 5)
+        .fetch()
+        .then(setMemberPage)
+        .finally(() => setLoading(false));
   }, [group]);
 
   function onJoin() {
@@ -68,7 +75,10 @@ export default function JoinGroup({ route, navigation }) {
         });
       })
       .catch(err => {
-        setError(err.response?.data?.message ?? translate('groups.groupJoin.somethingWentWrong'));
+        if (err.response?.status === 404) setError('groups.groupJoin.notFound');
+        else if (err.response?.status === 409) setError('groups.groupJoin.alreadyMember');
+        else if (err.response?.status === 422) setError('groups.groupJoin.limitExceeded');
+        else setError('groups.groupJoin.somethingWentWrong');
       });
   }
 
@@ -77,11 +87,12 @@ export default function JoinGroup({ route, navigation }) {
       <Header
         title={translate('groups.groupJoin.title')}
         canBack
-        headerRight={<IconButton name="checkmark" onPress={onJoin} />}
+        headerRight={!error && !loading && <IconButton name="checkmark" onPress={onJoin} />}
       />
       <Container style={{ flexGrow: 1 }}>
-        {error && <Text style={styles.error}>{error}</Text>}
-        {invite && group && creator && memberPage && !error && (
+        {error && <Text style={styles.error}>{translate(error)}</Text>}
+        {loading && !error && <ActivityIndicator style={styles.error} size={50} color={Color.primary} />}
+        {!loading && !error && creator && (
           <View style={styles.container}>
             <View>
               <Text style={styles.text}>
@@ -97,9 +108,11 @@ export default function JoinGroup({ route, navigation }) {
               >
                 {group.name}
               </Text>
-              <View style={styles.memberPreview}>
-                <MemberPreview members={memberPage.list('members')} total={memberPage.page.totalElements} />
-              </View>
+              {memberPage && (
+                <View style={styles.memberPreview}>
+                  <MemberPreview members={memberPage.list('members')} total={memberPage.page.totalElements} />
+                </View>
+              )}
               <Text style={styles.text}>{translate('groups.groupJoin.role')}</Text>
               <View style={styles.roleContainer}>
                 <FontAwesome5 name={types[invite.role].icon} style={styles.role} size={20} />

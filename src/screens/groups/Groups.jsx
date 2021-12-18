@@ -5,22 +5,29 @@ import 'moment/locale/ja';
 import 'moment/locale/de';
 import React, { useEffect, useRef, useState } from 'react';
 import { useContext } from 'react';
-import { FlatList, RefreshControl, StyleSheet, TextInput, TouchableNativeFeedback, View } from 'react-native';
+import {
+  FlatList,
+  ActivityIndicator,
+  RefreshControl,
+  StyleSheet,
+  TextInput,
+  TouchableNativeFeedback,
+  View,
+} from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import BottomPopup from '../../components/common/BottomPopup';
 import Button from '../../components/common/Button';
-import Container from '../../components/common/Container';
 import IconButton from '../../components/common/IconButton';
 import SearchBar from '../../components/common/SearchBar';
 import Text from '../../components/common/Text';
 import Header from '../../components/navigation/Header';
-import { STUDENT, TEACHER } from '../../components/state/State';
+import { TEACHER } from '../../components/state/State';
 import Color from '../../constants';
 import { GroupsContext } from '../../navigation/main/GroupsNavigationConstants';
 import { ProfileContext } from '../../navigation/NavigationConstants';
 import getContrastColor from '../../utils/ContrastColor';
 import Resource from '../../utils/Hateoas/Resource';
-import { getCurrentLanguage, getI, useTranslation } from '../../utils/Internationalization';
+import { getCurrentLanguage, useTranslation } from '../../utils/Internationalization';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 import { CREATE_GROUP_SCREEN } from './CreateGroup';
@@ -36,6 +43,7 @@ function Groups({ navigation }) {
   const { translate } = useTranslation();
 
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [search, setSearch] = useState('');
   const pageRef = useRef(Resource.basedOnHref(GROUPS_URL));
   const [inviteCode, setInviteCode] = useState('');
@@ -43,16 +51,22 @@ function Groups({ navigation }) {
   const currentLanguage = getCurrentLanguage();
 
   useEffect(() => {
+    setGroups([]);
     fetchPage(pageRef.current.link('first').fill('roles', state.name));
   }, [state]);
 
+  useEffect(() => {
+    setInviteCode('');
+  }, [createModalShow]);
+
   function onSearch(search) {
     setSearch(search);
+    setGroups([]);
     fetchPage(pageRef.current.link('first').fill('name', search));
   }
 
-  function fetchPage(link) {
-    link.fetch(setLoading).then(page => {
+  function fetchPage(link, refresh = false) {
+    link.fetch(refresh ? setRefreshing : setLoading).then(page => {
       pageRef.current = page;
       let newGroups = page.list('groups') ?? [];
 
@@ -66,7 +80,7 @@ function Groups({ navigation }) {
   }
 
   function onRefresh() {
-    fetchPage(pageRef.current.link('first'));
+    fetchPage(pageRef.current.link('first'), true);
   }
 
   function onJoinPress() {
@@ -117,6 +131,8 @@ function Groups({ navigation }) {
             />
           </View>
         }
+        ListFooterComponent={loading && <ActivityIndicator color={Color.primary} size={50} />}
+        ListFooterComponentStyle={{ flexGrow: 1, alignItems: 'center', justifyContent: 'center' }}
         stickyHeaderIndices={[0]}
         stickyHeaderHiddenOnScroll={true}
         onEndReached={onNext}
@@ -160,7 +176,7 @@ function Groups({ navigation }) {
             </View>
           )
         }
-        onEndReachedThreshold={0.2}
+        onEndReachedThreshold={0.5}
         data={groups}
         renderItem={({ item }) => {
           return (
@@ -178,7 +194,7 @@ function Groups({ navigation }) {
           );
         }}
         keyExtractor={item => item.id}
-        refreshControl={<RefreshControl refreshing={loading} onRefresh={onRefresh} />}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
       />
       {createModalShow && (
         <BottomPopup show={true} title={translate('groups.groupCreation')} onClose={() => setCreateModalShow(false)}>
@@ -188,6 +204,7 @@ function Groups({ navigation }) {
               <TextInput
                 style={styles.input}
                 onChangeText={setInviteCode}
+                value={inviteCode}
                 placeholder={translate('groups.invitePlaceholder')}
               />
               <IconButton
@@ -196,6 +213,7 @@ function Groups({ navigation }) {
                 style={styles.inviteButton}
                 color={Color.white}
                 onPress={onJoinPress}
+                disabled={inviteCode.length == 0}
               ></IconButton>
             </View>
             {state == TEACHER && (

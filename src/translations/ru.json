@@ -134,7 +134,14 @@
       "update": "Изменить",
       "name": "Название",
       "subject": "Предмет",
-      "color": "Цвет"
+      "color": "Цвет",
+      "validation": {
+        "nameTooSmall": "Слишком короткое название группы",
+        "nameTooLarge": "Слишком длинное название группы",
+        "nameRequired": "Не введено название группы",
+        "subjectTooSmall": "Слишком короткое название предмета",
+        "subjectTooLarge": "Слишком длинное название предмета"
+      }
     },
     "groupJoin": {
       "title": "Присоединиться к группе",
@@ -143,7 +150,9 @@
       "members": "Участники:",
       "accept": "Принять",
       "notFound": "По данному коду приглашений не найдено :(",
-      "somethingWentWrong": "Что-то пошло не так :/"
+      "somethingWentWrong": "Что-то пошло не так :/",
+      "alreadyMember": "Вы уже являетесь участником данной группы",
+      "limitExceeded": "Вы не можете присоединиться к группе, поскольку она достигла лимита участников"
     },
     "groupDetails": {
       "emptyNews": "Ничего нового :(",
@@ -169,12 +178,18 @@
       "emptySearchMembers": "С таким именем здесь никого нет :/",
       "actions": "Действия",
       "leave": "Выйти",
-      "kick": "Выгнать"
+      "kick": "Выгнать",
+      "leaveConfirmation": "Уверены, что хотите выйти из группы?",
+      "kickConfirmation" : "Уверены, что хотите выгнать участника?"
     }
   },
   "common": {
     "search": "Поиск",
     "input-placeholder-prefix": "Введите",
-    "input-placeholder-postfix": ""
+    "input-placeholder-postfix": "",
+
+    "confirmation": "Подтверждение",
+    "ok": "Ок",
+    "cancel": "Отмена"
   }
 }

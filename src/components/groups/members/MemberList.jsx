@@ -1,10 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { FlatList, Keyboard, StyleSheet, TouchableNativeFeedback, View } from 'react-native';
+import { ActivityIndicator, FlatList, Keyboard, StyleSheet, TouchableNativeFeedback, View } from 'react-native';
 import { useScrollIntoView } from 'react-native-scroll-into-view';
 import Color from '../../../constants';
 import Resource from '../../../utils/Hateoas/Resource';
 import { useTranslation } from '../../../utils/Internationalization';
 import BottomPopup from '../../common/BottomPopup';
+import ConfirmationAlert from '../../common/ConfirmationAlert';
 import SearchBar from '../../common/SearchBar';
 import Text from '../../common/Text';
 import { types } from '../../state/State';
@@ -28,7 +29,8 @@ export default function MemberList({
   const memberPage = useRef(null);
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [itemContextMenu, setItemContextMenu] = useState(null);
+  const [refreshing, setRefreshing] = useState(false);
+  const [contextMenu, setContextMenu] = useState(null);
 
   useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', e => {
@@ -55,8 +57,8 @@ export default function MemberList({
     }
   }, [fetchLink, active]);
 
-  function fetchPage(link) {
-    link?.fetch(setLoading).then(newPage => {
+  function fetchPage(link, refresh) {
+    link?.fetch(refresh ? setRefreshing : setLoading).then(newPage => {
       memberPage.current = newPage;
       let newMembers = newPage.list('members') ?? [];
       if (newPage.page.number === 1) setMembers(newMembers);
@@ -70,26 +72,27 @@ export default function MemberList({
 
   function onSearch(search) {
     setSearch(search);
+    setMembers([]);
     fetchPage(memberPage.current?.link('first').fill('name', search));
   }
 
   function onRefresh() {
-    fetchPage(memberPage.current?.link('first'));
+    fetchPage(memberPage.current?.link('first'), true);
   }
 
-  function onKick() {
-    members[itemContextMenu]
+  function onKick(member) {
+    setContextMenu(null);
+    member
       .link()
       ?.remove(setLoading)
       .then(() => {
-        if (currentUser?.id == members[itemContextMenu].user.id) onLeave?.();
-        setItemContextMenu(null);
-        setMembers(members.filter(member => member != members[itemContextMenu]));
+        if (currentUser?.id == member.user.id) onLeave?.();
+        setMembers(members.filter(m => m != member));
       });
   }
 
   return (
-    <View style={{ minHeight: keyboardHeight }}>
+    <View style={{ minHeight: keyboardHeight, overflow: 'hidden', flexGrow: 1 }}>
       <FlatList
         ListHeaderComponent={
           <View ref={active ? viewRef : undefined} style={{ backgroundColor: Color.white }}>
@@ -111,18 +114,19 @@ export default function MemberList({
             </Text>
           )
         }
+        ListFooterComponent={loading && <ActivityIndicator color={Color.primary} size={50} />}
         onEndReached={onNext}
         onRefresh={onRefresh}
-        refreshing={loading}
+        refreshing={refreshing}
         onEndReachedThreshold={0.2}
         data={members}
-        renderItem={({ item, index }) => {
+        renderItem={({ item }) => {
           let isCurrent = item.user.id == currentUser.id;
           return (
             <TouchableNativeFeedback
-              onPress={() => (isCreator || currentUser?.id == item.user.id) && setItemContextMenu(index)}
+              onPress={() => (isCreator || currentUser?.id == item.user.id) && setContextMenu({ item, show: true })}
             >
-              <View style={styles.row}>
+              <View style={[styles.row, item == contextMenu?.item && styles.active]}>
                 <User
                   user={item.user}
                   iconSize={55}
@@ -138,19 +142,42 @@ export default function MemberList({
         }}
         keyExtractor={item => item.id}
       ></FlatList>
-      {itemContextMenu != null && (
-        <BottomPopup onClose={() => setItemContextMenu(null)} title={translate('groups.groupDetails.actions')}>
-          <TouchableNativeFeedback onPress={onKick}>
-            <View style={{ borderTopWidth: StyleSheet.hairlineWidth }}>
-              <Text style={{ color: Color.danger, textAlign: 'center', padding: 15 }}>
-                {translate(
-                  currentUser?.id == members[itemContextMenu]?.user.id
-                    ? 'groups.groupDetails.leave'
-                    : 'groups.groupDetails.kick',
-                )}
-              </Text>
-            </View>
-          </TouchableNativeFeedback>
+      {contextMenu != null && (
+        <BottomPopup
+          show={contextMenu.show}
+          onClose={() => setContextMenu(null)}
+          title={translate('groups.groupDetails.actions')}
+        >
+          <ConfirmationAlert
+            onConfirm={() => onKick(contextMenu.item)}
+            onReject={() => setContextMenu(null)}
+            text={translate(
+              currentUser?.id == contextMenu.item.user.id
+                ? 'groups.groupDetails.leaveConfirmation'
+                : 'groups.groupDetails.kickConfirmation',
+            )}
+          >
+            {({ confirm }) => {
+              return (
+                <TouchableNativeFeedback
+                  onPress={() => {
+                    confirm();
+                    setContextMenu({ ...contextMenu, show: false });
+                  }}
+                >
+                  <View style={{ borderTopWidth: StyleSheet.hairlineWidth }}>
+                    <Text style={{ color: Color.danger, textAlign: 'center', padding: 15 }}>
+                      {translate(
+                        currentUser?.id == contextMenu.item.user.id
+                          ? 'groups.groupDetails.leave'
+                          : 'groups.groupDetails.kick',
+                      )}
+                    </Text>
+                  </View>
+                </TouchableNativeFeedback>
+              );
+            }}
+          </ConfirmationAlert>
         </BottomPopup>
       )}
     </View>
@@ -164,7 +191,14 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 7,
+    paddingVertical: 2,
+    borderWidth: 2,
+    borderColor: 'transparent',
+  },
+  active: {
+    borderColor: Color.primary,
+    borderWidth: 2,
+    borderRadius: 20,
   },
   roleBadge: {
     color: Color.white,
