@@ -9,6 +9,8 @@ import Header from '../../components/navigation/Header';
 import Text from '../../components/common/Text';
 import { translate } from '../../utils/Internationalization';
 
+const user = { firstName: 'Олег', secondName: 'Незабудкин', middleName: 'Прокопьевич', email: 'kek@kek.ru' }
+
 export const WORKSPACE_SCREEN = 'workspace';
 function Workspace() {
   const nearestLessonTime = moment.duration(3, 'day').humanize();

@@ -54,7 +54,7 @@ function BottomPopup({ show = true, title, canClose = true, onClose, children })
             </Text>
             <IconButton name="close" onPress={onCloseHandler} style={styles.close} />
           </View>
-          <Container>{children}</Container>
+          <View>{children}</View>
         </Animated.View>
       </View>
     </Modal>
@@ -74,7 +74,6 @@ const styles = StyleSheet.create({
     backgroundColor: Color.white,
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10,
-    minHeight: 200,
   },
   header: {
     flexDirection: 'row',

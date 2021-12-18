@@ -5,6 +5,13 @@
     "course": "Course",
     "groups": "Groups"
   },
+  "sidebar": {
+    "calendar": "Calendar",
+    "notifications": "Notifications",
+    "settings": "Settings",
+    "help": "Help",
+    "logout": "Logout"
+  },
   "start": {
     "comeback": "Welcome back!",
     "username": "Username",
@@ -68,7 +75,30 @@
     "account-not-found": "User with such username or email is not registered in the system",
     "not-found": "The confirmation code has expired. Request code again"
   },
-  "workspace": {
+  "profile": {
+    "settings": {
+      "title": "Settings",
+      "change-language": {
+        "title": "Change language"
+      }
+    },
+    "help": {
+      "title": "Help",
+      "website": "Browser version",
+      "send-issue": "Report a problem",
+      "help-center": "Help-center",
+      "privacy": "Privacy Policy"
+    }
+  },
+  "user": {
+    "self": "You"
+  },
+  "state": {
+    "teacher": "Teacher",
+    "student": "Student",
+    "assistant": "Assistant" 
+  },
+  "workspace":{
     "title": "Workspace",
     "planned-lesson": {
       "not-started": "It looks like the lesson has not started yet :/",
