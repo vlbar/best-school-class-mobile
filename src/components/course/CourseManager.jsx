@@ -226,7 +226,7 @@ function CourseManager() {
         />
       </View>
       <View style={[styles.listContainer, isCoursesTab && styles.hidden]}>
-        <TaskList parentCourse={parentCourse} headerContent={horizontalMenu} canFetch={!isCoursesTab} />
+        <TaskList parentCourse={parentCourse} headerContent={horizontalMenu} canFetch={!isCoursesTab} canSelect />
         {!isKeyboardShow && parentCourse && <ActionButton onPress={addTask} />}
         <AddTaskPopup
           show={isAddTaskPopupShow}

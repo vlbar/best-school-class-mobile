@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { StyleSheet, View, FlatList, TouchableNativeFeedback } from 'react-native';
+import { StyleSheet, View, FlatList, TouchableNativeFeedback, Alert } from 'react-native';
 
 import Bandage from './filters/Bandage';
 import Color from '../../constants';
@@ -10,6 +10,7 @@ import Text from '../common/Text';
 import { translate } from '../../utils/Internationalization';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { MODIFY_TASK_TYPE_SCREEN } from '../../screens/course/ModifyTaskType';
+import IconButton from '../common/IconButton';
 
 // colors
 const taskTypesColors = ['#69c44d', '#007bff', '#db4242', '#2cc7b2', '#8000ff', '#e68e29', '#d4d5d9', '#38c7d1'];
@@ -24,7 +25,17 @@ export function clearHtmlTags(htmlString) {
 
 export const defaultOrder = 'name-asc';
 
-function TaskList({ data, parentCourse, canFetch = true, showHeader = true, headerContent }) {
+function TaskList({
+  data,
+  parentCourse,
+  canFetch = true,
+  showHeader = true,
+  canSelect = false,
+  headerContent,
+  actionMenuContent,
+  onSelect,
+  onTaskPress,
+}) {
   const navigation = useNavigation();
   const isFocused = useIsFocused();
 
@@ -36,6 +47,9 @@ function TaskList({ data, parentCourse, canFetch = true, showHeader = true, head
   const [refreshOffset, setRefreshOffset] = useState(0);
   const needOpenPopupAfterMount = useRef(false);
   const [isTaskFiltersShow, setIsTaskFiltersShow] = useState(false);
+
+  const [isActionMenuShow, setIsActionMenuShow] = useState(false);
+  const [selectedTasks, setSelectedTasks] = useState([]);
 
   const filterParams = useRef({
     name: '',
@@ -82,7 +96,7 @@ function TaskList({ data, parentCourse, canFetch = true, showHeader = true, head
         nextPage.current = page.link('next');
 
         if (page.page.number == 1) setTasks(fetchedTasks);
-        else setTasks([...courses, ...fetchedTasks]);
+        else setTasks([...tasks, ...fetchedTasks]);
       })
       .catch(error => console.log('Не удалось загрузить список курсов.', error));
   }
@@ -128,20 +142,79 @@ function TaskList({ data, parentCourse, canFetch = true, showHeader = true, head
     navigation.navigate(MODIFY_TASK_TYPE_SCREEN);
   };
 
+  // action menu
+  const closeActionMenu = () => {
+    setIsActionMenuShow(false);
+    setSelectedTasks([]);
+  };
+
+  const taskLongPress = task => {
+    console.log(canSelect);
+    if (canSelect === false) return;
+    console.log('ok');
+
+    let targetSelectedTasks = [];
+    if (isActionMenuShow) {
+      if (selectedTasks.includes(task)) {
+        targetSelectedTasks = selectedTasks.filter(x => x.id !== task.id);
+        if (targetSelectedTasks.length === 0) setIsActionMenuShow(false);
+      } else {
+        targetSelectedTasks = [...selectedTasks, task];
+      }
+    } else {
+      setIsActionMenuShow(true);
+      targetSelectedTasks = [task];
+    }
+
+    setSelectedTasks(targetSelectedTasks);
+    onSelect?.(task, targetSelectedTasks);
+  };
+
+  const deleteSelectedTasks = async () => {
+    setIsFetching(true);
+    for await (const task of selectedTasks) {
+      await task.link().delete();
+    }
+
+    refreshPage();
+  };
+
+  const title = translate('common.confirmation');
+  const confirmation = translate('tasks.action.delete-confirmation');
+  const ok = translate('common.ok');
+  const cancel = translate('common.cancel');
+
+  function showDeleteTasksAlert() {
+    Alert.alert(title, confirmation, [
+      {
+        text: cancel,
+        style: 'cancel',
+      },
+      { text: ok, onPress: () => deleteSelectedTasks() },
+    ]);
+  }
+
   // render
   const renderCourseItem = ({ item }) => {
+    const isSelected = selectedTasks.find(x => x.id === item.id) !== undefined;
+    const description = clearHtmlTags(item.description);
     return (
-      <TouchableNativeFeedback>
-        <View style={styles.task} onPress={() => !item.isEmpty && onCoursePress(item)}>
+      <TouchableNativeFeedback
+        onPress={() => (isActionMenuShow ? taskLongPress(item) : onTaskPress?.(item))}
+        onLongPress={() => !isActionMenuShow && taskLongPress(item)}
+      >
+        <View style={[styles.task, isSelected && styles.selected]}>
           <View style={styles.titleRow}>
             <Text weight="medium" style={styles.title}>
               {item.name}
             </Text>
             {item.taskType && <Bandage color={getTaskTypeColor(item.taskType.id)} title={item.taskType.name} />}
           </View>
-          <Text style={styles.description} numberOfLines={1}>
-            {clearHtmlTags(item.description)}
-          </Text>
+          {description?.length && (
+            <Text style={styles.description} numberOfLines={1}>
+              {description}
+            </Text>
+          )}
         </View>
       </TouchableNativeFeedback>
     );
@@ -179,6 +252,35 @@ function TaskList({ data, parentCourse, canFetch = true, showHeader = true, head
     </View>
   );
 
+  const defaultActionMenu = (
+    <>
+      {selectedTasks?.length === 1 && (
+        <IconButton
+          name="create-outline"
+          size={24}
+          style={styles.actionIcon}
+          onPress={() => {}}
+        />
+      )}
+      <IconButton name="trash-outline" size={24} style={styles.actionIcon} onPress={showDeleteTasksAlert} />
+    </>
+  );
+
+  const actionMenuContainer = (
+    <View style={styles.actionHeader}>
+      <View style={[styles.listHeader]}>
+        {headerContent}
+        <View style={[styles.actionMenu]}>
+          <View style={[styles.actionRow]}>
+            <IconButton name="close-outline" onPress={closeActionMenu} />
+            <Text style={[styles.selectedCount]}>{selectedTasks.length}</Text>
+          </View>
+          {<View style={[styles.actionRow]}>{actionMenuContent ?? defaultActionMenu}</View>}
+        </View>
+      </View>
+    </View>
+  );
+
   const emptyTasks = () => {
     let emptyText;
     if (!isFetching) {
@@ -195,6 +297,7 @@ function TaskList({ data, parentCourse, canFetch = true, showHeader = true, head
 
   return (
     <View style={[styles.container]}>
+      {isActionMenuShow && actionMenuContainer}
       <FlatList
         data={data ?? tasks}
         renderItem={renderCourseItem}
@@ -209,7 +312,6 @@ function TaskList({ data, parentCourse, canFetch = true, showHeader = true, head
         onRefresh={!data && refreshPage}
         onEndReached={!data && fetchNextPage}
         onEndReachedThreshold={0.7}
-        style={[styles.coursesList]}
       />
       <TaskFilterPopup
         show={isTaskFiltersShow}
@@ -234,7 +336,16 @@ const styles = StyleSheet.create({
     marginBottom: 0,
   },
   task: {
-    paddingVertical: 10,
+    paddingVertical: 8,
+    marginVertical: 2,
+    paddingHorizontal: 10,
+  },
+  selected: {
+    backgroundColor: Color.grayPrimary,
+    borderRadius: 10,
+  },
+  selectedCount: {
+    marginStart: 4,
   },
   titleRow: {
     flexDirection: 'row',
@@ -262,6 +373,24 @@ const styles = StyleSheet.create({
     height: 10,
     borderRadius: 10,
     backgroundColor: Color.primary,
+  },
+  actionHeader: {
+    position: 'absolute',
+    width: '100%',
+    top: 0,
+    zIndex: 2,
+    elevation: 2,
+  },
+  actionMenu: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    height: 52,
+    backgroundColor: Color.white,
+  },
+  actionRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
 });
 
