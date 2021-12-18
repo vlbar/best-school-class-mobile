@@ -79,7 +79,6 @@ function CourseManager() {
   }
 
   function editTask(task) {
-    console.log(task);
     setIsAddTaskPopupShow(false);
   }
 

@@ -17,7 +17,10 @@ const pageLink = baseLink.fill('size', 20);
 
 const getSubCoursesLink = id => Resource.basedOnHref(`${baseUrl}/${id}/${subCoursesPartUrl}`).link();
 
-function CourseList({ parentCourse, parentCourseId, onCoursePress, headerContent, actionMenuContent, onCourseSelect }, ref) {
+function CourseList(
+  { parentCourse, parentCourseId, onCoursePress, headerContent, actionMenuContent, onCourseSelect },
+  ref,
+) {
   const [courses, setCourses] = useState([]);
   const [isFetching, setIsFetching] = useState(true);
   const nextPage = useRef(undefined);
@@ -25,6 +28,10 @@ function CourseList({ parentCourse, parentCourseId, onCoursePress, headerContent
   const [refreshOffset, setRefreshOffset] = useState(0);
   const [isActionMenuShow, setIsActionMenuShow] = useState(false);
   const [selectedCourses, setSelectedCourses] = useState([]);
+
+  const filterParams = useRef({
+    name: '',
+  });
 
   useEffect(() => {
     setCourses([]);
@@ -57,9 +64,11 @@ function CourseList({ parentCourse, parentCourseId, onCoursePress, headerContent
   const refreshPage = () => {
     closeActionMenu();
 
-    if (parentCourse) fetchCourses(parentCourse.link('subCourses'));
-    else if (parentCourseId) fetchCourses(getSubCoursesLink(parentCourseId));
-    else fetchCourses(pageLink);
+    let link;
+    if (parentCourse) link = parentCourse.link('subCourses');
+    else if (parentCourseId) link = getSubCoursesLink(parentCourseId);
+    else link = pageLink;
+    fetchCourses(link.fill('name', filterParams.current.name ?? ''));
   };
 
   const fetchNextPage = () => {
@@ -69,7 +78,7 @@ function CourseList({ parentCourse, parentCourseId, onCoursePress, headerContent
   const courseLongPress = course => {
     if (!actionMenuContent) return;
 
-    let targetSelectedCourses = []
+    let targetSelectedCourses = [];
     if (isActionMenuShow) {
       if (selectedCourses.includes(course)) {
         targetSelectedCourses = selectedCourses.filter(x => x.id !== course.id);
@@ -81,7 +90,7 @@ function CourseList({ parentCourse, parentCourseId, onCoursePress, headerContent
       }
     } else {
       setIsActionMenuShow(true);
-      targetSelectedCourses = [course]
+      targetSelectedCourses = [course];
       setSelectedCourses(targetSelectedCourses);
     }
 
@@ -129,7 +138,15 @@ function CourseList({ parentCourse, parentCourseId, onCoursePress, headerContent
   const listHeader = (
     <View onLayout={headerLayoutHandler} style={[styles.listHeader]}>
       {headerContent}
-      <SearchBar placeholder={translate('course.search')} style={styles.searchBar} />
+      <SearchBar
+        placeholder={translate('course.search')}
+        style={styles.searchBar}
+        onSearch={value => {
+          filterParams.current.name = value;
+          refreshPage();
+        }}
+        onDelayStart={() => setIsFetching(true)}
+      />
     </View>
   );
 

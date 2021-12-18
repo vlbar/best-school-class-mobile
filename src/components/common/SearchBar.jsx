@@ -65,6 +65,8 @@ function SearchBar({
 
   const onClearHandler = () => {
     onChangeHandler('');
+    if (onEmpty) onEmpty();
+    else onSearch('');
   };
 
   return (
