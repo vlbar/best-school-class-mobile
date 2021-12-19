@@ -1,8 +1,4 @@
 import moment from 'moment';
-import 'moment/locale/ru';
-import 'moment/locale/fr';
-import 'moment/locale/ja';
-import 'moment/locale/de';
 import React, { useEffect, useRef, useState } from 'react';
 import { useContext } from 'react';
 import {
