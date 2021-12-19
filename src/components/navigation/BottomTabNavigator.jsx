@@ -31,7 +31,6 @@ function BottomTabNavigator({ navigation, navigatorTabs, initialRouteName }) {
 
   // только не спрашивайте потом, почему undefined... прошу...
   useEffect(() => {
-    console.log(navigation.getState());
     if (!navigation.getState().routes[0].state) return;
 
     let currentNavigationState = navigation.getState().routes[0].state;
