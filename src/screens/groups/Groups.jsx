@@ -1,21 +1,30 @@
 import moment from 'moment';
-import 'moment/locale/ru';
 import React, { useEffect, useRef, useState } from 'react';
 import { useContext } from 'react';
-import { FlatList, RefreshControl, StyleSheet, TextInput, TouchableNativeFeedback, View } from 'react-native';
+import {
+  FlatList,
+  ActivityIndicator,
+  RefreshControl,
+  StyleSheet,
+  TextInput,
+  TouchableNativeFeedback,
+  View,
+} from 'react-native';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 import BottomPopup from '../../components/common/BottomPopup';
 import Button from '../../components/common/Button';
-import Container from '../../components/common/Container';
 import IconButton from '../../components/common/IconButton';
 import SearchBar from '../../components/common/SearchBar';
 import Text from '../../components/common/Text';
-import useDelay from '../../components/common/useDelay';
 import Header from '../../components/navigation/Header';
+import { TEACHER } from '../../components/state/State';
 import Color from '../../constants';
+import { GroupsContext } from '../../navigation/main/GroupsNavigationConstants';
 import { ProfileContext } from '../../navigation/NavigationConstants';
 import getContrastColor from '../../utils/ContrastColor';
 import Resource from '../../utils/Hateoas/Resource';
-import { getCurrentLanguage } from '../../utils/Internationalization';
+import { getCurrentLanguage, useTranslation } from '../../utils/Internationalization';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 import { CREATE_GROUP_SCREEN } from './CreateGroup';
 import { GROUPS_DETAILS_SCREEN } from './GroupDetails';
@@ -25,28 +34,35 @@ const GROUPS_URL = 'v1/groups';
 
 export const GROUPS_SCREEN = 'groups';
 function Groups({ navigation }) {
-  const { state } = useContext(ProfileContext);
-  const [loading, setLoading] = useState(false);
+  const { state, user } = useContext(ProfileContext);
+  const { groups, setGroups } = useContext(GroupsContext);
+  const { translate } = useTranslation();
+
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [search, setSearch] = useState('');
-  const [groups, setGroups] = useState([]);
   const pageRef = useRef(Resource.basedOnHref(GROUPS_URL));
   const [inviteCode, setInviteCode] = useState('');
   const [createModalShow, setCreateModalShow] = useState(false);
   const currentLanguage = getCurrentLanguage();
 
   useEffect(() => {
-    fetchPage(pageRef.current.link().fill('roles', state.name));
+    setGroups([]);
+    fetchPage(pageRef.current.link('first').fill('roles', state.name));
   }, [state]);
+
+  useEffect(() => {
+    setInviteCode('');
+  }, [createModalShow]);
 
   function onSearch(search) {
     setSearch(search);
+    setGroups([]);
     fetchPage(pageRef.current.link('first').fill('name', search));
   }
 
-  function fetchPage(link) {
-    if (loading) return;
-
-    link.fetch(setLoading).then(page => {
+  function fetchPage(link, refresh = false) {
+    link.fetch(refresh ? setRefreshing : setLoading).then(page => {
       pageRef.current = page;
       let newGroups = page.list('groups') ?? [];
 
@@ -56,11 +72,11 @@ function Groups({ navigation }) {
   }
 
   function onNext() {
-    if (pageRef.current.link('next')) fetchPage(pageRef.current.link('next'));
+    if (!loading && pageRef.current.link('next')) fetchPage(pageRef.current.link('next'));
   }
 
   function onRefresh() {
-    fetchPage(pageRef.current.link('first'));
+    fetchPage(pageRef.current.link('first'), true);
   }
 
   function onJoinPress() {
@@ -87,72 +103,121 @@ function Groups({ navigation }) {
     navigation.navigate({
       name: GROUPS_DETAILS_SCREEN,
       params: {
-        fetchLink: group.link().href,
+        groupId: group.id,
       },
     });
   }
 
   return (
     <>
-      <Header title="Группы" headerRight={<IconButton name="add-outline" onPress={() => setCreateModalShow(true)} />} />
-      <Container style={styles.container}>
-        <FlatList
-          ListHeaderComponent={
-            <View style={{ backgroundColor: Color.white }}>
-              <SearchBar
-                placeholder="Введите название группы..."
-                onSearch={onSearch}
-                emptyAfterValue={groups.length == 0 ? search : undefined}
-                onEmpty={() => {
-                  onSearch('');
-                }}
-              />
+      <Header
+        title={translate('groups.title')}
+        headerRight={<IconButton name="add-outline" onPress={() => setCreateModalShow(true)} />}
+      />
+      <FlatList
+        ListHeaderComponent={
+          <View style={{ backgroundColor: Color.white }}>
+            <SearchBar
+              placeholder={translate('groups.searchPlaceholder')}
+              onSearch={onSearch}
+              emptyAfterValue={groups.length == 0 ? search : undefined}
+            />
+          </View>
+        }
+        ListFooterComponent={loading && <ActivityIndicator color={Color.primary} size={50} />}
+        ListFooterComponentStyle={{ flexGrow: 1, alignItems: 'center', justifyContent: 'center' }}
+        stickyHeaderIndices={[0]}
+        stickyHeaderHiddenOnScroll={true}
+        onEndReached={onNext}
+        contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 20 }}
+        ListEmptyComponent={
+          !loading && (
+            <View style={styles.emptyMessage}>
+              {search ? (
+                <>
+                  <Text style={styles.emptyText}>{translate('groups.emptySearch')}</Text>
+                  <Text style={styles.emptyText}>{translate('groups.emptySearchAdvice')}</Text>
+                </>
+              ) : (
+                <>
+                  <Text style={styles.emptyText}>{translate('groups.empty')}</Text>
+                  <Text style={[styles.emptyText, styles.roleText]}> {translate(state.key)}</Text>
+
+                  <Text style={styles.emptyText}>
+                    {translate('groups.emptyJoinAdvice')}
+                    {'\n'}
+                    <TouchableOpacity onPress={() => setCreateModalShow(true)}>
+                      <Text style={styles.emptyText}>
+                        <Text style={styles.linkText}>{translate('groups.join')}</Text>{' '}
+                        {translate('groups.emptyJoinAdviceContinue')}.
+                      </Text>
+                    </TouchableOpacity>
+                  </Text>
+                  {state == TEACHER && (
+                    <>
+                      <Text style={[styles.emptyText, styles.orText]}>{translate('groups.or')}</Text>
+                      <TouchableOpacity onPress={onCreatePress}>
+                        <Text style={styles.emptyText}>
+                          <Text style={styles.linkText}>{translate('groups.create')}</Text>{' '}
+                          {translate('groups.emptyCreateAdviceContinue')}
+                        </Text>
+                      </TouchableOpacity>
+                    </>
+                  )}
+                </>
+              )}
             </View>
-          }
-          stickyHeaderIndices={[0]}
-          stickyHeaderHiddenOnScroll={true}
-          onEndReached={onNext}
-          onEndReachedThreshold={0.2}
-          data={groups}
-          renderItem={({ item }) => {
-            return (
-              <TouchableNativeFeedback onPress={() => onDetailsPress(item)}>
-                <View style={[styles.card, { backgroundColor: item.color }]}>
-                  <Text style={[styles.cardHeader, { color: getContrastColor(item.color) }]}>{item.name}</Text>
-                  <Text style={styles.cardBody}>
+          )
+        }
+        onEndReachedThreshold={0.5}
+        data={groups}
+        renderItem={({ item }) => {
+          return (
+            <TouchableNativeFeedback onPress={() => onDetailsPress(item)}>
+              <View style={[styles.card, { backgroundColor: item.color }]}>
+                <Text style={[styles.cardHeader, { color: getContrastColor(item.color) }]}>{item.name}</Text>
+                <View style={styles.cardBody}>
+                  <Text style={styles.joinedText}>
                     {moment(new Date(item.membership.joinDate), undefined, currentLanguage.languageName).fromNow()}
                   </Text>
+                  {user.id == item.creatorId && <Icon name="key-outline" color={Color.gray} size={22} />}
                 </View>
-              </TouchableNativeFeedback>
-            );
-          }}
-          keyExtractor={item => item.id}
-          refreshControl={<RefreshControl refreshing={loading} onRefresh={onRefresh} />}
-        />
-        {createModalShow && (
-          <BottomPopup show={true} title="Добавление группы" onClose={() => setCreateModalShow(false)}>
-            <View style={styles.modal}>
-              <Text style={styles.textCenter}>У вас есть приглашение?</Text>
-              <View style={styles.codeContainer}>
-                <TextInput
-                  style={styles.input}
-                  onChangeText={setInviteCode}
-                  placeholder={'Введите код приглашения...'}
-                />
-                <IconButton
-                  name="chevron-forward-outline"
-                  size={40}
-                  style={styles.inviteButton}
-                  color={Color.white}
-                  onPress={onJoinPress}
-                ></IconButton>
               </View>
-              <Text style={[styles.textCenter, styles.orText]}>или</Text>
-              <Button title="Создать новую" onPress={onCreatePress}></Button>
+            </TouchableNativeFeedback>
+          );
+        }}
+        keyExtractor={item => item.id}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+      />
+      {createModalShow && (
+        <BottomPopup show={true} title={translate('groups.groupCreation')} onClose={() => setCreateModalShow(false)}>
+          <View style={styles.modal}>
+            <Text style={styles.textCenter}>{translate('groups.inviteQuestion')}</Text>
+            <View style={styles.codeContainer}>
+              <TextInput
+                style={styles.input}
+                onChangeText={setInviteCode}
+                value={inviteCode}
+                placeholder={translate('groups.invitePlaceholder')}
+              />
+              <IconButton
+                name="chevron-forward-outline"
+                size={40}
+                style={styles.inviteButton}
+                color={Color.white}
+                onPress={onJoinPress}
+                disabled={inviteCode.length == 0}
+              ></IconButton>
             </View>
-          </BottomPopup>
-        )}
-      </Container>
+            {state == TEACHER && (
+              <>
+                <Text style={[styles.textCenter, styles.orText]}>{translate('groups.or')}</Text>
+                <Button title={translate('groups.createNew')} onPress={onCreatePress}></Button>
+              </>
+            )}
+          </View>
+        </BottomPopup>
+      )}
     </>
   );
 }
@@ -191,7 +256,7 @@ const styles = StyleSheet.create({
     paddingVertical: 0,
   },
   orText: {
-    marginVertical: 15,
+    marginVertical: 10,
   },
   card: {
     borderRadius: 15,
@@ -209,6 +274,25 @@ const styles = StyleSheet.create({
     marginBottom: 4,
     marginHorizontal: 4,
     borderRadius: 13,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  joinedText: {
     color: Color.silver,
+  },
+  emptyMessage: {
+    marginTop: 50,
+  },
+  emptyText: {
+    textAlign: 'center',
+    color: Color.silver,
+  },
+  roleText: {
+    color: Color.lightPrimary,
+    marginVertical: 5,
+  },
+  linkText: {
+    fontWeight: 'bold',
   },
 });

@@ -1,8 +1,9 @@
-import md5 from 'md5';
 import React from 'react';
-import { Image, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import Color from '../../../constants';
+import { getI } from '../../../utils/Internationalization';
 import Text from '../../common/Text';
+import Avatar from '../../user/Avatar';
 
 export default function MemberPreview({ members, total, iconSize = 40 }) {
   function membersWord(count) {
@@ -19,25 +20,12 @@ export default function MemberPreview({ members, total, iconSize = 40 }) {
           return (
             <View key={index}>
               <View style={styles.iconWrapper} key={index}>
-                <Image
-                  style={[
-                    styles.icon,
-                    {
-                      height: iconSize,
-                      width: iconSize,
-                    },
-                  ]}
-                  source={{
-                    uri: `http://cdn.libravatar.org/avatar/${md5(member.user.email)}?s=100&&d=${
-                      member.user.email ? 'identicon' : 'mm'
-                    }&&r=g`,
-                  }}
-                ></Image>
+                <Avatar size={iconSize} email={member.user.email} />
               </View>
             </View>
           );
         })}
-        {total > members.length && (
+        {total > members.length ? (
           <View style={styles.iconWrapper}>
             <View
               style={[
@@ -52,12 +40,16 @@ export default function MemberPreview({ members, total, iconSize = 40 }) {
               <Text style={{ color: Color.white }}>+{total - members.length}</Text>
             </View>
           </View>
-        )}
+        ) : null}
       </View>
       <Text style={[styles.membersNames, styles.smallText]}>
-        {total <= members.length && <span>Участники: </span>}
+        {total <= members.length ? (
+          <Text style={[styles.membersNames, styles.smallText]}>{getI('groups.groupJoin.members')} </Text>
+        ) : (
+          ''
+        )}
         {members.map(member => member.user.secondName).join(', ')}{' '}
-        {total > members.length && `и еще ${total - members.length} ${membersWord(total - members.length)}`}
+        {total > members.length ? `и еще ${total - members.length} ${membersWord(total - members.length)}` : ''}
       </Text>
     </View>
   );
