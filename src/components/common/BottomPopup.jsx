@@ -1,8 +1,7 @@
 import React, { useEffect, useRef } from 'react';
-import { Animated, Modal, StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
+import { Animated, Modal, StyleSheet, TouchableWithoutFeedback, View, ScrollView } from 'react-native';
 import Text from './Text';
 import IconButton from './IconButton';
-import Container from './Container';
 import Color from '../../constants';
 
 function BottomPopup({ show = true, title, canClose = true, onClose, children }) {
@@ -54,7 +53,7 @@ function BottomPopup({ show = true, title, canClose = true, onClose, children })
             </Text>
             <IconButton name="close" onPress={onCloseHandler} style={styles.close} />
           </View>
-          <View>{children}</View>
+          <ScrollView style={styles.container}>{children}</ScrollView>
         </Animated.View>
       </View>
     </Modal>
@@ -71,6 +70,7 @@ const styles = StyleSheet.create({
   },
   popup: {
     width: '100%',
+    maxHeight: '100%',
     backgroundColor: Color.white,
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10,
