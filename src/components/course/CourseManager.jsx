@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { StyleSheet, Animated, BackHandler, TouchableNativeFeedback, View, Alert, Pressable } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { useNavigation } from '@react-navigation/native';
 
 import AddCoursePopup from './AddCoursePopup';
 import AddTaskPopup from '../tasks/AddTaskPopup';
@@ -12,11 +13,13 @@ import Text from '../common/Text';
 import translate from '../../utils/Internationalization';
 import useBreadcrumbs from './useBreadcrumbs';
 import useIsKeyboardShow from '../../utils/useIsKeyboardShow';
+import { TASK_SCREEN } from '../../screens/course/TaskQuestions';
 
 const SUB_COURSES_TAB = 'subcoursesTab';
 const TASKS_TAB = 'tasksTab';
 
 function CourseManager() {
+  const navigation = useNavigation();
   const [parentCourse, setParentCourse] = useState(null);
   const [pushCourse, popCourse, Breadcrumbs] = useBreadcrumbs(translate('course.root'), onCourseSelect);
 
@@ -52,6 +55,10 @@ function CourseManager() {
     if (course.isEmpty) setCurrentTab(TASKS_TAB);
 
     subcoursesOutAnimation();
+  }
+
+  function onTaskPress(task) {
+    navigation.navigate(TASK_SCREEN, {id: task.id});
   }
 
   // popits - courses
@@ -225,7 +232,7 @@ function CourseManager() {
         />
       </View>
       <View style={[styles.listContainer, isCoursesTab && styles.hidden]}>
-        <TaskList parentCourse={parentCourse} headerContent={horizontalMenu} canFetch={!isCoursesTab} canSelect />
+        <TaskList parentCourse={parentCourse} headerContent={horizontalMenu} canFetch={!isCoursesTab} canSelect onTaskPress={onTaskPress} />
         {!isKeyboardShow && parentCourse && <ActionButton onPress={addTask} />}
         <AddTaskPopup
           show={isAddTaskPopupShow}

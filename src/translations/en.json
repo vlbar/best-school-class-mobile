@@ -96,9 +96,9 @@
   "state": {
     "teacher": "Teacher",
     "student": "Student",
-    "assistant": "Assistant" 
+    "assistant": "Assistant"
   },
-  "workspace":{
+  "workspace": {
     "title": "Workspace",
     "planned-lesson": {
       "not-started": "It looks like the lesson has not started yet :/",
@@ -149,16 +149,33 @@
     },
     "action": {
       "delete-confirmation": "Are you sure you want to delete the selected tasks?"
+    },
+    "question": {
+      "balls": "Points",
+      "variant": {
+        "type": "Question type",
+        "formulation": "Formulation",
+        "textQuestion": {
+          "title": "Text",
+          "numberOfSymbols": "Number of symbols"
+        },
+        "testQuestion": {
+          "title": "One of the list"
+        },
+        "testMultiQuestion": {
+          "title": "Several from the list"
+        }
+      }
     }
   },
   "task-types": {
     "search": "Enter name of task type",
     "modify": {
-      "add-title":"Add new task type",
-      "edit-title":"Edit task type",
-      "name":"Task type name",
-      "add-submit":"Add",
-      "edit-submit":"Update",
+      "add-title": "Add new task type",
+      "edit-title": "Edit task type",
+      "name": "Task type name",
+      "add-submit": "Add",
+      "edit-submit": "Update",
       "delete": "Delete",
       "delete-confirmation": "Are you sure you want to delete this task type?"
     }
