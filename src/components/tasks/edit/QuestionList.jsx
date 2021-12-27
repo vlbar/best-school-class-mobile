@@ -72,7 +72,11 @@ function QuestionList({ taskId }) {
               </View>
             </View>
           </Pressable>
-          <Text numberOfLines={10} ellipsizeMode='tail' style={styles.formulation}>{clearHtmlTags(selectedVariant.formulation)}</Text>
+          <Text numberOfLines={10} ellipsizeMode="tail" style={styles.formulation}>
+            {selectedVariant.formulation.length
+              ? clearHtmlTags(selectedVariant.formulation)
+              : translate('tasks.question.variant.empty-formulation')}
+          </Text>
           <View style={[styles.footer]}>
             <Text color={Color.silver} fontSize={14}>
               {translate('tasks.question.variant.type')}
