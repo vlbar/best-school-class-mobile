@@ -151,19 +151,47 @@
       "delete-confirmation": "Are you sure you want to delete the selected tasks?"
     },
     "question": {
-      "balls": "Points",
+      "title": "Question",
+      "maxScore": "Score",
+      "validation": {
+        "maxScoreMin": "Score must be greater than or equal to {{min}}",
+        "maxScoreMax": "Too many score"
+      },
+      "closeNotValid": "Are you sure you want to close the question change panel? There are invalid varinats in the question. \nNote: Invalid questions will not be saved!",
       "variant": {
         "type": "Question type",
         "formulation": "Formulation",
+        "empty-formulation": "Formulation is empty",
+        "delete-confirmation": "Are you sure you want to delete the variant?",
+        "delete-last": "The last option cannot be deleted",
         "textQuestion": {
           "title": "Text",
-          "numberOfSymbols": "Number of symbols"
+          "numberOfSymbols": "Number of symbols",
+          "validation": {
+            "numberOfSymbolsMin": "Number of symbols must be greater than or equal to {{min}}",
+            "numberOfSymbolsMax": "Too many number of symbols"
+          }
         },
         "testQuestion": {
-          "title": "One of the list"
+          "title": "One of the list",
+          "addAnswer": "Add answer",
+          "validation": {
+            "empty": "There are no answers to the question",
+            "minCount": "Number of answers must be greater than or equal to {{min}}",
+            "noRight": "There is no right answer",
+            "answer": {
+              "required": "Answer has not been entered",
+              "maxLenght": "Answer is too long"
+            }
+          }
         },
         "testMultiQuestion": {
           "title": "Several from the list"
+        },
+        "validation": {
+          "formulationRequired": "Formulation has not been entered",
+          "formulationMin": "Formulation name must contain at least {{min}} letters",
+          "formulationMax": "Formulation is too long"
         }
       }
     }

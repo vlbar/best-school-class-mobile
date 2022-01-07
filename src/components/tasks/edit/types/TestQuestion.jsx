@@ -5,16 +5,15 @@ import Button from './../../../common/Button';
 import Check from '../../../common/Check';
 import Color from '../../../../constants';
 import IconButton from '../../../common/IconButton';
-import InputForm from '../../../common/InputForm';
+import { BestValidation } from '../../../../utils/useBestValidation';
 import { useTranslation } from '../../../../utils/Internationalization';
 
 const SOURCE_TYPE = 'TEST_QUESTION';
 export const TEST_QUESTION = 'TEST_QUESTION';
 export const TEST_MULTI_QUESTION = 'TEST_MULTI_QUESTION';
 
-function TestQuestion({ variant, setVariant }) {
+function TestQuestion({ variant, setVariant, variantValidation }) {
   const { translate } = useTranslation();
-
   const focusedOn = useRef(undefined);
 
   const setAnswers = answers => {
@@ -26,16 +25,19 @@ function TestQuestion({ variant, setVariant }) {
   const addNewAnswer = () => {
     if (variant.testAnswerVariants.length < 10) {
       const newAnswer = { id: Math.random(), detached: true, answer: '' };
-      setAnswers([...variant.testAnswerVariants, newAnswer]);
+      let testAnswerVariants = [...variant.testAnswerVariants, newAnswer];
+      setAnswers(testAnswerVariants);
 
+      variantValidation.changeHandle('testAnswerVariants', testAnswerVariants);
       focusedOn.current = newAnswer.id;
     }
   };
 
-  const onCheckAnswer = (id, isRight) => {
+  const onAnswerChange = (id, callback) => {
     const prevAnswers = [...variant.testAnswerVariants];
-    prevAnswers.find(x => x.id === id).isRight = isRight;
+    callback(prevAnswers.find(x => x.id === id));
     setAnswers(prevAnswers);
+    variantValidation.changeHandle('testAnswerVariants', prevAnswers);
   };
 
   const removeAnswer = answer => {
@@ -44,39 +46,66 @@ function TestQuestion({ variant, setVariant }) {
 
   return (
     <View style={styles.container}>
-      <Check.Group onChange={answer => onCheckAnswer(answer.name, answer.value)}>
-        {variant?.testAnswerVariants?.map(item => {
-          return (
-            <View key={item.id} style={styles.answer}>
-              <Check
-                name={item.id}
-                checked={item.isRight}
-                type={variant.isMultipleAnswer ? 'checkbox' : 'radio'}
-                style={styles.check}
-              />
-              <InputForm
-                multiline
-                value={item.answer}
-                style={styles.answerInput}
-                autoFocus={focusedOn.current === item.id}
-              />
-              <IconButton name="close-outline" style={styles.answerIcon} onPress={() => removeAnswer(item)} />
-            </View>
-          );
-        })}
-      </Check.Group>
-      {variant?.testAnswerVariants?.length < 10 && (
-        <Button
-          title={translate('tasks.questions.variant.testQuestion.addAnswer')}
-          color={Color.ultraLightPrimary}
-          textColor={Color.darkGray}
-          onPress={addNewAnswer}
-          styles={styles.button}
-        />
-      )}
+      <BestValidation.Context validation={variantValidation} entity={variant}>
+        <BestValidation.ErrorMessage name="testAnswerVariants" />
+        <Check.Group onChange={answer => onAnswerChange(answer.name, x => (x.isRight = answer.value))}>
+          {variant?.testAnswerVariants?.map((item, index) => {
+            const id = item.id;
+            return (
+              <View key={id} style={styles.answer}>
+                <Check
+                  name={id}
+                  checked={item.isRight}
+                  type={variant.isMultipleAnswer ? 'checkbox' : 'radio'}
+                  style={styles.check}
+                />
+                <BestValidation.InputForm
+                  name={`testAnswerVariants[${index}].answer`}
+                  multiline
+                  value={item.answer}
+                  onChange={value => onAnswerChange(id, x => (x.answer = value))}
+                  autoFocus={focusedOn.current === id}
+                  style={styles.answerInput}
+                />
+                <IconButton name="close-outline" style={styles.answerIcon} onPress={() => removeAnswer(item)} />
+              </View>
+            );
+          })}
+        </Check.Group>
+        {variant?.testAnswerVariants?.length < 10 && (
+          <Button
+            title={translate('tasks.question.variant.testQuestion.addAnswer')}
+            color={Color.ultraLightPrimary}
+            textColor={Color.darkGray}
+            onPress={addNewAnswer}
+            styles={styles.button}
+          />
+        )}
+      </BestValidation.Context>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    marginBottom: 10,
+  },
+  answer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  answerInput: {
+    flex: 1,
+  },
+  answerIcon: {
+    paddingBottom: 20,
+  },
+  check: {
+    paddingBottom: 20,
+    marginRight: 10,
+  },
+});
 
 const getInnerType = variant => {
   return variant.isMultipleAnswer ? TEST_MULTI_QUESTION : TEST_QUESTION;
@@ -100,27 +129,32 @@ const init = (variant, type) => {
   }
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    marginBottom: 10,
-  },
-  answer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  answerInput: {
-    flex: 1,
-  },
-  answerIcon: {
-    paddingBottom: 20,
-  },
-  check: {
-    paddingBottom: 20,
-    marginRight: 10,
-  },
-});
+const getValidationSchema = translate => {
+  return {
+    testAnswerVariants: {
+      type: 'array',
+      of: {
+        answer: {
+          type: 'string',
+          required: [translate('tasks.question.variant.testQuestion.validation.answer.required')],
+          max: [1024, translate('tasks.question.variant.testQuestion.validation.answer.maxLenght')],
+        },
+      },
+      required: [translate('tasks.question.variant.testQuestion.validation.empty')],
+      min: [2, translate('tasks.question.variant.testQuestion.validation.minCount', { min: 2 })],
+      custom: {
+        noRight: [validateIsRight, translate('tasks.question.variant.testQuestion.validation.noRight')],
+      },
+    },
+  };
+};
 
+function validateIsRight(answers) {
+  for (const answer of answers) if (answer.isRight) return true;
+  return false;
+}
+
+TestQuestion.getValidationSchema = getValidationSchema;
 TestQuestion.getInnerType = getInnerType;
 TestQuestion.souceType = SOURCE_TYPE;
 TestQuestion.innerType = [TEST_QUESTION, TEST_MULTI_QUESTION];

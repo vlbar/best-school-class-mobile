@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { StyleSheet, View, Pressable } from 'react-native';
-import Icon from 'react-native-vector-icons/Ionicons';
 import DraggableFlatList, { ScaleDecorator } from 'react-native-draggable-flatlist';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 import Color from '../../../constants';
 import QuestionPopup from './QuestionPopup';
@@ -46,32 +46,50 @@ function QuestionList({ taskId }) {
     let targetIndex = questions.findIndex(x => x.id === question.id);
     prevQuestions[targetIndex] = question;
     setQuestions(prevQuestions);
-
     setSelectedQuestion(null);
   };
 
   const renderQuestionItem = ({ item, drag, isActive }) => {
     const selectedVariant = item.questionVariants.find(x => x.id === item.selectedVariant) ?? item.questionVariants[0];
+    const isUkraine =
+      item.questionVariants.length === 3 &&
+      item.questionVariants[2]?.isValid === false &&
+      item.questionVariants[0]?.isValid &&
+      item.questionVariants.findIndex(x => x.id === selectedVariant.id) === 1;
+    let isQuestionNotValid = item?.isValid === false ?? false;
+    if (!isQuestionNotValid) {
+      for (const variant of item.questionVariants)
+        if (variant.isValid === false) {
+          isQuestionNotValid = true;
+          break;
+        }
+    }
 
     return (
       <ScaleDecorator>
-        <Pressable style={[styles.question]} onPress={() => setSelectedQuestion(item)}>
-          <Pressable onLongPress={drag}>
-            <View style={[styles.header]}>
-              <Icon name="reorder-two-outline" size={21} />
-              <View style={[styles.variantsRow]}>
-                {item.questionVariants.length > 1 &&
-                  item.questionVariants?.map((variant, index) => {
-                    return (
-                      <View
-                        key={variant.id}
-                        style={[styles.variant, variant.id === selectedVariant.id && styles.active]}
-                      />
-                    );
-                  })}
-              </View>
+        <Pressable
+          style={[styles.question, isQuestionNotValid && styles.noValidQuestion, isUkraine && styles.ukraine]}
+          onPress={() => setSelectedQuestion(item)}
+          onLongPress={drag}
+        >
+          <View style={[styles.header]}>
+            <Icon name="reorder-two-outline" size={21} />
+            <View style={[styles.variantsRow]}>
+              {item.questionVariants.length > 1 &&
+                item.questionVariants?.map((variant, index) => {
+                  return (
+                    <View
+                      key={variant.id}
+                      style={[
+                        styles.variant,
+                        variant.id === selectedVariant.id && styles.active,
+                        variant?.isValid === false && styles.notValid,
+                      ]}
+                    />
+                  );
+                })}
             </View>
-          </Pressable>
+          </View>
           <Text numberOfLines={10} ellipsizeMode="tail" style={styles.formulation}>
             {selectedVariant.formulation.length
               ? clearHtmlTags(selectedVariant.formulation)
@@ -106,6 +124,16 @@ const styles = StyleSheet.create({
     backgroundColor: Color.ultraLightPrimary,
     borderRadius: 10,
   },
+  noValidQuestion: {
+    borderWidth: 2,
+    borderColor: Color.danger,
+  },
+  ukraine: {
+    borderTopColor: 'blue',
+    borderStartColor: 'blue',
+    borderBottomColor: 'yellow',
+    borderEndColor: 'yellow',
+  },
   header: {
     flexDirection: 'row',
   },
@@ -120,9 +148,14 @@ const styles = StyleSheet.create({
     backgroundColor: Color.lightGray,
     borderRadius: 10,
     marginRight: 4,
+    opacity: 0.5,
   },
   active: {
     backgroundColor: Color.primary,
+    opacity: 1,
+  },
+  notValid: {
+    backgroundColor: Color.danger,
   },
   footer: {
     marginTop: 8,

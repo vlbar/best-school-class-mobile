@@ -20,7 +20,7 @@ export function getTaskTypeColor(id) {
 
 export function clearHtmlTags(htmlString) {
   if (!htmlString) return;
-  return htmlString.replace(/<[^>]*>?/gm, '').trim();
+  return htmlString.replace(/<[^>]*>?/gm, '');
 }
 
 export const defaultOrder = 'name-asc';

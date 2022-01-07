@@ -1,12 +1,12 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Dropdown } from 'react-native-element-dropdown';
 
 import Color from '../../../constants';
-import InputForm from '../../common/InputForm';
 import TestQuestion, { TEST_MULTI_QUESTION, TEST_QUESTION } from './types/TestQuestion';
 import Text from '../../common/Text';
 import TextQuestion, { TEXT_QUESTION } from './types/TextQuestion';
+import useBestValidation, { BestValidation } from '../../../utils/useBestValidation';
 import { clearHtmlTags } from '../TaskList';
 import { useTranslation } from './../../../utils/Internationalization';
 
@@ -36,25 +36,37 @@ export const getQuestionTypeLabelKey = source => {
   else return getQuestionTypeLabelKey(getInnerType(source));
 };
 
-function QuestionVariant({ questionVariant, setQuestionVariant }) {
+function QuestionVariant({ show = true, questionVariant, setQuestionVariant, validateCallback }, ref) {
   const { translate } = useTranslation();
   const translatedQuestionTypes = questionTypes.map(x => {
     x.label = translate(x.labelKey);
     return x;
   });
 
-  const [variant, setVariant] = useState(questionVariant);
   const [questionType, setQuestionType] = useState(TEXT_QUESTION);
-  const questionInputRef = useRef(undefined);
+  const questionInputRef = useRef(questionTypes[0].component);
 
-  const setFormulation = form => setVariant({ ...variant, formulation: form });
+  const genericVariantValidationSchema = {
+    formulation: {
+      type: 'string',
+      required: [translate('tasks.question.variant.validation.formulationRequired')],
+      min: [5, translate('tasks.question.variant.validation.formulationMin', { min: 5 })],
+      max: [1024, translate('tasks.question.variant.validation.formulationMax')],
+    },
+  };
+
+  const validationSchema = useRef(genericVariantValidationSchema);
+  const variantValidation = useBestValidation(validationSchema.current);
+
+  const setFormulation = formulation => setQuestionVariant({ ...questionVariant, formulation });
+
+  useImperativeHandle(ref, () => ({
+    validate: () => {
+      return variantValidation.validate(questionVariant);
+    },
+  }));
 
   useEffect(() => {
-    setQuestionVariant(variant);
-  }, [variant]);
-
-  useEffect(() => {
-    setVariant(questionVariant);
     for (const type of translatedQuestionTypes)
       if (type.component.souceType === questionVariant.type) {
         questionInputRef.current = type.component;
@@ -65,29 +77,43 @@ function QuestionVariant({ questionVariant, setQuestionVariant }) {
       console.error(questionVariant, 'has bad type! Change to text type...');
       onChangeQuestionType(TEXT_QUESTION);
     } else {
-      setQuestionType(questionInputRef.current.getInnerType(variant));
+      validationSchema.current = {
+        ...genericVariantValidationSchema,
+        ...questionInputRef.current.getValidationSchema(translate),
+      };
+      if (questionVariant?.isValid === false) variantValidation.validate(questionVariant);
+
+      setQuestionType(questionInputRef.current.getInnerType(questionVariant));
     }
-  }, [questionVariant]);
+  }, []);
 
   const onChangeQuestionType = type => {
+    validationSchema.current = {
+      ...genericVariantValidationSchema,
+      ...questionInputRef.current.getValidationSchema(translate),
+    };
     setQuestionType(type.value);
     questionInputRef.current = translatedQuestionTypes.find(x => x.value === type.value).component;
 
-    let targetVariant = { ...variant };
+    let targetVariant = { ...questionVariant };
     questionInputRef.current.init(targetVariant, type.value);
-    setVariant(targetVariant);
+    setQuestionVariant(targetVariant);
   };
 
   const QuestionInput = questionInputRef.current;
 
+  if (!show) return <></>;
   return (
     <View style={styles.container}>
-      <InputForm
-        multiline
-        label={translate('tasks.question.variant.formulation')}
-        value={clearHtmlTags(questionVariant.formulation)}
-        onChange={setFormulation}
-      />
+      <BestValidation.Context validation={variantValidation} entity={questionVariant}>
+        <BestValidation.InputForm
+          name="formulation"
+          multiline
+          label={translate('tasks.question.variant.formulation')}
+          value={clearHtmlTags(questionVariant?.formulation)}
+          onChange={setFormulation}
+        />
+      </BestValidation.Context>
       <View style={[styles.typeRow]}>
         <Text color={Color.silver} fontSize={14}>
           {translate('tasks.question.variant.type')}
@@ -104,7 +130,13 @@ function QuestionVariant({ questionVariant, setQuestionVariant }) {
         />
       </View>
       <View style={[styles.variantAnswerContainer]}>
-        {QuestionInput && <QuestionInput variant={questionVariant} setVariant={setQuestionVariant} />}
+        {QuestionInput && (
+          <QuestionInput
+            variant={questionVariant}
+            setVariant={setQuestionVariant}
+            variantValidation={variantValidation}
+          />
+        )}
       </View>
     </View>
   );
@@ -129,4 +161,5 @@ const styles = StyleSheet.create({
   },
 });
 
+QuestionVariant = forwardRef(QuestionVariant);
 export default QuestionVariant;

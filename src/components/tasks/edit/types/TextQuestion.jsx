@@ -1,48 +1,37 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import Color from '../../../../constants';
-import InputForm from '../../../common/InputForm';
 import Text from '../../../common/Text';
+import { BestValidation } from '../../../../utils/useBestValidation';
 import { useTranslation } from './../../../../utils/Internationalization';
 
 const SOURCE_TYPE = 'TEXT_QUESTION';
 export const TEXT_QUESTION = 'TEXT_QUESTION';
 
-function TextQuestion({ variant, setVariant }) {
+function TextQuestion({ variant, setVariant, variantValidation }) {
   const { translate } = useTranslation();
 
-  const [numberOfSymbols, setNumberOfSymbols] = useState(variant.numberOfSymbols);
-
-  useEffect(() => {
-    const prevVarinat = { ...variant };
-    variant.numberOfSymbols = numberOfSymbols;
-    setVariant(prevVarinat);
-  }, [numberOfSymbols]);
+  const setNumberOfSymbols = numberOfSymbols => setVariant({ ...variant, numberOfSymbols });
 
   return (
-    <View style={styles.row}>
-      <Text style={styles.rowText} fontSize={14}>
-        {translate('tasks.question.variant.textQuestion.numberOfSymbols')}
-      </Text>
-      <InputForm
-        value={numberOfSymbols}
-        onChange={value => setNumberOfSymbols(value)}
-        style={styles.rowInput}
-        keyboardType="numeric"
-      />
-    </View>
+    <BestValidation.Context validation={variantValidation} entity={variant}>
+      <View style={styles.row}>
+        <Text style={styles.rowText} fontSize={14}>
+          {translate('tasks.question.variant.textQuestion.numberOfSymbols')}
+        </Text>
+        <BestValidation.InputForm
+          name="numberOfSymbols"
+          hideErrorMessage
+          keyboardType="numeric"
+          onChange={value => setNumberOfSymbols(value)}
+          style={styles.rowInput}
+        />
+      </View>
+      <BestValidation.ErrorMessage name="numberOfSymbols" />
+    </BestValidation.Context>
   );
 }
-
-const getInnerType = variant => {
-  return TEXT_QUESTION;
-};
-
-const init = variant => {
-  variant.type = SOURCE_TYPE;
-  return variant;
-};
 
 const styles = StyleSheet.create({
   row: {
@@ -59,6 +48,27 @@ const styles = StyleSheet.create({
   },
 });
 
+const getInnerType = variant => {
+  return TEXT_QUESTION;
+};
+
+const init = variant => {
+  variant.type = SOURCE_TYPE;
+  return variant;
+};
+
+const getValidationSchema = translate => {
+  return {
+    numberOfSymbols: {
+      type: 'number',
+      nullable: true,
+      min: [1, translate('tasks.question.variant.textQuestion.validation.numberOfSymbolsMin', { min: 1 })],
+      max: [9223372036854775807, translate('tasks.question.variant.textQuestion.validation.numberOfSymbolsMax')],
+    },
+  };
+};
+
+TextQuestion.getValidationSchema = getValidationSchema;
 TextQuestion.souceType = SOURCE_TYPE;
 TextQuestion.innerType = TEXT_QUESTION;
 TextQuestion.getInnerType = getInnerType;

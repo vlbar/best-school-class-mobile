@@ -4,9 +4,9 @@ import Icon from 'react-native-vector-icons/Ionicons';
 
 import BottomPopup from './../../common/BottomPopup';
 import Color from '../../../constants';
-import InputForm from '../../common/InputForm';
 import QuestionVariant from './QuestionVariant';
 import Text from '../../common/Text';
+import useBestValidation, { BestValidation } from '../../../utils/useBestValidation';
 import { TEXT_QUESTION } from './types/TextQuestion';
 import { useTranslation } from './../../../utils/Internationalization';
 
@@ -17,32 +17,64 @@ function QuestionPopup({ show, taskQuestion, onClose }) {
   const [question, setQuestion] = useState(taskQuestion);
   const [selectedVariant, setSelectedVariant] = useState(undefined);
 
+  const questionValidationSchema = {
+    maxScore: {
+      type: 'number',
+      min: [1, translate('tasks.question.validation.maxScoreMin', { min: 1 })],
+      max: [9223372036854775807, translate('tasks.question.validation.maxScoreMax')],
+    },
+  };
+
+  const questionValidation = useBestValidation(questionValidationSchema, isValid =>
+    setQuestion({ ...question, isValid }),
+  );
+
   const varinatScrollRef = useRef();
+  const questionVarinatRef = useRef();
 
   const setScore = score => setQuestion({ ...question, maxScore: score });
 
   const onCloseHandler = () => {
-    onClose?.({ ...question, selectedVariant: selectedVariant.id });
+    let isQuestionValid = validateSelectedVariant();
+
+    if (isQuestionValid && question.questionVariants.length > 1) {
+      for (const variant of question.questionVariants) {
+        if (variant.isValid === false) {
+          isQuestionValid = false;
+          break;
+        }
+      }
+    }
+
+    if (!isQuestionValid) {
+      showNotValidOnClose();
+      return false;
+    } else {
+      questionValidation.reset();
+      onClose?.({ ...question, selectedVariant: selectedVariant.id });
+      return true;
+    }
   };
 
   useEffect(() => {
     if (taskQuestion) {
       setQuestion(taskQuestion);
-      setSelectedVariant(
+      if (taskQuestion?.isValid === false) questionValidation.validate(taskQuestion);
+
+      const selectedVarinat =
         taskQuestion?.questionVariants.find(variant => variant.id === taskQuestion.selectedVariant) ??
-          taskQuestion?.questionVariants[0],
-      );
+        taskQuestion?.questionVariants[0];
+      setSelectedVariant(selectedVarinat);
     }
   }, [taskQuestion]);
 
   const setQuestionVariant = variant => {
     if (!question) return;
-    let questionVariants = question.questionVariants;
+    let questionVariants = question?.questionVariants ?? [];
 
-    let selectedIndex = questionVariants.findIndex(variant => variant.id === selectedVariant.id);
+    let selectedIndex = questionVariants.findIndex(x => variant.id === x.id);
     questionVariants[selectedIndex] = variant;
 
-    setSelectedVariant(variant);
     setQuestion({ ...question, questionVariants });
   };
 
@@ -54,9 +86,10 @@ function QuestionPopup({ show, taskQuestion, onClose }) {
       type: TEXT_QUESTION,
     };
 
-    setQuestion({ ...question, questionVariants: [...question.questionVariants, emptyVariant] });
+    const questionVariants = [...question?.questionVariants, emptyVariant];
+    setQuestion({ ...question, questionVariants });
+    changeSelectedVariant(emptyVariant, questionVariants);
 
-    changeSelectedVariant(emptyVariant);
     varinatScrollRef.current.scrollToEnd({ animated: true });
   };
 
@@ -70,7 +103,9 @@ function QuestionPopup({ show, taskQuestion, onClose }) {
     }
   };
 
-  const changeSelectedVariant = variant => {
+  // questionVariants param for cringe
+  const changeSelectedVariant = (variant, questionVariants) => {
+    validateSelectedVariant(questionVariants);
     LayoutAnimation.configureNext(LayoutAnimation.create(200, 'linear', 'opacity'));
     setSelectedVariant(variant);
   };
@@ -91,6 +126,29 @@ function QuestionPopup({ show, taskQuestion, onClose }) {
     }
   };
 
+  const showNotValidOnClose = () => {
+    Alert.alert(translate('common.confirmation'), translate('tasks.question.closeNotValid'), [
+      {
+        text: translate('common.cancel'),
+        style: 'cancel',
+      },
+      { text: translate('common.ok'), onPress: () => onClose?.({ ...question, selectedVariant: selectedVariant.id }) },
+    ]);
+  };
+
+  const validateSelectedVariant = targetQuestionVariants => {
+    if (!selectedVariant) return undefined;
+    let questionVariants = targetQuestionVariants ?? question?.questionVariants;
+    let questionVariant = questionVariants.find(x => x.id === selectedVariant.id);
+
+    if (!questionVariant) return undefined;
+    const isValid = questionVarinatRef.current.validate();
+    console.log(isValid);
+    questionVariant.isValid = isValid;
+    setQuestion({ ...question, questionVariants });
+    return isValid;
+  };
+
   if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
     UIManager.setLayoutAnimationEnabledExperimental(true);
   }
@@ -108,28 +166,54 @@ function QuestionPopup({ show, taskQuestion, onClose }) {
               }}
               onLongPress={() => showDeleteVariantAlert(variant)}
             >
-              <View style={[styles.variant, selectedVariant?.id === variant?.id && styles.active]} />
+              <View
+                style={[
+                  styles.variant,
+                  selectedVariant?.id === variant?.id && styles.active,
+                  variant?.isValid === false && styles.notValid,
+                ]}
+              />
             </Pressable>
           );
         })}
-        {question?.questionVariants.length < MAX_QUESTION_VARIANTS_COUNT && (
+        {question?.questionVariants?.length < MAX_QUESTION_VARIANTS_COUNT && (
           <Pressable style={[styles.variantCheck]}>
             <Icon name="add-outline" size={18} onPress={addNewVariant} />
           </Pressable>
         )}
       </ScrollView>
-      {selectedVariant && <QuestionVariant questionVariant={selectedVariant} setQuestionVariant={setQuestionVariant} />}
-      <View style={styles.row}>
-        <Text style={styles.ballsText} fontSize={14}>
-          {translate('tasks.question.balls')}
-        </Text>
-        <InputForm
-          value={String(question?.maxScore)}
-          onChange={setScore}
-          keyboardType="numeric"
-          style={styles.ballsInput}
-        />
-      </View>
+      {question?.questionVariants?.map(variant => {
+        const isSelected = variant.id === selectedVariant.id;
+        return (
+          <QuestionVariant
+            key={variant.id}
+            questionVariant={variant}
+            setQuestionVariant={setQuestionVariant}
+            show={isSelected}
+            //validateCallback={x => (questionVarinatRef.current = x)}
+            ref={ref => {
+              if (isSelected) questionVarinatRef.current = ref;
+            }}
+          />
+        );
+      })}
+      <BestValidation.Context validation={questionValidation} entity={question}>
+        <View style={styles.row}>
+          <Text style={styles.ballsText} fontSize={14}>
+            {translate('tasks.question.maxScore')}
+          </Text>
+          <BestValidation.InputForm
+            name="maxScore"
+            hideErrorMessage
+            keyboardType="numeric"
+            onChange={value => {
+              setScore(value);
+            }}
+            style={styles.ballsInput}
+          />
+        </View>
+        <Text style={styles.rowErrorMessage}>{questionValidation.errors.maxScore}</Text>
+      </BestValidation.Context>
     </BottomPopup>
   );
 }
@@ -157,6 +241,7 @@ const styles = StyleSheet.create({
     backgroundColor: Color.lightGray,
     borderRadius: 10,
     marginRight: 4,
+    opacity: 0.5,
   },
   ballsText: {
     color: Color.silver,
@@ -164,9 +249,20 @@ const styles = StyleSheet.create({
   },
   ballsInput: {
     maxWidth: 120,
+    marginBottom: 0,
   },
   active: {
     backgroundColor: Color.primary,
+    opacity: 1,
+  },
+  notValid: {
+    backgroundColor: Color.danger,
+  },
+  rowErrorMessage: {
+    color: Color.danger,
+    fontSize: 14,
+    marginHorizontal: 20,
+    marginBottom: 10,
   },
 });
 
