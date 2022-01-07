@@ -152,6 +152,11 @@
     },
     "question": {
       "title": "Question",
+      "add": "Add question",
+      "addAfter": "Add question after",
+      "moveMode": "Move question",
+      "delete": "Delete question",
+      "deleteConfirmation": "Are you sure you want to delete the selected question?",
       "maxScore": "Score",
       "validation": {
         "maxScoreMin": "Score must be greater than or equal to {{min}}",
@@ -209,6 +214,7 @@
     }
   },
   "common": {
+    "actions": "Actions",
     "search": "Search",
     "filters": {
       "title": "Filters",

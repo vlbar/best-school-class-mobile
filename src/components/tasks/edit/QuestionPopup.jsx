@@ -58,8 +58,12 @@ function QuestionPopup({ show, taskQuestion, onClose }) {
 
   useEffect(() => {
     if (taskQuestion) {
-      setQuestion(taskQuestion);
-      if (taskQuestion?.isValid === false) questionValidation.validate(taskQuestion);
+      setQuestion(taskQuestion); 
+
+      if (!taskQuestion.questionVariants.length) {
+        addNewVariant(taskQuestion);
+        return;
+      }
 
       const selectedVarinat =
         taskQuestion?.questionVariants.find(variant => variant.id === taskQuestion.selectedVariant) ??
@@ -78,7 +82,7 @@ function QuestionPopup({ show, taskQuestion, onClose }) {
     setQuestion({ ...question, questionVariants });
   };
 
-  const addNewVariant = variant => {
+  const addNewVariant = (targetQuestion = question) => {
     const emptyVariant = {
       id: Math.random(),
       detached: true,
@@ -86,10 +90,11 @@ function QuestionPopup({ show, taskQuestion, onClose }) {
       type: TEXT_QUESTION,
     };
 
-    const questionVariants = [...question?.questionVariants, emptyVariant];
-    setQuestion({ ...question, questionVariants });
+    const questionVariants = [...targetQuestion.questionVariants, emptyVariant];
+    setQuestion({ ...targetQuestion, questionVariants });
     changeSelectedVariant(emptyVariant, questionVariants);
 
+    questionValidation.reset();
     varinatScrollRef.current.scrollToEnd({ animated: true });
   };
 
@@ -143,7 +148,6 @@ function QuestionPopup({ show, taskQuestion, onClose }) {
 
     if (!questionVariant) return undefined;
     const isValid = questionVarinatRef.current.validate();
-    console.log(isValid);
     questionVariant.isValid = isValid;
     setQuestion({ ...question, questionVariants });
     return isValid;
@@ -178,7 +182,7 @@ function QuestionPopup({ show, taskQuestion, onClose }) {
         })}
         {question?.questionVariants?.length < MAX_QUESTION_VARIANTS_COUNT && (
           <Pressable style={[styles.variantCheck]}>
-            <Icon name="add-outline" size={18} onPress={addNewVariant} />
+            <Icon name="add-outline" size={18} onPress={() => addNewVariant()} />
           </Pressable>
         )}
       </ScrollView>
@@ -190,7 +194,6 @@ function QuestionPopup({ show, taskQuestion, onClose }) {
             questionVariant={variant}
             setQuestionVariant={setQuestionVariant}
             show={isSelected}
-            //validateCallback={x => (questionVarinatRef.current = x)}
             ref={ref => {
               if (isSelected) questionVarinatRef.current = ref;
             }}

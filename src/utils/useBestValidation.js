@@ -82,7 +82,7 @@ export default function useBestValidation(validationSchema, onChangeValidCallbac
   }
 
   // FUNCTIONS
-  function validate(obj, silent) {
+  function validate(obj) {
     if (obj === undefined) {
       console.error('Object to validate is undefined');
       return;
@@ -103,7 +103,7 @@ export default function useBestValidation(validationSchema, onChangeValidCallbac
       }
     });
 
-    if (!silent) setErrors(currentErrors);
+    setErrors(currentErrors);
     setIsValid(isEmpty(currentErrors));
     return isEmpty(currentErrors);
   }

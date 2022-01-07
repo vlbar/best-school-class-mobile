@@ -1,8 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { StyleSheet, View, Pressable } from 'react-native';
+import { StyleSheet, View, Pressable, RefreshControl, TouchableNativeFeedback, Alert } from 'react-native';
 import DraggableFlatList, { ScaleDecorator } from 'react-native-draggable-flatlist';
 import Icon from 'react-native-vector-icons/Ionicons';
 
+import BottomPopup from '../../common/BottomPopup';
+import Button from '../../common/Button';
 import Color from '../../../constants';
 import QuestionPopup from './QuestionPopup';
 import Resource from '../../../utils/Hateoas/Resource';
@@ -13,19 +15,21 @@ import { useTranslation } from './../../../utils/Internationalization';
 
 const baseUrl = '/v1/tasks';
 const questionsPartUrl = 'questions';
-const getQuestionsLink = id => Resource.basedOnHref(`${baseUrl}/${id}/${questionsPartUrl}`).link().fill('size', 20);
+const getQuestionsLink = id => Resource.basedOnHref(`${baseUrl}/${id}/${questionsPartUrl}`).link().fill('size', 10);
 
 function QuestionList({ taskId }) {
   const [questions, setQuestions] = useState([]);
-  const [isFetching, setIsFetching] = useState(false);
+  const [isFetching, setIsFetching] = useState(true);
   const nextPage = useRef(undefined);
 
   const [selectedQuestion, setSelectedQuestion] = useState(null);
+  const [actionedQuestion, setActionedQuestion] = useState(null);
 
   const { translate } = useTranslation();
 
+  // fetching list
   useEffect(() => {
-    fetchQuestions(getQuestionsLink(taskId));
+    refreshPage();
   }, []);
 
   const fetchQuestions = link => {
@@ -41,12 +45,60 @@ function QuestionList({ taskId }) {
       .catch(error => console.log('Не удалось загрузить список вопросов.', error));
   };
 
+  const refreshPage = () => {
+    fetchQuestions(getQuestionsLink(taskId));
+  };
+
+  const fetchNextPage = () => {
+    fetchQuestions(nextPage.current);
+  };
+
+  // question control
   const onCloseQuestion = question => {
     let prevQuestions = questions;
     let targetIndex = questions.findIndex(x => x.id === question.id);
     prevQuestions[targetIndex] = question;
     setQuestions(prevQuestions);
     setSelectedQuestion(null);
+  };
+
+  const addQuestionAfter = position => {
+    setActionedQuestion(null);
+
+    let targetQuestions = questions;
+    targetQuestions.filter(x => x.position >= position).forEach(x => x.position++);
+
+    const newQuestion = {
+      id: Math.random(),
+      detached: true,
+      position: position,
+      maxScore: 1,
+      questionVariants: [],
+    };
+
+    const targetIndex = targetQuestions.findIndex(x => x.position >= position);
+    if (targetIndex < 0) targetQuestions.push(newQuestion);
+    else targetQuestions.splice(targetIndex, 0, newQuestion);
+
+    setSelectedQuestion(newQuestion);
+    setQuestions([...targetQuestions]);
+  };
+
+  const deleteQuestion = question => {
+    setActionedQuestion(null);
+    setQuestions(questions.filter(x => x.id !== question.id));
+  };
+
+  // render
+  const addQuestionButton = () => {
+    if (nextPage.current != undefined || isFetching) return <></>;
+    return (
+      <Button
+        title={translate('tasks.question.add')}
+        style={styles.add}
+        onPress={() => addQuestionAfter(questions[questions.length - 1]?.position + 1 || 0)}
+      />
+    );
   };
 
   const renderQuestionItem = ({ item, drag, isActive }) => {
@@ -70,7 +122,7 @@ function QuestionList({ taskId }) {
         <Pressable
           style={[styles.question, isQuestionNotValid && styles.noValidQuestion, isUkraine && styles.ukraine]}
           onPress={() => setSelectedQuestion(item)}
-          onLongPress={drag}
+          onLongPress={() => setActionedQuestion(item)}
         >
           <View style={[styles.header]}>
             <Icon name="reorder-two-outline" size={21} />
@@ -91,7 +143,7 @@ function QuestionList({ taskId }) {
             </View>
           </View>
           <Text numberOfLines={10} ellipsizeMode="tail" style={styles.formulation}>
-            {selectedVariant.formulation.length
+            {selectedVariant?.formulation.length
               ? clearHtmlTags(selectedVariant.formulation)
               : translate('tasks.question.variant.empty-formulation')}
           </Text>
@@ -108,11 +160,53 @@ function QuestionList({ taskId }) {
     );
   };
 
+  const showDeleteAlert = () => {
+    Alert.alert(translate('common.confirmation'), translate('tasks.question.deleteConfirmation'), [
+      {
+        text: translate('common.cancel'),
+        style: 'cancel',
+      },
+      { text: translate('common.ok'), onPress: () => deleteQuestion(actionedQuestion) },
+    ]);
+  };
+
   return (
     <View style={{ flex: 1 }}>
-      <DraggableFlatList data={questions} renderItem={renderQuestionItem} keyExtractor={item => item.id} />
+      <DraggableFlatList
+        data={questions}
+        renderItem={renderQuestionItem}
+        ListFooterComponent={addQuestionButton}
+        keyExtractor={item => item.id}
+        onEndReached={fetchNextPage}
+        onEndReachedThreshold={0.7}
+        refreshControl={<RefreshControl tintColor={'#FCF450'} onRefresh={refreshPage} refreshing={isFetching} />}
+      />
       <QuestionPopup show={selectedQuestion !== null} taskQuestion={selectedQuestion} onClose={onCloseQuestion} />
+      <BottomPopup
+        show={actionedQuestion !== null}
+        title={translate('common.actions')}
+        onClose={() => setActionedQuestion(null)}
+      >
+        <LigthButton
+          title={translate('tasks.question.addAfter')}
+          onPress={() => addQuestionAfter(actionedQuestion.position + 1)}
+        />
+        <LigthButton title={translate('tasks.question.moveMode')} />
+        <LigthButton title={translate('tasks.question.delete')} color={Color.danger} onPress={showDeleteAlert} />
+      </BottomPopup>
     </View>
+  );
+}
+
+function LigthButton({ title, onPress, color }) {
+  return (
+    <TouchableNativeFeedback onPress={onPress}>
+      <View>
+        <Text style={{ textAlign: 'center', padding: 15 }} color={color}>
+          {title}
+        </Text>
+      </View>
+    </TouchableNativeFeedback>
   );
 }
 
@@ -161,6 +255,10 @@ const styles = StyleSheet.create({
     marginTop: 8,
     flexDirection: 'row',
     justifyContent: 'space-between',
+  },
+  add: {
+    marginHorizontal: 20,
+    marginBottom: 10,
   },
 });
 

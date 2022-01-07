@@ -36,7 +36,7 @@ export const getQuestionTypeLabelKey = source => {
   else return getQuestionTypeLabelKey(getInnerType(source));
 };
 
-function QuestionVariant({ show = true, questionVariant, setQuestionVariant, validateCallback }, ref) {
+function QuestionVariant({ show = true, questionVariant, setQuestionVariant }, ref) {
   const { translate } = useTranslation();
   const translatedQuestionTypes = questionTypes.map(x => {
     x.label = translate(x.labelKey);
@@ -81,11 +81,16 @@ function QuestionVariant({ show = true, questionVariant, setQuestionVariant, val
         ...genericVariantValidationSchema,
         ...questionInputRef.current.getValidationSchema(translate),
       };
-      if (questionVariant?.isValid === false) variantValidation.validate(questionVariant);
 
       setQuestionType(questionInputRef.current.getInnerType(questionVariant));
     }
   }, []);
+
+  useEffect(() => {
+    if (questionVariant?.isValid === false) {
+      variantValidation.validate(questionVariant);
+    }
+  }, [questionType])
 
   const onChangeQuestionType = type => {
     validationSchema.current = {
