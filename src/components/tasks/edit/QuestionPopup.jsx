@@ -58,7 +58,7 @@ function QuestionPopup({ show, taskQuestion, onClose }) {
 
   useEffect(() => {
     if (taskQuestion) {
-      setQuestion(taskQuestion); 
+      setQuestion(taskQuestion);
 
       if (!taskQuestion.questionVariants.length) {
         addNewVariant(taskQuestion);
@@ -100,11 +100,12 @@ function QuestionPopup({ show, taskQuestion, onClose }) {
 
   const deleteVariant = variant => {
     const deletedIndex = question.questionVariants.findIndex(x => x.id === variant.id);
-    setQuestion({ ...question, questionVariants: question.questionVariants.filter(x => x.id !== variant.id) });
+    const questionVariants = question.questionVariants.filter(x => x.id !== variant.id);
+    setQuestion({ ...question, questionVariants });
 
     if (selectedVariant.id === variant.id) {
-      if (deletedIndex === 0) changeSelectedVariant(question.questionVariants[1]);
-      else changeSelectedVariant(question.questionVariants[deletedIndex - 1]);
+      if (deletedIndex === 0) changeSelectedVariant(question.questionVariants[1], questionVariants);
+      else changeSelectedVariant(question.questionVariants[deletedIndex - 1], questionVariants);
     }
   };
 
@@ -191,12 +192,13 @@ function QuestionPopup({ show, taskQuestion, onClose }) {
         return (
           <QuestionVariant
             key={variant.id}
+            show={isSelected}
             questionVariant={variant}
             setQuestionVariant={setQuestionVariant}
-            show={isSelected}
             ref={ref => {
               if (isSelected) questionVarinatRef.current = ref;
             }}
+            showDeleteVariantAlert={() => showDeleteVariantAlert(variant)}
           />
         );
       })}
@@ -209,9 +211,7 @@ function QuestionPopup({ show, taskQuestion, onClose }) {
             name="maxScore"
             hideErrorMessage
             keyboardType="numeric"
-            onChange={value => {
-              setScore(value);
-            }}
+            onChange={value => setScore(value)}
             style={styles.ballsInput}
           />
         </View>

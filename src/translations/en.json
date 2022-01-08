@@ -167,8 +167,10 @@
         "type": "Question type",
         "formulation": "Formulation",
         "empty-formulation": "Formulation is empty",
+        "addLink": "Paste link",
+        "delete": "Delete variant",
         "delete-confirmation": "Are you sure you want to delete the variant?",
-        "delete-last": "The last option cannot be deleted",
+        "delete-last": "The last variant cannot be deleted!",
         "textQuestion": {
           "title": "Text",
           "numberOfSymbols": "Number of symbols",

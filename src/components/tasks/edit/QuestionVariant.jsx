@@ -1,6 +1,7 @@
 import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Dropdown } from 'react-native-element-dropdown';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 import Color from '../../../constants';
 import TestQuestion, { TEST_MULTI_QUESTION, TEST_QUESTION } from './types/TestQuestion';
@@ -36,7 +37,7 @@ export const getQuestionTypeLabelKey = source => {
   else return getQuestionTypeLabelKey(getInnerType(source));
 };
 
-function QuestionVariant({ show = true, questionVariant, setQuestionVariant }, ref) {
+function QuestionVariant({ show = true, questionVariant, setQuestionVariant, showDeleteVariantAlert }, ref) {
   const { translate } = useTranslation();
   const translatedQuestionTypes = questionTypes.map(x => {
     x.label = translate(x.labelKey);
@@ -105,11 +106,25 @@ function QuestionVariant({ show = true, questionVariant, setQuestionVariant }, r
     setQuestionVariant(targetVariant);
   };
 
+  const varinatActionsList = [
+    { label: translate('tasks.question.variant.addLink'), action: () => console.log('cringe') },
+    { label: translate('tasks.question.variant.delete'), action: () => showDeleteVariantAlert() },
+  ];
+
+  const variantAction = () => {
+    return (
+      <View style={styles.actions}>
+        <DropdownButton data={varinatActionsList} />
+      </View>
+    );
+  };
+
   const QuestionInput = questionInputRef.current;
 
   if (!show) return <></>;
   return (
     <View style={styles.container}>
+      {variantAction()}
       <BestValidation.Context validation={variantValidation} entity={questionVariant}>
         <BestValidation.InputForm
           name="formulation"
@@ -147,6 +162,37 @@ function QuestionVariant({ show = true, questionVariant, setQuestionVariant }, r
   );
 }
 
+function DropdownButton({ data, textAlign = 'right', maxHeight }) {
+  const dropdownMenu = data.map(x => {
+    x.value = x.label;
+    return x;
+  });
+
+  const onChageHadle = (value) => {
+    value.action?.();
+  };
+
+  const renderItem = item => {
+    if (item.value === 0) return <></>;
+    return <Text style={[styles.dropdownButtonItem, { textAlign }]}>{item.label}</Text>;
+  };
+
+  return (
+    <Dropdown
+      labelField="label"
+      valueField="value"
+      renderItem={renderItem}
+      data={dropdownMenu}
+      value={dropdownMenu[0].value}
+      maxHeight={maxHeight ?? dropdownMenu.length * 46}
+      renderRightIcon={() => <Icon name="ellipsis-horizontal-outline" size={28} />}
+      onChange={onChageHadle}
+      selectedTextStyle={{ color: 'transparent' }}
+      activeColor={'transparent'}
+    />
+  );
+}
+
 const styles = StyleSheet.create({
   container: {
     marginHorizontal: 20,
@@ -163,6 +209,18 @@ const styles = StyleSheet.create({
   },
   variantAnswerContainer: {
     marginTop: 20,
+  },
+  actions: {
+    position: 'absolute',
+    right: 0,
+    top: -6,
+    width: 200,
+    zIndex: 2,
+    elevation: 2,
+  },
+  dropdownButtonItem: {
+    paddingHorizontal: 10,
+    paddingVertical: 10,
   },
 });
 
