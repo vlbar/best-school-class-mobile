@@ -6,6 +6,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import BottomPopup from '../../common/BottomPopup';
 import Button from '../../common/Button';
 import Color from '../../../constants';
+import IconButton from '../../common/IconButton';
 import QuestionPopup from './QuestionPopup';
 import Resource from '../../../utils/Hateoas/Resource';
 import Text from '../../common/Text';
@@ -24,6 +25,7 @@ function QuestionList({ taskId }) {
 
   const [selectedQuestion, setSelectedQuestion] = useState(null);
   const [actionedQuestion, setActionedQuestion] = useState(null);
+  const [isMoveMode, setIsMoveMode] = useState(false);
 
   const { translate } = useTranslation();
 
@@ -89,6 +91,24 @@ function QuestionList({ taskId }) {
     setQuestions(questions.filter(x => x.id !== question.id));
   };
 
+  const startMoveMode = () => {
+    setActionedQuestion(null);
+    setIsMoveMode(true);
+  };
+
+  const moveQuestion = ({ from, to }) => {
+    const toPosition = questions[to].position;
+    let movedQuestion = questions[from];
+
+    let movedQuestions = questions;
+    if (to > from) for (let i = from + 1; i <= to; i++) movedQuestions[i].position--;
+    else for (let i = to; i < from; i++) movedQuestions[i].position++;
+
+    movedQuestions = arrayMove(movedQuestions, from, to);
+    movedQuestion.position = toPosition;
+    setQuestions([...movedQuestions]);
+  };
+
   // render
   const addQuestionButton = () => {
     if (nextPage.current != undefined || isFetching) return <></>;
@@ -121,8 +141,8 @@ function QuestionList({ taskId }) {
       <ScaleDecorator>
         <Pressable
           style={[styles.question, isQuestionNotValid && styles.noValidQuestion, isUkraine && styles.ukraine]}
-          onPress={() => setSelectedQuestion(item)}
-          onLongPress={() => setActionedQuestion(item)}
+          onPress={() => !isMoveMode && setSelectedQuestion(item)}
+          onLongPress={() => (isMoveMode ? drag() : setActionedQuestion(item))}
         >
           <View style={[styles.header]}>
             <Icon name="reorder-two-outline" size={21} />
@@ -170,13 +190,26 @@ function QuestionList({ taskId }) {
     ]);
   };
 
+  const moveModeHeader = () => {
+    return (
+      <View style={styles.moveModeHeader}>
+        <View style={styles.moveModeHeaderInner}>
+          <Text>{translate('tasks.question.moveMode')}</Text>
+          <IconButton name="close" onPress={() => setIsMoveMode(false)} />
+        </View>
+      </View>
+    );
+  };
+
   return (
     <View style={{ flex: 1 }}>
+      {isMoveMode && moveModeHeader()}
       <DraggableFlatList
         data={questions}
         renderItem={renderQuestionItem}
         ListFooterComponent={addQuestionButton}
         keyExtractor={item => item.id}
+        onDragEnd={moveQuestion}
         onEndReached={fetchNextPage}
         onEndReachedThreshold={0.7}
         refreshControl={<RefreshControl tintColor={'#FCF450'} onRefresh={refreshPage} refreshing={isFetching} />}
@@ -191,7 +224,7 @@ function QuestionList({ taskId }) {
           title={translate('tasks.question.addAfter')}
           onPress={() => addQuestionAfter(actionedQuestion.position + 1)}
         />
-        <LigthButton title={translate('tasks.question.moveMode')} />
+        <LigthButton title={translate('tasks.question.moveMode')} onPress={startMoveMode} />
         <LigthButton title={translate('tasks.question.delete')} color={Color.danger} onPress={showDeleteAlert} />
       </BottomPopup>
     </View>
@@ -208,6 +241,17 @@ function LigthButton({ title, onPress, color }) {
       </View>
     </TouchableNativeFeedback>
   );
+}
+
+function arrayMove(arr, oldIndex, newIndex) {
+  if (newIndex >= arr.length) {
+    var k = newIndex - arr.length + 1;
+    while (k--) {
+      arr.push(undefined);
+    }
+  }
+  arr.splice(newIndex, 0, arr.splice(oldIndex, 1)[0]);
+  return arr;
 }
 
 const styles = StyleSheet.create({
@@ -259,6 +303,21 @@ const styles = StyleSheet.create({
   add: {
     marginHorizontal: 20,
     marginBottom: 10,
+  },
+  moveModeHeader: {
+    position: 'absolute',
+    top: -56,
+    width: '100%',
+    height: 56,
+    backgroundColor: Color.white,
+    paddingHorizontal: 20,
+  },
+  moveModeHeaderInner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    width: '100%',
+    height: '100%',
   },
 });
 
