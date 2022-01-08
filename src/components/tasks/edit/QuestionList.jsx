@@ -10,6 +10,7 @@ import IconButton from '../../common/IconButton';
 import QuestionPopup from './QuestionPopup';
 import Resource from '../../../utils/Hateoas/Resource';
 import Text from '../../common/Text';
+import useQuestionSaveManager from './useQuestionSaveManager';
 import { clearHtmlTags } from '../TaskList';
 import { getQuestionTypeLabelKey } from './QuestionVariant';
 import { useTranslation } from './../../../utils/Internationalization';
@@ -18,7 +19,7 @@ const baseUrl = '/v1/tasks';
 const questionsPartUrl = 'questions';
 const getQuestionsLink = id => Resource.basedOnHref(`${baseUrl}/${id}/${questionsPartUrl}`).link().fill('size', 10);
 
-function QuestionList({ taskId }) {
+function QuestionList({ taskId, setIsSaving }) {
   const [questions, setQuestions] = useState([]);
   const [isFetching, setIsFetching] = useState(true);
   const nextPage = useRef(undefined);
@@ -26,6 +27,8 @@ function QuestionList({ taskId }) {
   const [selectedQuestion, setSelectedQuestion] = useState(null);
   const [actionedQuestion, setActionedQuestion] = useState(null);
   const [isMoveMode, setIsMoveMode] = useState(false);
+
+  const { isSaving, addToManage, manageQuestion } = useQuestionSaveManager(getQuestionsLink(taskId), updateQuestion);
 
   const { translate } = useTranslation();
 
@@ -39,8 +42,13 @@ function QuestionList({ taskId }) {
       ?.fetch(setIsFetching)
       .then(page => {
         let fetchedQuestions = page.list('questions') ?? [];
+        fetchedQuestions.forEach(x => {
+          x.key = x.id;
+          x.questionVariants = x.questionVariants.map(v => ({ ...v, key: v.id }));
+        });
         nextPage.current = page.link('next');
 
+        addToManage(fetchedQuestions);
         if (page.page.number == 1) setQuestions(fetchedQuestions);
         else setQuestions([...questions, ...fetchedQuestions]);
       })
@@ -55,14 +63,23 @@ function QuestionList({ taskId }) {
     fetchQuestions(nextPage.current);
   };
 
+  useEffect(() => {
+    setIsSaving?.(isSaving)
+  }, [isSaving])
+
   // question control
   const onCloseQuestion = question => {
-    let prevQuestions = questions;
-    let targetIndex = questions.findIndex(x => x.id === question.id);
-    prevQuestions[targetIndex] = question;
-    setQuestions(prevQuestions);
+    if (question.isValid === undefined || question.isValid === true) manageQuestion(question);
+    updateQuestion(question);
     setSelectedQuestion(null);
   };
+
+  function updateQuestion(question) {
+    let prevQuestions = questions;
+    let targetIndex = questions.findIndex(x => x.key === question.key);
+    prevQuestions[targetIndex] = question;
+    setQuestions([...prevQuestions]);
+  }
 
   const addQuestionAfter = position => {
     setActionedQuestion(null);
@@ -71,7 +88,8 @@ function QuestionList({ taskId }) {
     targetQuestions.filter(x => x.position >= position).forEach(x => x.position++);
 
     const newQuestion = {
-      id: Math.random(),
+      id: null,
+      key: Math.random(),
       detached: true,
       position: position,
       maxScore: 1,
@@ -87,8 +105,9 @@ function QuestionList({ taskId }) {
   };
 
   const deleteQuestion = question => {
+    if (!question.detached === true) manageQuestion({ ...question, isDeleted: true });
     setActionedQuestion(null);
-    setQuestions(questions.filter(x => x.id !== question.id));
+    setQuestions(questions.filter(x => x.key !== question.key));
   };
 
   const startMoveMode = () => {
@@ -122,12 +141,12 @@ function QuestionList({ taskId }) {
   };
 
   const renderQuestionItem = ({ item, drag, isActive }) => {
-    const selectedVariant = item.questionVariants.find(x => x.id === item.selectedVariant) ?? item.questionVariants[0];
+    const selectedVariant = item.questionVariants.find(x => x.key === item.selectedVariant) ?? item.questionVariants[0];
     const isUkraine =
       item.questionVariants.length === 3 &&
       item.questionVariants[2]?.isValid === false &&
       item.questionVariants[0]?.isValid &&
-      item.questionVariants.findIndex(x => x.id === selectedVariant.id) === 1;
+      item.questionVariants.findIndex(x => x.key === selectedVariant.key) === 1;
     let isQuestionNotValid = item?.isValid === false ?? false;
     if (!isQuestionNotValid) {
       for (const variant of item.questionVariants)
@@ -151,10 +170,10 @@ function QuestionList({ taskId }) {
                 item.questionVariants?.map((variant, index) => {
                   return (
                     <View
-                      key={variant.id}
+                      key={variant.key}
                       style={[
                         styles.variant,
-                        variant.id === selectedVariant.id && styles.active,
+                        variant.key === selectedVariant.key && styles.active,
                         variant?.isValid === false && styles.notValid,
                       ]}
                     />
@@ -208,7 +227,7 @@ function QuestionList({ taskId }) {
         data={questions}
         renderItem={renderQuestionItem}
         ListFooterComponent={addQuestionButton}
-        keyExtractor={item => item.id}
+        keyExtractor={item => item.key}
         onDragEnd={moveQuestion}
         onEndReached={fetchNextPage}
         onEndReachedThreshold={0.7}

@@ -51,7 +51,7 @@ function QuestionPopup({ show, taskQuestion, onClose }) {
       return false;
     } else {
       questionValidation.reset();
-      onClose?.({ ...question, selectedVariant: selectedVariant.id });
+      onClose?.({ ...question, selectedVariant: selectedVariant.key });
       return true;
     }
   };
@@ -66,7 +66,7 @@ function QuestionPopup({ show, taskQuestion, onClose }) {
       }
 
       const selectedVarinat =
-        taskQuestion?.questionVariants.find(variant => variant.id === taskQuestion.selectedVariant) ??
+        taskQuestion?.questionVariants.find(variant => variant.key === taskQuestion.selectedVariant) ??
         taskQuestion?.questionVariants[0];
       setSelectedVariant(selectedVarinat);
     }
@@ -76,7 +76,7 @@ function QuestionPopup({ show, taskQuestion, onClose }) {
     if (!question) return;
     let questionVariants = question?.questionVariants ?? [];
 
-    let selectedIndex = questionVariants.findIndex(x => variant.id === x.id);
+    let selectedIndex = questionVariants.findIndex(x => variant.key === x.key);
     questionVariants[selectedIndex] = variant;
 
     setQuestion({ ...question, questionVariants });
@@ -84,9 +84,10 @@ function QuestionPopup({ show, taskQuestion, onClose }) {
 
   const addNewVariant = (targetQuestion = question) => {
     const emptyVariant = {
-      id: Math.random(),
-      detached: true,
+      id: null,
+      key: Math.random(),
       formulation: '',
+      position: targetQuestion.questionVariants.length + 1,
       type: TEXT_QUESTION,
     };
 
@@ -99,11 +100,11 @@ function QuestionPopup({ show, taskQuestion, onClose }) {
   };
 
   const deleteVariant = variant => {
-    const deletedIndex = question.questionVariants.findIndex(x => x.id === variant.id);
-    const questionVariants = question.questionVariants.filter(x => x.id !== variant.id);
+    const deletedIndex = question.questionVariants.findIndex(x => x.key === variant.key);
+    const questionVariants = question.questionVariants.filter(x => x.key !== variant.key);
     setQuestion({ ...question, questionVariants });
 
-    if (selectedVariant.id === variant.id) {
+    if (selectedVariant.key === variant.key) {
       if (deletedIndex === 0) changeSelectedVariant(question.questionVariants[1], questionVariants);
       else changeSelectedVariant(question.questionVariants[deletedIndex - 1], questionVariants);
     }
@@ -138,14 +139,14 @@ function QuestionPopup({ show, taskQuestion, onClose }) {
         text: translate('common.cancel'),
         style: 'cancel',
       },
-      { text: translate('common.ok'), onPress: () => onClose?.({ ...question, selectedVariant: selectedVariant.id }) },
+      { text: translate('common.ok'), onPress: () => onClose?.({ ...question, selectedVariant: selectedVariant.key }) },
     ]);
   };
 
   const validateSelectedVariant = targetQuestionVariants => {
     if (!selectedVariant) return undefined;
     let questionVariants = targetQuestionVariants ?? question?.questionVariants;
-    let questionVariant = questionVariants.find(x => x.id === selectedVariant.id);
+    let questionVariant = questionVariants.find(x => x.key === selectedVariant.key);
 
     if (!questionVariant) return undefined;
     const isValid = questionVarinatRef.current.validate();
@@ -158,13 +159,14 @@ function QuestionPopup({ show, taskQuestion, onClose }) {
     UIManager.setLayoutAnimationEnabledExperimental(true);
   }
 
+  const r = /\d+/;
   return (
     <BottomPopup title={translate('tasks.question.title')} show={show} onClose={onCloseHandler}>
       <ScrollView horizontal fadingEdgeLength={50} style={[styles.variantsRow]} ref={varinatScrollRef}>
         {question?.questionVariants?.map(variant => {
           return (
             <Pressable
-              key={variant.id}
+              key={variant.key}
               style={[styles.variantCheck]}
               onPress={() => {
                 changeSelectedVariant(variant);
@@ -174,7 +176,7 @@ function QuestionPopup({ show, taskQuestion, onClose }) {
               <View
                 style={[
                   styles.variant,
-                  selectedVariant?.id === variant?.id && styles.active,
+                  selectedVariant?.key === variant?.key && styles.active,
                   variant?.isValid === false && styles.notValid,
                 ]}
               />
@@ -188,10 +190,10 @@ function QuestionPopup({ show, taskQuestion, onClose }) {
         )}
       </ScrollView>
       {question?.questionVariants?.map(variant => {
-        const isSelected = variant.id === selectedVariant.id;
+        const isSelected = variant.key === selectedVariant.key;
         return (
           <QuestionVariant
-            key={variant.id}
+            key={variant.key}
             show={isSelected}
             questionVariant={variant}
             setQuestionVariant={setQuestionVariant}
@@ -207,11 +209,13 @@ function QuestionPopup({ show, taskQuestion, onClose }) {
           <Text style={styles.ballsText} fontSize={14}>
             {translate('tasks.question.maxScore')}
           </Text>
+          
           <BestValidation.InputForm
             name="maxScore"
             hideErrorMessage
             keyboardType="numeric"
             onChange={value => setScore(value)}
+            onEndEditing={value => setScore(Number(value.match(r)) || 0)}
             style={styles.ballsInput}
           />
         </View>

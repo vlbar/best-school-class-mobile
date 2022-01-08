@@ -94,12 +94,13 @@ function QuestionVariant({ show = true, questionVariant, setQuestionVariant, sho
   }, [questionType])
 
   const onChangeQuestionType = type => {
+    questionInputRef.current = translatedQuestionTypes.find(x => x.value === type.value).component;
+
     validationSchema.current = {
       ...genericVariantValidationSchema,
       ...questionInputRef.current.getValidationSchema(translate),
     };
     setQuestionType(type.value);
-    questionInputRef.current = translatedQuestionTypes.find(x => x.value === type.value).component;
 
     let targetVariant = { ...questionVariant };
     questionInputRef.current.init(targetVariant, type.value);

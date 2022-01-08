@@ -24,24 +24,24 @@ function TestQuestion({ variant, setVariant, variantValidation }) {
 
   const addNewAnswer = () => {
     if (variant.testAnswerVariants.length < 10) {
-      const newAnswer = { id: Math.random(), detached: true, answer: '' };
+      const newAnswer = { key: Math.random(), answer: '', isRight: false };
       let testAnswerVariants = [...variant.testAnswerVariants, newAnswer];
       setAnswers(testAnswerVariants);
 
       variantValidation.changeHandle('testAnswerVariants', testAnswerVariants);
-      focusedOn.current = newAnswer.id;
+      focusedOn.current = newAnswer.key;
     }
   };
 
-  const onAnswerChange = (id, callback) => {
+  const onAnswerChange = (key, callback) => {
     const prevAnswers = [...variant.testAnswerVariants];
-    callback(prevAnswers.find(x => x.id === id));
+    callback(prevAnswers.find(x => x.key === key));
     setAnswers(prevAnswers);
     variantValidation.changeHandle('testAnswerVariants', prevAnswers);
   };
 
   const removeAnswer = answer => {
-    setAnswers(variant.testAnswerVariants.filter(x => x.id !== answer.id));
+    setAnswers(variant.testAnswerVariants.filter(x => x.key !== answer.key));
   };
 
   return (
@@ -50,11 +50,11 @@ function TestQuestion({ variant, setVariant, variantValidation }) {
         <BestValidation.ErrorMessage name="testAnswerVariants" />
         <Check.Group onChange={answer => onAnswerChange(answer.name, x => (x.isRight = answer.value))}>
           {variant?.testAnswerVariants?.map((item, index) => {
-            const id = item.id;
+            const key = item.id ?? item.key;
             return (
-              <View key={id} style={styles.answer}>
+              <View key={key} style={styles.answer}>
                 <Check
-                  name={id}
+                  name={key}
                   checked={item.isRight}
                   type={variant.isMultipleAnswer ? 'checkbox' : 'radio'}
                   style={styles.check}
@@ -63,8 +63,8 @@ function TestQuestion({ variant, setVariant, variantValidation }) {
                   name={`testAnswerVariants[${index}].answer`}
                   multiline
                   value={item.answer}
-                  onChange={value => onAnswerChange(id, x => (x.answer = value))}
-                  autoFocus={focusedOn.current === id}
+                  onChange={value => onAnswerChange(key, x => (x.answer = value))}
+                  autoFocus={focusedOn.current === key}
                   style={styles.answerInput}
                 />
                 <IconButton name="close-outline" style={styles.answerIcon} onPress={() => removeAnswer(item)} />
@@ -116,7 +116,7 @@ const init = (variant, type) => {
   variant.isMultipleAnswer = type === TEST_MULTI_QUESTION;
 
   if (!variant.isMultipleAnswer) {
-    let answers = variant.testAnswerVariants;
+    let answers = variant?.testAnswerVariants ?? [];
     let forceRight = true;
     answers.forEach(answer => {
       if (answer.isRight) {

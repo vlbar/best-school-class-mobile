@@ -260,7 +260,10 @@ const BestValidationField = ({ name, onChange, onEndEditing, hideErrorMessage = 
         onChange?.(value);
       }}
       errorMessage={hideErrorMessage === false && context?.validation.errors[name]}
-      onEndEditing={e => context?.validation.blurHandle(name, e.nativeEvent.text)}
+      onEndEditing={e => {
+        context?.validation.blurHandle(name, e.nativeEvent.text);
+        onEndEditing?.(e.nativeEvent.text);
+      }}
       {...props}
     />
   );

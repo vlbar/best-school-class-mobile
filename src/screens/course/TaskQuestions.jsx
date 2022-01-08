@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 
+import Color from '../../constants';
 import Header from './../../components/navigation/Header';
-import { SafeAreaView, View } from 'react-native';
-import { useTranslation } from './../../utils/Internationalization';
 import IconButton from '../../components/common/IconButton';
 import QuestionList from '../../components/tasks/edit/QuestionList';
 import Resource from './../../utils/Hateoas/Resource';
+import { ActivityIndicator, SafeAreaView, View } from 'react-native';
+import { useTranslation } from './../../utils/Internationalization';
 
 const baseUrl = '/v1/tasks';
 const getTaskLink = id => Resource.basedOnHref(`${baseUrl}/${id}`).link();
@@ -14,6 +15,7 @@ export const TASK_SCREEN = 'task';
 function TaskQuestions({ route }) {
   const { translate } = useTranslation();
   const [task, setTask] = useState();
+  const [isSaving, setIsSaving] = useState(false);
   const { id } = route.params;
 
   useEffect(() => {
@@ -32,14 +34,14 @@ function TaskQuestions({ route }) {
   const headerContent = (
     <View style={{ flexDirection: 'row' }}>
       <IconButton name="settings-outline" />
-      <IconButton name="checkmark-outline" />
+      {isSaving ? <ActivityIndicator color={Color.primary} style={{marginHorizontal: 10}} /> : <IconButton name="checkmark-outline" />}
     </View>
   );
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <Header title={task ? task.name : translate('task.loading-title')} headerRight={headerContent} />
-      <QuestionList taskId={id} />
+      <QuestionList taskId={id} setIsSaving={setIsSaving} />
     </SafeAreaView>
   );
 }
