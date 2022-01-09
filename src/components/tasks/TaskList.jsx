@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { StyleSheet, View, FlatList, TouchableNativeFeedback, Alert } from 'react-native';
 
 import Bandage from './filters/Bandage';
@@ -25,17 +25,20 @@ export function clearHtmlTags(htmlString) {
 
 export const defaultOrder = 'name-asc';
 
-function TaskList({
-  data,
-  parentCourse,
-  canFetch = true,
-  showHeader = true,
-  canSelect = false,
-  headerContent,
-  actionMenuContent,
-  onSelect,
-  onTaskPress,
-}) {
+function TaskList(
+  {
+    data,
+    parentCourse,
+    canFetch = true,
+    showHeader = true,
+    canSelect = false,
+    headerContent,
+    actionMenuContent,
+    onSelect,
+    onTaskPress,
+  },
+  ref,
+) {
   const navigation = useNavigation();
   const isFocused = useIsFocused();
 
@@ -56,6 +59,18 @@ function TaskList({
     taskTypeId: null,
     orderBy: defaultOrder,
   });
+
+  useImperativeHandle(ref, () => ({
+    refresh: () => {
+      refreshPage();
+    },
+    updateTask: task => {
+      let prevTasks = tasks;
+      let targetIndex = prevTasks.findIndex(x => x.id === task.id);
+      prevTasks[targetIndex] = task;
+      setTasks([...prevTasks]);
+    },
+  }));
 
   useEffect(() => {
     if (isFocused) {
@@ -396,4 +411,5 @@ const styles = StyleSheet.create({
   },
 });
 
+TaskList = forwardRef(TaskList);
 export default TaskList;

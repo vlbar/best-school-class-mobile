@@ -150,6 +150,36 @@
     "action": {
       "delete-confirmation": "Are you sure you want to delete the selected tasks?"
     },
+    "edit": {
+      "title": "Edit task",
+      "name": "Task name",
+      "description": "Task description",
+      "maxScore": "Max score",
+      "maxScoreSubtitle": "The number of points received by the student will be translated to this number.",
+      "duration": "Duration",
+      "taskType": "Task type",
+      "noTaskType": "Not selected",
+      "validation": {
+        "name": {
+          "required": "Task name has not been entered",
+          "min": "Task name must contain at least {{min}} letters",
+          "max": "Task name too long"
+        },
+        "description": {
+          "max": "Task description too long"
+        },
+        "maxScore": {
+          "required": "Max score has not been entered",
+          "positive": "Max score must be a positive number",
+          "max": "Too many number of score"
+        },
+        "duration": {
+          "required": "Duration has not been entered",
+          "positive": "Duration must be a positive number",
+          "max": "Too many number of duration"
+        }
+      }
+    },
     "question": {
       "title": "Question",
       "add": "Add question",
@@ -205,6 +235,7 @@
   },
   "task-types": {
     "search": "Enter name of task type",
+    "select": "Select task type",
     "modify": {
       "add-title": "Add new task type",
       "edit-title": "Edit task type",
@@ -226,7 +257,11 @@
     "input-placeholder-prefix": "Еnter",
     "input-placeholder-postfix": "",
     "confirmation": "Confirmation",
+    "applyChanges": "Apply Changes?",
+    "applyChangesText": "Are you sure you want to apply changes?",
     "ok": "Ok",
+    "discard": "Discard",
+    "apply": "Apply",
     "cancel": "Cancel"
   }
 }

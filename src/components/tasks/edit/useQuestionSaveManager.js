@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import Resource from '../../../utils/Hateoas/Resource';
 
 const questionPropBlackList = ['isValid', 'selectedVariant', 'questionVariants', '_links'];
@@ -13,7 +13,6 @@ function useQuestionSaveManager(questionsLink, setQuestion) {
 
   const pushToSave = id => {
     onSave.current.push(id);
-    console.log("push", id, onSave.current);
     setIsSaving(onSave.current.length > 0);
   };
 
@@ -22,7 +21,6 @@ function useQuestionSaveManager(questionsLink, setQuestion) {
     if (index > -1) {
       onSave.current.splice(index, 1);
     }
-    console.log("remove", id, onSave.current);
     setIsSaving(onSave.current.length > 0);
   };
 

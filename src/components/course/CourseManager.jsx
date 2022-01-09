@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { StyleSheet, Animated, BackHandler, TouchableNativeFeedback, View, Alert, Pressable } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
@@ -7,12 +7,13 @@ import AddCoursePopup from './AddCoursePopup';
 import AddTaskPopup from '../tasks/AddTaskPopup';
 import Color from '../../constants';
 import CourseList from './CourseList';
-import TaskList from '../tasks/TaskList';
 import IconButton from '../common/IconButton';
+import TaskList from '../tasks/TaskList';
 import Text from '../common/Text';
 import translate from '../../utils/Internationalization';
 import useBreadcrumbs from './useBreadcrumbs';
 import useIsKeyboardShow from '../../utils/useIsKeyboardShow';
+import { CourseNavigationContext, useOnBackCatcher } from './CourseNavigationContext';
 import { TASK_SCREEN } from '../../screens/course/TaskQuestions';
 
 const SUB_COURSES_TAB = 'subcoursesTab';
@@ -32,6 +33,9 @@ function CourseManager() {
   const [isAddTaskPopupShow, setIsAddTaskPopupShow] = useState(false);
 
   const [currentTab, setCurrentTab] = useState(SUB_COURSES_TAB);
+  const waitBackFromEdit = useOnBackCatcher(onBackFromEdit);
+  const { contextTask } = useContext(CourseNavigationContext);
+  const taskListRef = useRef();
 
   useEffect(() => {
     BackHandler.addEventListener('hardwareBackPress', onBackPress);
@@ -58,7 +62,12 @@ function CourseManager() {
   }
 
   function onTaskPress(task) {
-    navigation.navigate(TASK_SCREEN, {id: task.id});
+    waitBackFromEdit();
+    navigation.navigate(TASK_SCREEN, { id: task.id });
+  }
+
+  function onBackFromEdit() {
+    taskListRef.current.updateTask(contextTask);
   }
 
   // popits - courses
@@ -87,6 +96,8 @@ function CourseManager() {
 
   function editTask(task) {
     setIsAddTaskPopupShow(false);
+    waitBackFromEdit();
+    navigation.navigate(TASK_SCREEN, { id: task.id });
   }
 
   function closeAddTask() {
@@ -232,7 +243,14 @@ function CourseManager() {
         />
       </View>
       <View style={[styles.listContainer, isCoursesTab && styles.hidden]}>
-        <TaskList parentCourse={parentCourse} headerContent={horizontalMenu} canFetch={!isCoursesTab} canSelect onTaskPress={onTaskPress} />
+        <TaskList
+          parentCourse={parentCourse}
+          headerContent={horizontalMenu}
+          canFetch={!isCoursesTab}
+          canSelect
+          onTaskPress={onTaskPress}
+          ref={taskListRef}
+        />
         {!isKeyboardShow && parentCourse && <ActionButton onPress={addTask} />}
         <AddTaskPopup
           show={isAddTaskPopupShow}
