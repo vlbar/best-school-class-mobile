@@ -29,13 +29,22 @@ function CourseList(
   const [isActionMenuShow, setIsActionMenuShow] = useState(false);
   const [selectedCourses, setSelectedCourses] = useState([]);
 
+  const NULL_PARENT_ID = -1;
+  const coursesMap = useRef(new Map());
+
   const filterParams = useRef({
     name: '',
   });
 
   useEffect(() => {
     setCourses([]);
-    refreshPage();
+
+    const targetId = parentCourseId ?? parentCourse?.id ?? NULL_PARENT_ID;
+    if (coursesMap.current.has(targetId)) {
+      setCourses(coursesMap.current.get(targetId));
+    } else {
+      refreshPage();
+    }
   }, [parentCourse, parentCourseId]);
 
   useImperativeHandle(ref, () => ({
@@ -49,14 +58,20 @@ function CourseList(
   }));
 
   function fetchCourses(link) {
+    const targetId = parentCourseId ?? parentCourse?.id ?? NULL_PARENT_ID;
+
     link
       ?.fetch(setIsFetching)
       .then(page => {
         let fetchedCourses = page.list('courses') ?? [];
         nextPage.current = page.link('next');
 
-        if (page.page.number == 1) setCourses(fetchedCourses);
-        else setCourses([...courses, ...fetchedCourses]);
+        if (page.page.number == 1) {
+          setCourses(fetchedCourses);
+          coursesMap.current.set(targetId, fetchedCourses);
+        } else {
+          setCourses([...courses, ...fetchedCourses]);
+        }
       })
       .catch(error => console.log('Не удалось загрузить список курсов.', error));
   }
