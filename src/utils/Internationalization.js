@@ -1,6 +1,7 @@
 import i18n from 'i18next';
 import { NativeModules, Platform } from 'react-native';
 import { initReactI18next, useTranslation as useI18nTranslations } from 'react-i18next';
+import intervalPlural from 'i18next-intervalplural-postprocessor';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import 'moment/locale/ru';
 import 'moment/locale/fr';
@@ -63,7 +64,7 @@ export async function configureInternationalization() {
 }
 
 function initInternationalization(language, resources) {
-  return i18n.use(initReactI18next).init({
+  return i18n.use(intervalPlural).use(initReactI18next).init({
     resources,
     lng: language,
     fallbackLng: defaultLanguage,

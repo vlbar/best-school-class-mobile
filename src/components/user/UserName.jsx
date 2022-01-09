@@ -4,7 +4,7 @@ import Text from '../common/Text';
 
 function UserName({ user, short = false, withCurrent = false, textWeight, textSize = 17, style }) {
   return (
-    <Text weight={textWeight} style={[style, { fontSize: textSize }]}>
+    <Text weight={textWeight} style={[{ fontSize: textSize }, style]}>
       {user.secondName}{' '}
       {short ? (
         <>

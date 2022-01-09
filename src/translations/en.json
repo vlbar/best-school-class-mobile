@@ -111,6 +111,7 @@
   },
   "groups": {
     "title": "Groups",
+    "group": "Group",
     "searchPlaceholder": "Enter the name of the group...",
     "emptySearch": "No group with this name was found.",
     "emptySearchAdvice": "Check your search terms, you might need to change your role.",
@@ -235,10 +236,55 @@
       "delete-confirmation": "Are you sure you want to delete this task type?"
     }
   },
+  "homeworks": {
+    "title": "Tasks",
+    "homework": "Homework",
+    "from": "from {{date}}",
+    "until": "until {{date}}",
+    "taskCount_interval": "(1)[{{count}} task];(2-inf)[{{count}} tasks]",
+    "current": "Current",
+    "previous": "Previous",
+    "sortBy": {
+      "newest": "Early first",
+      "oldest": "Late first"
+    },
+    "empty": "It looks like there is no homework yet :(",
+    "filter": {
+      "group": "Group"
+    },
+    "details": {
+      "title": "Homework",
+      "info": {
+        "title" : "Information",
+        "group": "Group",
+        "appointed": "Appointed",
+        "deadline": "Deadline"
+      },
+      "members": {
+        "title": "Members",
+        "empty": "Looks like no one is here yet.\nThis is possible if there are no students in the group.\nFirst you need to invite students to the group!",
+        "emptySearch": "No one was found for the specified search criteria :("
+      }
+    },
+    "interview": {
+      "tasks": "Tasks",
+      "messages": "Messages",
+      "messagePlaceholder": "Enter your message...",
+      "messageDeleted": "Message deleted",
+      "taskNoDesctiption": "No description.",
+      "actions": {
+        "title": "Actions",
+        "delete": "Delete",
+        "edit": "Edit",
+        "reply": "Reply"
+      }
+    }
+  },
   "common": {
     "search": "Search",
     "filters": {
       "title": "Filters",
+      "sortBy": "Sort by",
       "apply": "Apply",
       "cancel-all": "Cancel All"
     },
