@@ -126,6 +126,7 @@ function QuestionList({ taskId, setIsSaving }) {
     movedQuestions = arrayMove(movedQuestions, from, to);
     movedQuestion.position = toPosition;
     setQuestions([...movedQuestions]);
+    manageQuestion(movedQuestion);
   };
 
   // render

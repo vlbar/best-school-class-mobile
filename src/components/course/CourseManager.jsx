@@ -67,7 +67,7 @@ function CourseManager() {
   }
 
   function onBackFromEdit() {
-    taskListRef.current.updateTask(contextTask);
+    if(contextTask) taskListRef.current.updateTask(contextTask);
   }
 
   // popits - courses
