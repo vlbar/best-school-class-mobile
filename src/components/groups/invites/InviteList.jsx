@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { View } from 'react-native';
+import { getI, useTranslation } from '../../../utils/Internationalization';
 import HorizontalMenu from '../../common/HorizontalMenu';
+import { ASSISTANT, STUDENT, TEACHER, types } from '../../state/State';
 import Invite from './Invite';
 
 export default function InviteList({ fetchLink }) {
   const [invites, setInvites] = useState(null);
+  const { translate } = useTranslation();
 
   useEffect(() => {
     if (fetchLink)
@@ -17,19 +20,17 @@ export default function InviteList({ fetchLink }) {
     return (
       <View style={{ flexGrow: 1 }}>
         <HorizontalMenu>
-          <HorizontalMenu.Item title="Ученик">
-            <Invite invite={invites.find(invite => invite.role == 'STUDENT')} createLink={fetchLink} role="student" />
-          </HorizontalMenu.Item>
-          <HorizontalMenu.Item title="Препод.">
-            <Invite invite={invites.find(invite => invite.role == 'TEACHER')} createLink={fetchLink} role="teacher" />
-          </HorizontalMenu.Item>
-          <HorizontalMenu.Item title="Помощник">
-            <Invite
-              invite={invites.find(invite => invite.role == 'ASSISTANT')}
-              createLink={fetchLink}
-              role="assistant"
-            />
-          </HorizontalMenu.Item>
+          {[STUDENT, TEACHER, ASSISTANT].map(state => {
+            return (
+              <HorizontalMenu.Item key={state.name} title={translate(state.key)}>
+                <Invite
+                  invite={invites.find(invite => invite.role.toLowerCase() == state.name.toLowerCase())}
+                  createLink={fetchLink}
+                  role={state.name}
+                />
+              </HorizontalMenu.Item>
+            );
+          })}
         </HorizontalMenu>
       </View>
     );

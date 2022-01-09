@@ -2,6 +2,10 @@ import i18n from 'i18next';
 import { NativeModules, Platform } from 'react-native';
 import { initReactI18next, useTranslation as useI18nTranslations } from 'react-i18next';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import 'moment/locale/ru';
+import 'moment/locale/fr';
+import 'moment/locale/ja';
+import 'moment/locale/de';
 
 const defaultLanguage = 'en';
 const translations = [

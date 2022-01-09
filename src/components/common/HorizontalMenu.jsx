@@ -30,7 +30,7 @@ function HorizontalMenu({ children, style }) {
       <View>
         {items.map((item, index) => {
           return (
-            <View style={{ display: index === selected ? 'flex' : 'none'}} key={index}>
+            <View style={{ display: index === selected ? 'flex' : 'none' }} key={index}>
               {item.props.children}
             </View>
           );
@@ -49,7 +49,9 @@ function HorizontalMenuItem({ title, onPress, style, __contextValue, __contextSe
   let isActive = __contextValue === __contextSelected;
   return (
     <Pressable onPress={onPressHandler} style={[styles.item]}>
-      <Text style={[styles.title, isActive && styles.active, style]}>{title}</Text>
+      <Text numberOfLines={1} style={[styles.title, isActive && styles.active, style]}>
+        {title}
+      </Text>
     </Pressable>
   );
 }
