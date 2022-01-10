@@ -15,19 +15,18 @@ function BottomPopup({ show = true, title, canClose = true, onClose, children })
         duration: 200,
         useNativeDriver: true,
       }).start();
-    }
-  }, [show]);
-
-  const onCloseHandler = () => {
-    if (canClose) {
+    } else {
       translateY.setValue(1);
       Animated.timing(translateY, {
         toValue: 0,
         duration: 100,
         useNativeDriver: true,
       }).start();
-      onClose?.();
     }
+  }, [show]);
+
+  const onCloseHandler = () => {
+    if (canClose) onClose?.();
   };
 
   let transform = {

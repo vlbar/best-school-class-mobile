@@ -14,10 +14,15 @@ const HEADER_PADDING_RIGHT = 10;
 const HEADER_PADDING_LEFT = 0;
 const TITLE_MARGIN = 5;
 
-function Header({ canBack = true, title, backgroundColor = Color.white, headerRight, children }) {
+function Header({ canBack = true, title, backgroundColor = Color.white, headerRight, onBack, children }) {
   const navigation = useNavigation();
   const [canGoBack, setCanGoBack] = useState(navigation.canGoBack());
   let isGoBackShow = canGoBack && canBack;
+
+  const onBackHandler = () => {
+    const result = onBack?.();
+    if (result === undefined || result === true) navigation.goBack();
+  };
 
   let minTitleMarginSize = isGoBackShow ? BACK_SIZE_WITH_PADDING : 0;
   return (
@@ -35,7 +40,7 @@ function Header({ canBack = true, title, backgroundColor = Color.white, headerRi
             name="chevron-back-outline"
             size={BACK_SIZE}
             color={getContrastColor(backgroundColor)}
-            onPress={() => navigation.goBack()}
+            onPress={onBackHandler}
           />
         )}
         {children}

@@ -96,9 +96,9 @@
   "state": {
     "teacher": "Teacher",
     "student": "Student",
-    "assistant": "Assistant" 
+    "assistant": "Assistant"
   },
-  "workspace":{
+  "workspace": {
     "title": "Workspace",
     "planned-lesson": {
       "not-started": "It looks like the lesson has not started yet :/",
@@ -221,21 +221,105 @@
     },
     "action": {
       "delete-confirmation": "Are you sure you want to delete the selected tasks?"
+    },
+    "edit": {
+      "title": "Edit task",
+      "name": "Task name",
+      "description": "Task description",
+      "maxScore": "Max score",
+      "maxScoreSubtitle": "The number of points received by the student will be translated to this number.",
+      "duration": "Duration",
+      "taskType": "Task type",
+      "noTaskType": "Not selected",
+      "validation": {
+        "name": {
+          "required": "Task name has not been entered",
+          "min": "Task name must contain at least {{min}} letters",
+          "max": "Task name too long"
+        },
+        "description": {
+          "max": "Task description too long"
+        },
+        "maxScore": {
+          "required": "Max score has not been entered",
+          "positive": "Max score must be a positive number",
+          "max": "Too many number of score"
+        },
+        "duration": {
+          "required": "Duration has not been entered",
+          "positive": "Duration must be a positive number",
+          "max": "Too many number of duration"
+        }
+      }
+    },
+    "question": {
+      "title": "Question",
+      "add": "Add question",
+      "addAfter": "Add question after",
+      "moveMode": "Move question",
+      "delete": "Delete question",
+      "deleteConfirmation": "Are you sure you want to delete the selected question?",
+      "maxScore": "Score",
+      "validation": {
+        "maxScoreMin": "Score must be greater than or equal to {{min}}",
+        "maxScoreMax": "Too many score"
+      },
+      "closeNotValid": "Are you sure you want to close the question change panel? There are invalid varinats in the question. \nNote: Invalid questions will not be saved!",
+      "variant": {
+        "type": "Question type",
+        "formulation": "Formulation",
+        "empty-formulation": "Formulation is empty",
+        "addLink": "Paste link",
+        "delete": "Delete variant",
+        "delete-confirmation": "Are you sure you want to delete the variant?",
+        "delete-last": "The last variant cannot be deleted!",
+        "textQuestion": {
+          "title": "Text",
+          "numberOfSymbols": "Number of symbols",
+          "validation": {
+            "numberOfSymbolsMin": "Number of symbols must be greater than or equal to {{min}}",
+            "numberOfSymbolsMax": "Too many number of symbols"
+          }
+        },
+        "testQuestion": {
+          "title": "One of the list",
+          "addAnswer": "Add answer",
+          "validation": {
+            "empty": "There are no answers to the question",
+            "minCount": "Number of answers must be greater than or equal to {{min}}",
+            "noRight": "There is no right answer",
+            "answer": {
+              "required": "Answer has not been entered",
+              "maxLenght": "Answer is too long"
+            }
+          }
+        },
+        "testMultiQuestion": {
+          "title": "Several from the list"
+        },
+        "validation": {
+          "formulationRequired": "Formulation has not been entered",
+          "formulationMin": "Formulation name must contain at least {{min}} letters",
+          "formulationMax": "Formulation is too long"
+        }
+      }
     }
   },
   "task-types": {
     "search": "Enter name of task type",
+    "select": "Select task type",
     "modify": {
-      "add-title":"Add new task type",
-      "edit-title":"Edit task type",
-      "name":"Task type name",
-      "add-submit":"Add",
-      "edit-submit":"Update",
+      "add-title": "Add new task type",
+      "edit-title": "Edit task type",
+      "name": "Task type name",
+      "add-submit": "Add",
+      "edit-submit": "Update",
       "delete": "Delete",
       "delete-confirmation": "Are you sure you want to delete this task type?"
     }
   },
   "common": {
+    "actions": "Actions",
     "search": "Search",
     "filters": {
       "title": "Filters",
@@ -245,7 +329,11 @@
     "input-placeholder-prefix": "Еnter",
     "input-placeholder-postfix": "",
     "confirmation": "Confirmation",
+    "applyChanges": "Apply Changes?",
+    "applyChangesText": "Are you sure you want to apply changes?",
     "ok": "Ok",
+    "discard": "Discard",
+    "apply": "Apply",
     "cancel": "Cancel"
   }
 }
