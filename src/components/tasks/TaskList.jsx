@@ -9,7 +9,7 @@ import SearchBar from './../common/SearchBar';
 import TaskFilterPopup from './filters/TaskFilterPopup';
 import Text from '../common/Text';
 import { MODIFY_TASK_TYPE_SCREEN } from '../../screens/course/ModifyTaskType';
-import { translate } from '../../utils/Internationalization';
+import { useTranslation } from '../../utils/Internationalization';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 
 // colors
@@ -33,12 +33,17 @@ function TaskList(
     showHeader = true,
     canSelect = false,
     headerContent,
+    additionalHeaderContent,
     actionMenuContent,
+    additionalEmptyMessage,
     onSelect,
     onTaskPress,
+    onPushSelected,
+    style,
   },
   ref,
 ) {
+  const { translate } = useTranslation();
   const navigation = useNavigation();
   const isFocused = useIsFocused();
 
@@ -103,6 +108,16 @@ function TaskList(
       closeActionMenu();
     }
   }, [parentCourse]);
+
+  useEffect(() => {
+    if (canFetch === false) {
+      const existsSelectedTasks = selectedTasks.filter(task => {
+        return data.find(x => task.id === x.id);
+      });
+      setSelectedTasks(existsSelectedTasks);
+      if (!existsSelectedTasks.length) closeActionMenu();
+    }
+  }, [data]);
 
   function fetchTasks(link) {
     link
@@ -193,6 +208,11 @@ function TaskList(
     refreshPage();
   };
 
+  const pushSelectedTasks = () => {
+    closeActionMenu();
+    onPushSelected?.(selectedTasks);
+  };
+
   const title = translate('common.confirmation');
   const confirmation = translate('tasks.action.delete-confirmation');
   const ok = translate('common.ok');
@@ -209,7 +229,7 @@ function TaskList(
   }
 
   // render
-  const renderCourseItem = ({ item }) => {
+  const renderTaskItem = ({ item }) => {
     const isSelected = selectedTasks.find(x => x.id === item.id) !== undefined;
     const description = clearHtmlTags(item.description);
     return (
@@ -224,11 +244,9 @@ function TaskList(
             </Text>
             {item.taskType && <Bandage color={getTaskTypeColor(item.taskType.id)} title={item.taskType.name} />}
           </View>
-          {description?.length && (
-            <Text style={styles.description} numberOfLines={1}>
-              {description}
-            </Text>
-          )}
+          <Text style={styles.description} numberOfLines={1}>
+            {description?.length ? description : translate('tasks.noDescription')}
+          </Text>
         </View>
       </TouchableNativeFeedback>
     );
@@ -251,68 +269,77 @@ function TaskList(
     );
   };
 
+  const defaultActionMenu = (
+    <>
+      {selectedTasks?.length === 1 && (
+        <IconButton
+          name="create-outline"
+          size={24}
+          style={styles.actionIcon}
+          onPress={() => onTaskPress(selectedTasks[0])}
+        />
+      )}
+      <IconButton name="push-outline" size={24} style={styles.actionIcon} onPress={pushSelectedTasks} />
+      <IconButton name="trash-outline" size={24} style={styles.actionIcon} onPress={showDeleteTasksAlert} />
+    </>
+  );
+
   const headerLayoutHandler = event => {
     setRefreshOffset(event.nativeEvent.layout.height);
   };
 
   const isHasFilters = filterParams.current.taskTypeId !== null || filterParams.current.orderBy !== defaultOrder;
   const listHeader = (
-    <View onLayout={headerLayoutHandler} style={[styles.listHeader]}>
-      {headerContent}
-      <SearchBar placeholder={translate('tasks.search')} style={styles.searchBar} onSearch={searchByName}>
-        <SearchBar.IconButton name="filter-outline" onPress={() => setIsTaskFiltersShow(true)} />
-        {isHasFilters && <View style={styles.hasFilters} />}
-      </SearchBar>
-    </View>
-  );
-
-  const defaultActionMenu = (
     <>
-      {selectedTasks?.length === 1 && (
-        <IconButton name="create-outline" size={24} style={styles.actionIcon} onPress={() => {}} />
-      )}
-      <IconButton name="trash-outline" size={24} style={styles.actionIcon} onPress={showDeleteTasksAlert} />
-    </>
-  );
-
-  const actionMenuContainer = (
-    <View style={styles.actionHeader}>
-      <View style={[styles.listHeader]}>
-        {headerContent}
-        <View style={[styles.actionMenu]}>
-          <View style={[styles.actionRow]}>
-            <IconButton name="close-outline" onPress={closeActionMenu} />
-            <Text style={[styles.selectedCount]}>{selectedTasks.length}</Text>
+      <View onLayout={headerLayoutHandler} style={[styles.listHeader, refreshOffset && { height: refreshOffset }]}>
+        {additionalHeaderContent}
+        {!isActionMenuShow && headerContent && headerContent}
+        {!isActionMenuShow && !headerContent && showHeader && (
+          <SearchBar placeholder={translate('tasks.search')} style={styles.searchBar} onSearch={searchByName}>
+            <SearchBar.IconButton name="filter-outline" onPress={() => setIsTaskFiltersShow(true)} />
+            {isHasFilters && <View style={styles.hasFilters} />}
+          </SearchBar>
+        )}
+        {isActionMenuShow && (
+          <View style={[styles.actionMenu]}>
+            <View style={[styles.actionRow]}>
+              <IconButton name="close-outline" onPress={closeActionMenu} />
+              <Text style={[styles.selectedCount]}>{selectedTasks.length}</Text>
+            </View>
+            {<View style={[styles.actionRow]}>{actionMenuContent?.(selectedTasks) ?? defaultActionMenu}</View>}
           </View>
-          {<View style={[styles.actionRow]}>{actionMenuContent ?? defaultActionMenu}</View>}
-        </View>
+        )}
       </View>
-    </View>
+    </>
   );
 
   const emptyTasks = () => {
     let emptyText;
     if (!isFetching) {
-      if (data) emptyText = 'tasks.empty';
+      if (data && !canFetch) emptyText = 'tasks.empty';
       else {
         if (parentCourse) emptyText = 'tasks.empty';
         else emptyText = 'tasks.course-not-selected';
       }
     }
-
-    if (emptyText) return <Text style={styles.emptyTasks}>{translate(emptyText)}</Text>;
+    if (emptyText)
+      return (
+        <>
+          <Text style={styles.emptyTasks}>{translate(emptyText)}</Text>
+          <Text style={[styles.emptyTasks, { marginTop: 10 }]}>{additionalEmptyMessage}</Text>
+        </>
+      );
     else return <View />;
   };
 
   return (
-    <View style={[styles.container]}>
-      {isActionMenuShow && actionMenuContainer}
+    <View style={[styles.container, style]}>
       <FlatList
         data={data ?? tasks}
-        renderItem={renderCourseItem}
+        renderItem={renderTaskItem}
         keyExtractor={item => item.id}
         refreshing={isFetching}
-        ListHeaderComponent={showHeader && listHeader}
+        ListHeaderComponent={listHeader}
         stickyHeaderIndices={[0]}
         stickyHeaderHiddenOnScroll={true}
         ListFooterComponent={loadingItemsIndicator}
@@ -344,6 +371,7 @@ const styles = StyleSheet.create({
   emptyTasks: {
     paddingTop: 10,
     textAlign: 'center',
+    color: Color.silver,
   },
   searchBar: {
     marginBottom: 0,
@@ -402,7 +430,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    height: 52,
+    height: 50,
     backgroundColor: Color.white,
   },
   actionRow: {

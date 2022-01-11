@@ -120,7 +120,8 @@
     "emptyJoinAdviceContinue": "his group",
     "or": "or",
     "create": "Create",
-    "emptyCreateAdviceContinue" : "your own group",
+    "select": "Select group",
+    "emptyCreateAdviceContinue": "your own group",
     "groupCreation": "Adding a group",
     "inviteQuestion": "Do you have an invitation?",
     "invitePlaceholder": "Enter your invitation code...",
@@ -162,7 +163,7 @@
       "teachers": "Teachers",
       "teachersSearchPlaceholder": "Enter teacher name...",
       "tasks": "Tasks",
-      "accessSettings": "Access settings", 
+      "accessSettings": "Access settings",
       "memberSettings": "Members settings",
       "studentsLimit": "Limiting the number of members",
       "groupOpened": "Group open",
@@ -178,7 +179,7 @@
       "leave": "Leave",
       "kick": "Kick",
       "leaveConfirmation": "Are you sure you want to leave the group?",
-      "kickConfirmation" : "Are you sure you want to kick the member?"
+      "kickConfirmation": "Are you sure you want to kick the member?"
     }
   },
   "course": {
@@ -196,10 +197,38 @@
     "empty": "Courses not yet added",
     "delete-course-confirmation": "Are you sure you want to delete the selected courses?"
   },
+  "homeworks": {
+    "homework": "Homework",
+    "taskCount_interval": "(1)[{{count}} task];(2-inf)[{{count}} tasks]",
+    "modify": {
+      "start": "Start",
+      "startNew": "Start new",
+      "or": "or",
+      "select": "Select existing",
+      "ask": "Ask homework",
+      "group": "Group",
+      "noGroup": "not selected",
+      "openingDate": "Start date",
+      "endingDate": "Close date",
+      "noDate": "not selected",
+      "tasks": "Tasks",
+      "askConfirmation": "Are you sure you want to ask this homework?",
+      "howAddTasks": "To add tasks select it from your list in the course with a long press and in the action menu press the 'Add to homework' button",
+      "validation": {
+        "groupRequired": "Group is required",
+        "dateRequired": "Date is required",
+        "tasksRequired": "Tasks not added",
+        "openAfterClose": "Start date must be earlier than end date",
+        "closeBeforeOpen": "Close date must be earlier than start date",
+        "endDateBeforeNow": "Close date must be earlier than now"
+      }
+    }
+  },
   "tasks": {
     "title": "Tasks",
     "search": "Enter a task name",
     "empty": "Tasks list is empty",
+    "noDescription": "No description",
     "course-not-selected": "Select a course to display its tasks",
     "add": {
       "title": "Add task",

@@ -19,7 +19,7 @@ import { TASK_SCREEN } from '../../screens/course/TaskQuestions';
 const SUB_COURSES_TAB = 'subcoursesTab';
 const TASKS_TAB = 'tasksTab';
 
-function CourseManager() {
+function CourseManager({ onPushSelectedTasks }) {
   const navigation = useNavigation();
   const [parentCourse, setParentCourse] = useState(null);
   const [pushCourse, popCourse, Breadcrumbs] = useBreadcrumbs(translate('course.root'), onCourseSelect);
@@ -67,7 +67,7 @@ function CourseManager() {
   }
 
   function onBackFromEdit() {
-    if(contextTask) taskListRef.current.updateTask(contextTask);
+    if (contextTask) taskListRef.current.updateTask(contextTask);
   }
 
   // popits - courses
@@ -245,10 +245,11 @@ function CourseManager() {
       <View style={[styles.listContainer, isCoursesTab && styles.hidden]}>
         <TaskList
           parentCourse={parentCourse}
-          headerContent={horizontalMenu}
+          additionalHeaderContent={horizontalMenu}
           canFetch={!isCoursesTab}
           canSelect
           onTaskPress={onTaskPress}
+          onPushSelected={onPushSelectedTasks}
           ref={taskListRef}
         />
         {!isKeyboardShow && parentCourse && <ActionButton onPress={addTask} />}
