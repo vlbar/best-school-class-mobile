@@ -151,14 +151,27 @@ function ModifyHomework({ navigation }) {
 
   const askHomework = () => {
     const homeworkDTO = toHomeworkDTO(homework);
-    baseLink
-      .post(homeworkDTO, setIsSaving)
-      .then(data => {
-        setContextHomework(undefined);
-        navigation.goBack();
-      })
-      .catch(error => console.log(error))
-      .finally(() => setIsConfirmationAlertShow(false));
+
+    if (homeworkDTO.id) {
+      homework
+        .link()
+        .put(homeworkDTO, setIsSaving)
+        .then(data => {
+          setContextHomework(undefined);
+          navigation.goBack();
+        })
+        .catch(error => console.log(error))
+        .finally(() => setIsConfirmationAlertShow(false));
+    } else {
+      baseLink
+        .post(homeworkDTO, setIsSaving)
+        .then(data => {
+          setContextHomework(undefined);
+          navigation.goBack();
+        })
+        .catch(error => console.log(error))
+        .finally(() => setIsConfirmationAlertShow(false));
+    }
   };
 
   // render
@@ -209,11 +222,11 @@ function ModifyHomework({ navigation }) {
       <View style={{ flex: 1, marginHorizontal: 20 }}>
         <View style={{ flexGrow: 1 }}>
           <BestValidation.Context validation={homeworkValidation} entity={homework}>
-            <View style={[styles.row, { marginBottom: 15 }]}>
+            <View style={[styles.row]}>
               <Text style={styles.rowText} fontSize={14}>
                 {translate('homeworks.modify.group')}
               </Text>
-              <Pressable onPress={selectGroup}>
+              <Pressable onPress={selectGroup} style={styles.rowValue}>
                 {homework.group ? (
                   <GroupItem group={homework.group} circleStyle={styles.groupCircle} textStyle={styles.groupName} />
                 ) : (
@@ -223,11 +236,11 @@ function ModifyHomework({ navigation }) {
             </View>
             <BestValidation.ErrorMessage name="group" />
 
-            <View style={[styles.row, { marginBottom: 15 }]}>
+            <View style={[styles.row]}>
               <Text style={styles.rowText} fontSize={14}>
                 {translate('homeworks.modify.openingDate')}
               </Text>
-              <Pressable onPress={() => pickDate(OPEN_DATE)}>
+              <Pressable onPress={() => pickDate(OPEN_DATE)} style={styles.rowValue}>
                 <Text>
                   {homework?.openingDate
                     ? moment(homework.openingDate).format('llll')
@@ -237,11 +250,11 @@ function ModifyHomework({ navigation }) {
             </View>
             <BestValidation.ErrorMessage name="openingDate" />
 
-            <View style={[styles.row, { marginBottom: 15 }]}>
+            <View style={[styles.row]}>
               <Text style={styles.rowText} fontSize={14}>
                 {translate('homeworks.modify.endingDate')}
               </Text>
-              <Pressable onPress={() => pickDate(CLOSE_DATE)}>
+              <Pressable onPress={() => pickDate(CLOSE_DATE)} style={styles.rowValue}>
                 <Text>
                   {homework?.endingDate
                     ? moment(homework.endingDate).format('llll')
@@ -304,6 +317,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    marginBottom: 15,
   },
   rowText: {
     color: Color.silver,
@@ -319,6 +333,13 @@ const styles = StyleSheet.create({
   groupName: {
     fontSize: 17,
     flex: 0,
+  },
+  rowValue: {
+    marginLeft: 40,
+    flexShrink: 1,
+    justifyContent: 'flex-end',
+    flexDirection: 'row',
+    alignItems: 'center',
   },
 });
 

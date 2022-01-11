@@ -48,21 +48,23 @@ function HomeworkBuilderPanel({ homework, onCancel }) {
               <Text style={styles.panelText}>{translate('homeworks.modify.start')}</Text>
             )}
           </View>
-          <View style={[styles.flexRowBetween, styles.homeowrkInfoRow]}>
-            <View style={styles.directionRow}>
-              <Text style={styles.panelText}>{translate('homeworks.modify.group')}: </Text>
+          <View style={styles.homeworkInfoRow}>
+            <Text style={styles.panelText}>{translate('homeworks.modify.group')}:</Text>
+            <View style={{ flexShrink: 1, marginHorizontal: 8}}>
               {homework?.group ? (
                 <GroupItem group={homework.group} circleStyle={styles.groupCircle} textStyle={styles.groupName} />
               ) : (
                 <Text style={styles.panelText}>{translate('homeworks.modify.noGroup')}</Text>
               )}
             </View>
-            <Text style={styles.panelText}>
-              {translate('homeworks.taskCount_interval', {
-                postProcess: 'interval',
-                count: homework?.tasks?.length,
-              })}
-            </Text>
+            <View style={{flexGrow: 1}}>
+              <Text style={[styles.panelText, {textAlign: 'right'}]}>
+                {translate('homeworks.taskCount_interval', {
+                  postProcess: 'interval',
+                  count: homework?.tasks?.length,
+                })}
+              </Text>
+            </View>
           </View>
         </View>
       </TouchableHighlight>
@@ -109,13 +111,16 @@ const styles = StyleSheet.create({
     color: Color.white,
     fontSize: 14,
   },
-  homeowrkInfoRow: {
+  homeworkInfoRow: {
     marginTop: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   flexRowBetween: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    width: '100%',
   },
   directionRow: {
     flexDirection: 'row',
