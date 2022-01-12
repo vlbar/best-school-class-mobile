@@ -192,8 +192,8 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   apply: {
-    minWidth: 100,
-    paddingHorizontal: 10,
+    flex: 0,
+    paddingHorizontal: 20,
   },
 });
 

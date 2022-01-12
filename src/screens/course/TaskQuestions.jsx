@@ -33,6 +33,7 @@ function TaskQuestions({ navigation, route }) {
       .fetch()
       .then(res => {
         setTask(res);
+        setContextTask(res);
       })
       .catch(err => console.error(err));
   };

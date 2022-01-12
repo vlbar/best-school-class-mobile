@@ -1,5 +1,5 @@
 import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
-import { StyleSheet, View, FlatList, TouchableNativeFeedback, Alert } from 'react-native';
+import { StyleSheet, View, FlatList, TouchableNativeFeedback, Alert, ActivityIndicator } from 'react-native';
 
 import Bandage from './filters/Bandage';
 import Color from '../../constants';
@@ -49,6 +49,7 @@ function TaskList(
 
   const [tasks, setTasks] = useState([]);
   const [isFetching, setIsFetching] = useState(false);
+  const [isRefresing, setIsRefresing] = useState(false);
   const nextPage = useRef(undefined);
   const lastParentCourse = useRef(undefined);
 
@@ -70,10 +71,19 @@ function TaskList(
       refreshPage();
     },
     updateTask: task => {
-      let prevTasks = tasks;
-      let targetIndex = prevTasks.findIndex(x => x.id === task.id);
-      prevTasks[targetIndex] = task;
-      setTasks([...prevTasks]);
+      console.log(task);
+      const prevTasks = tasks;
+      const targetIndex = prevTasks.findIndex(x => x.id === task.id);
+      if (targetIndex > -1) {
+        prevTasks[targetIndex] = task;
+        setTasks([...prevTasks]);
+      } else {
+        setTasks(
+          [...prevTasks, task].sort((a, b) =>
+            a.name.toLowerCase() > b.name.toLowerCase() ? 1 : b.name.toLowerCase() > a.name.toLowerCase() ? -1 : 0,
+          ),
+        );
+      }
     },
   }));
 
@@ -119,9 +129,9 @@ function TaskList(
     }
   }, [data]);
 
-  function fetchTasks(link) {
+  function fetchTasks(link, isRefres = false) {
     link
-      ?.fetch(setIsFetching)
+      ?.fetch(isRefres ? setIsRefresing : setIsFetching)
       .then(page => {
         let fetchedTasks = page.list('tasks') ?? [];
         nextPage.current = page.link('next');
@@ -132,9 +142,16 @@ function TaskList(
       .catch(error => console.log('Не удалось загрузить список курсов.', error));
   }
 
+  const fetchPage = (isRefres = false) => {
+    if (!parentCourse) {
+      setTasks([]);
+      return;
+    }
+    fetchTasks(parentCourse.link('tasks'), isRefres);
+  };
+
   const refreshPage = () => {
-    if (!parentCourse) setTasks([]);
-    fetchTasks(parentCourse.link('tasks'));
+    fetchPage(true);
   };
 
   const fetchFirstPage = () => {
@@ -168,6 +185,7 @@ function TaskList(
   };
 
   const addTaskType = taskType => {
+    if (taskType && taskType.creatorId === null) return;
     setIsTaskFiltersShow(false);
     needOpenPopupAfterMount.current = true;
     navigation.navigate(MODIFY_TASK_TYPE_SCREEN, { taskTypeName: taskType.name, taskTypeId: taskType.id });
@@ -252,22 +270,7 @@ function TaskList(
     );
   };
 
-  const loadingItemsIndicator = () => {
-    return isFetching && !tasks.length ? (
-      <View>
-        <View style={[styles.fetchingViewContainer]}>
-          <ProcessView style={[styles.fetchingView, { width: '70%' }]} />
-          <ProcessView style={[styles.fetchingView, { width: '50%' }]} />
-        </View>
-        <View style={[styles.fetchingViewContainer]}>
-          <ProcessView style={[styles.fetchingView, { width: '70%' }]} />
-          <ProcessView style={[styles.fetchingView, { width: '50%' }]} />
-        </View>
-      </View>
-    ) : (
-      <></>
-    );
-  };
+  const loadingItemsIndicator = isFetching && !tasks.length && <ActivityIndicator color={Color.primary} size={50} />;
 
   const defaultActionMenu = (
     <>
@@ -333,21 +336,24 @@ function TaskList(
   };
 
   return (
-    <View style={[styles.container, style]}>
+    <>
       <FlatList
         data={data ?? tasks}
         renderItem={renderTaskItem}
         keyExtractor={item => item.id}
-        refreshing={isFetching}
+        refreshing={isRefresing}
         ListHeaderComponent={listHeader}
         stickyHeaderIndices={[0]}
         stickyHeaderHiddenOnScroll={true}
         ListFooterComponent={loadingItemsIndicator}
+        ListFooterComponentStyle={styles.indicator}
         ListEmptyComponent={emptyTasks}
         progressViewOffset={refreshOffset}
         onRefresh={!data && refreshPage}
         onEndReached={!data && fetchNextPage}
         onEndReachedThreshold={0.7}
+        style={[styles.container]}
+        contentContainerStyle={{ flexGrow: 1 }}
       />
       <TaskFilterPopup
         show={isTaskFiltersShow}
@@ -356,7 +362,7 @@ function TaskList(
         onAddTaskType={addTaskType}
         isNeedRefesh={needOpenPopupAfterMount.current}
       />
-    </View>
+    </>
   );
 }
 
@@ -367,11 +373,17 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
+    paddingHorizontal: 10,
   },
   emptyTasks: {
-    paddingTop: 10,
+    paddingTop: 60,
     textAlign: 'center',
     color: Color.silver,
+  },
+  indicator: {
+    flexGrow: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   searchBar: {
     marginBottom: 0,

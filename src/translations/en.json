@@ -229,7 +229,7 @@
   "tasks": {
     "title": "Tasks",
     "search": "Search Task",
-    "empty": "Tasks list is empty",
+    "empty": "Tasks not added yet",
     "noDescription": "No description",
     "course-not-selected": "Select a course to display its tasks",
     "add": {
