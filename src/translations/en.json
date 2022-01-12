@@ -262,6 +262,7 @@
       "duration": "Duration",
       "taskType": "Task type",
       "noTaskType": "Not selected",
+      "loading": "Loading task...",
       "validation": {
         "name": {
           "required": "Task name has not been entered",
