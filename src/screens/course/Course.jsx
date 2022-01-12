@@ -20,7 +20,7 @@ function Course({ navigation }) {
   return (
     <>
       <Header title={translate('course.title', 'Курс')} />
-      <View style={{ flex: 1, marginHorizontal: 10 }}>
+      <View style={{ flex: 1 }}>
         <HomeworkBuilderPanel homework={contextHomework} onCancel={() => setContextHomework(undefined)} />
         <CourseManager onPushSelectedTasks={pushTasks} />
       </View>

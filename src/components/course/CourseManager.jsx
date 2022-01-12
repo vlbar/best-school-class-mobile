@@ -230,6 +230,7 @@ function CourseManager({ onPushSelectedTasks }) {
             actionMenuContent={courseActions}
             headerContent={horizontalMenu}
             onCourseSelect={onCoursesSelectHandler}
+            onPressEmptyMessage={addCourse}
             ref={courseListRef}
           />
         </Animated.View>
@@ -298,7 +299,7 @@ OldSchoolHorizontalMenu.Item = OldSchoolHorizontalMenuItem;
 
 const styles = StyleSheet.create({
   breadcrumbs: {
-    marginHorizontal: 10,
+    marginHorizontal: 20,
   },
   listContainer: {
     flex: 1,
@@ -311,7 +312,7 @@ const styles = StyleSheet.create({
   actionButtonContainer: {
     position: 'absolute',
     bottom: 16,
-    right: 6,
+    right: 16,
     width: 56,
     height: 56,
     backgroundColor: Color.primary,

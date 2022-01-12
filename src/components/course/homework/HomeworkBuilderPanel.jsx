@@ -77,7 +77,7 @@ const styles = StyleSheet.create({
   touchableHightlight: {
     borderRadius: 10,
     overflow: 'hidden',
-    marginHorizontal: 10,
+    marginHorizontal: 20,
   },
   panel: {
     backgroundColor: Color.lightPrimary,

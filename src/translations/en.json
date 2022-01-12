@@ -185,7 +185,7 @@
   "course": {
     "title": "Course",
     "root": "Courses",
-    "search": "Enter a name of course",
+    "search": "Search Course",
     "sub-courses": "Subcourses",
     "modify": {
       "add-title": "Add course",
@@ -194,7 +194,9 @@
       "add-submit": "Add",
       "edit-submit": "Edit"
     },
-    "empty": "Courses not yet added",
+    "empty": "Alas, the courses have not been added yet.\n\nTo get into a world of easy-to-use curriculum and knowledge base, you must first **add a course**",
+    "emptySub": "The subcourses have not been added yet.",
+    "emptySearch": "No course with this name was found.",
     "delete-course-confirmation": "Are you sure you want to delete the selected courses?"
   },
   "homeworks": {
@@ -226,7 +228,7 @@
   },
   "tasks": {
     "title": "Tasks",
-    "search": "Enter a task name",
+    "search": "Search Task",
     "empty": "Tasks list is empty",
     "noDescription": "No description",
     "course-not-selected": "Select a course to display its tasks",
