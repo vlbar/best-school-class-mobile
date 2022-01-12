@@ -272,7 +272,7 @@ function ModifyHomework({ navigation }) {
               canFetch={false}
               actionMenuContent={actionMenu}
               additionalEmptyMessage={tip}
-              style={{ marginHorizontal: -10, marginTop: 10 }}
+              style={{ marginHorizontal: -20, marginTop: 10 }}
             />
           </BestValidation.Context>
         </View>

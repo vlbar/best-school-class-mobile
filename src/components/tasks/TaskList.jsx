@@ -329,7 +329,7 @@ function TaskList(
       return (
         <>
           <Text style={styles.emptyTasks}>{translate(emptyText)}</Text>
-          <Text style={[styles.emptyTasks, { marginTop: 10 }]}>{additionalEmptyMessage}</Text>
+          <Text style={[styles.emptyTasks, { paddingTop: 10 }]}>{additionalEmptyMessage}</Text>
         </>
       );
     else return <View />;
@@ -353,7 +353,7 @@ function TaskList(
         onEndReached={!data && fetchNextPage}
         onEndReachedThreshold={0.7}
         style={[styles.container]}
-        contentContainerStyle={{ flexGrow: 1 }}
+        contentContainerStyle={[{ flexGrow: 1 }, style]}
       />
       <TaskFilterPopup
         show={isTaskFiltersShow}
