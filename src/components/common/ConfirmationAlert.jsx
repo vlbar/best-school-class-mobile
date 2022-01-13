@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { Alert } from 'react-native';
 
 import { useTranslation } from '../../utils/Internationalization';
@@ -25,4 +25,30 @@ export default function ConfirmationAlert({ title, text, onConfirm, onReject, sh
   }
 
   return children({ confirm });
+}
+
+export function ButtonedConfirmationAlert({ title, text, buttons, onReject, onConfirm, show = false }) {
+  const { translate } = useTranslation();
+
+  const defaultButtons = [
+    {
+      text: translate('common.cancel'),
+      style: 'cancel',
+      onPress: () => onReject?.(),
+    },
+    {
+      text: translate('common.ok'),
+      onPress: () => onConfirm?.(),
+    },
+  ];
+
+  useEffect(() => {
+    if (show) confirm();
+  }, [show]);
+
+  function confirm() {
+    Alert.alert(title ?? translate('common.confirmation'), text, (buttons ?? defaultButtons));
+  }
+
+  return <></>;
 }
