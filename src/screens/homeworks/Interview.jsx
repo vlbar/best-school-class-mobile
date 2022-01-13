@@ -6,31 +6,72 @@ import HorizontalMenu from '../../components/common/HorizontalMenu';
 import Text from '../../components/common/Text';
 import MessageList from '../../components/interviews/MessageList';
 import Header from '../../components/navigation/Header';
+import { types } from '../../components/state/State';
 import { getTaskTypeColor } from '../../components/tasks/TaskList';
 import Avatar from '../../components/user/Avatar';
-import User from '../../components/user/User';
 import UserName from '../../components/user/UserName';
 import Color from '../../constants';
 import { HomeworkContext } from '../../navigation/main/HomeworksNavigationConstants';
 import { ProfileContext } from '../../navigation/NavigationConstants';
+import Link from '../../utils/Hateoas/Link';
 import { useTranslation } from '../../utils/Internationalization';
+
+const HOMEWORK_URL = 'v1/homeworks';
+const fetchLink = new Link(HOMEWORK_URL);
 
 export const INTERVIEW_SCREEN = 'interview';
 export default function Interview({ route }) {
   const { translate } = useTranslation();
-  const { user } = useContext(ProfileContext);
-  const { interviews, tasks } = useContext(HomeworkContext);
-  const [interview, setInterview] = useState(null);
+  const { user, state } = useContext(ProfileContext);
+  const { interviews, tasks, setTasks, homework, setHomework } = useContext(HomeworkContext);
+  const [interview, setInterview] = useState(undefined);
+
+  const interviewId = route.params.interviewId;
 
   useEffect(() => {
-    const interviewId = route.params.interviewId;
-    setInterview(interviews.find(i => i.id === interviewId));
+    return () => {
+      if (state == types.STUDENT) {
+        setTasks([]);
+        setHomework(null);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    if (state == types.STUDENT) {
+      const homeworkId = route.params.homeworkId;
+      fetchLink.withPathTale(homeworkId).fetch().then(setHomework);
+    } else {
+      const interviewId = route.params.interviewId;
+      const savedInterview = interviews.find(i => i.id === interviewId);
+      if (savedInterview) setInterview(savedInterview);
+      else homework.link('interviews').withPathTale(interviewId).fetch(setInterview);
+    }
   }, [route]);
+
+  useEffect(() => {
+    if (homework && state == types.STUDENT) {
+      homework
+        .link('myInterview')
+        .fetch()
+        .then(setInterview)
+        .catch(() => setInterview(null));
+      setTasks(homework.tasks);
+    }
+  }, [homework]);
+
+  function handleMessage(message) {
+    if (interview == null) {
+      if (state == types.STUDENT) homework.link('myInterview').fetch().then(setInterview);
+    } else if (interview.inactive) {
+      interview.link().fetch().then(setInterview);
+    }
+  }
 
   return (
     <>
-      <Header>
-        {interview && (
+      <Header title={state == types.STUDENT && translate('homeworks.details.title')}>
+        {interview && state != types.STUDENT && (
           <>
             <Avatar email={interview.interviewer.email} size={30}></Avatar>
             <UserName user={interview.interviewer} numberOfLines={1} style={styles.nameStyle} />
@@ -63,11 +104,26 @@ export default function Interview({ route }) {
               })}
           </HorizontalMenu.Item>
           <HorizontalMenu.Item title={translate('homeworks.interview.messages')}>
-            <MessageList
-              fetchLink={interview?.link('interviewMessages')}
-              messageCreateLink={interview?.link('interviewMessages')}
-              currentUser={user}
-            />
+            {interview != null && (
+              <MessageList
+                fetchLink={interview?.link('interviewMessages')}
+                messageCreateLink={interview?.link('interviewMessages')}
+                currentUser={user}
+                tasks={tasks}
+                onMessageCreate={handleMessage}
+              />
+            )}
+            {interview === null && (
+              <MessageList
+                messageCreateLink={homework
+                  .link('interviews')
+                  .withPathTale(interviewId ?? user.id)
+                  .withPathTale('messages')}
+                currentUser={user}
+                tasks={tasks}
+                onMessageCreate={handleMessage}
+              />
+            )}
           </HorizontalMenu.Item>
         </HorizontalMenu>
       </Container>

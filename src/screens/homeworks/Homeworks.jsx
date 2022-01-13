@@ -16,6 +16,8 @@ import Button from '../../components/common/Button';
 import HorizontalMenu from '../../components/common/HorizontalMenu';
 import HomeworkList from '../../components/homeworks/HomeworkList';
 import { HOMEWORKS_DETAILS_SCREEN } from './HomeworkDetails';
+import { types } from '../../components/state/State';
+import { INTERVIEW_SCREEN } from './Interview';
 
 export const HOMEWORKS_SCREEN = 'homeworks';
 
@@ -35,7 +37,7 @@ function Homeworks({ navigation }) {
 
   function onDetailsPress(homework) {
     navigation.navigate({
-      name: HOMEWORKS_DETAILS_SCREEN,
+      name: state == types.STUDENT ? INTERVIEW_SCREEN : HOMEWORKS_DETAILS_SCREEN,
       params: {
         homeworkId: homework.id,
       },

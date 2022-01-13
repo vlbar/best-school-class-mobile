@@ -1,9 +1,12 @@
-import React from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useRef } from 'react';
-import { useMemo } from 'react';
-import { FlatList } from 'react-native';
-import { KeyboardAwareFlatList } from 'react-native-keyboard-aware-scroll-view';
-import MessageGroup from './MessageGroup';
+import { ActivityIndicator, StyleSheet, View } from 'react-native';
+import { SwipeListView } from 'react-native-swipe-list-view';
+import Color from '../../constants';
+import { useTranslation } from '../../utils/Internationalization';
+import Text from '../common/Text';
+import Message from './Message';
+import { MessageContext } from './MessageList';
 
 export function isDatesEquals(date1, date2) {
   return (
@@ -11,49 +14,149 @@ export function isDatesEquals(date1, date2) {
   );
 }
 
-export default function MessageGroupContainer({ messages, currentUser, blockTimeRange, style, onReply, ...props }) {
-  const messageGroups = useMemo(() => {
-    let prevMessage = null;
-    let groupedMessages = [];
-    let idx = -1;
-    messages.forEach(message => {
-      if (
-        prevMessage == null ||
-        message.author.id != prevMessage.author.id ||
-        prevMessage.submittedAt - message.submittedAt > blockTimeRange ||
-        !isDatesEquals(new Date(prevMessage.submittedAt), new Date(message.submittedAt)) ||
-        prevMessage.type != message.type
-      ) {
-        groupedMessages.push({
-          author: message.author,
-          time: message.submittedAt,
-          messages: [],
-          type: message.type,
-        });
-        idx++;
+export default React.forwardRef(({ fetchLink, tasks, onAnswer, currentUser, blockTimeRange, style, ...props }, ref) => {
+  const { setReply, setPing, setEdit, disabled } = useContext(MessageContext);
+  const { translate } = useTranslation();
+
+  const page = useRef(null);
+  const messagesRef = useRef({});
+  const [messages, setMessages] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const timeout = useRef(null);
+  const fetchLinkHref = useRef(null);
+
+  useEffect(() => {
+    return () => {
+      clearTimeout(timeout.current);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (fetchLink && page.current == null) {
+      // && fetchLink.href != fetchLinkHref.current) {
+      fetchLinkHref.current = fetchLink.href;
+      clearTimeout(timeout.current);
+      fetchMessages(fetchLink.fill('size', 30));
+    }
+  }, [fetchLink]);
+
+  function reloadChanges(link) {
+    clearTimeout(timeout.current);
+    timeout.current = setTimeout(() => {
+      fetchChanges(link);
+    }, 2000);
+  }
+
+  function fetchMessages(link) {
+    link?.fetch(setLoading).then(newPage => {
+      let newMessages = newPage.list('messages');
+      if (newMessages) {
+        newMessages = newMessages.reduce((map, message) => {
+          map[message.submittedAt] = message;
+          return map;
+        }, {});
+        if (page.current == null) {
+          messagesRef.current = newMessages;
+        } else {
+          messagesRef.current = { ...messagesRef.current, ...newMessages };
+        }
+        setMessages(Object.values(messagesRef.current));
       }
-      groupedMessages[idx].messages.push(message);
-      prevMessage = message;
+      page.current = newPage;
+      if (!disabled) reloadChanges(newPage.link('changedAfter'));
     });
+  }
 
-    return groupedMessages;
-  }, [messages, currentUser, blockTimeRange]);
+  function fetchChanges(link) {
+    link?.fetch().then(changes => {
+      let changedMessages = changes.list('messages');
 
-  function renderGroup({ item: messageGroup }) {
-    let isAuthor = messageGroup.author.id == currentUser.id;
+      if (changedMessages) {
+        updateMessages(changedMessages);
+        reloadChanges(changes.link('changedAfter'));
+      } else reloadChanges(link);
+    });
+  }
 
-    return <MessageGroup messageGroup={messageGroup} isCreator={isAuthor} onReply={onReply} />;
+  function updateMessages(changedMessages) {
+    let keys = Object.keys(messagesRef.current);
+    let lastKey = keys.pop();
+    let firstKey = keys.shift();
+    if (!firstKey) firstKey = lastKey;
+    let addedMessages = {};
+
+    changedMessages = changedMessages.reduce((map, message) => {
+      if (!firstKey || Number(firstKey) < message.submittedAt) addedMessages[message.submittedAt] = message;
+      else if (Number(lastKey) <= message.submittedAt) map[message.submittedAt] = message;
+      if (message.type == 'ANSWER') onAnswer && onAnswer?.(message);
+      return map;
+    }, {});
+
+    messagesRef.current = {
+      ...addedMessages,
+      ...messagesRef.current,
+      ...changedMessages,
+    };
+    setMessages(Object.values(messagesRef.current));
+  }
+
+  function fetchPrev() {
+    if (!loading) fetchMessages(page.current.link('next'));
+  }
+
+  function renderItem(data) {
+    const message = data.item;
+    const nextMessage = messages[data.index + 1];
+    const isAuthor = currentUser.id === message.author.id;
+    const anotherBlock =
+      !nextMessage ||
+      nextMessage.author.id != message.author.id ||
+      message.submittedAt - nextMessage.submittedAt > blockTimeRange;
+
+    return (
+      <Message
+        message={message}
+        tasks={tasks}
+        withAvatar={!isAuthor && anotherBlock}
+        isCreator={isAuthor}
+        withTime={anotherBlock}
+        onEdit={setEdit}
+        onReply={setReply}
+        onPing={setPing}
+      />
+    );
   }
 
   return (
-    <FlatList
+    <SwipeListView
+      ref={ref}
       inverted
+      useFlatList={true}
       fadingEdgeLength={30}
-      data={messageGroups}
-      renderItem={renderGroup}
+      data={messages}
+      renderItem={renderItem}
+      ListEmptyComponent={
+        !loading && (
+          <View style={{ flexGrow: 1, alignItems: 'center', justifyContent: 'center' }}>
+            <Text style={styles.emptyText}>{translate('homeworks.interview.noMessages')}</Text>
+          </View>
+        )
+      }
+      ListFooterComponent={loading && messages.length == 0 && <ActivityIndicator color={Color.primary} size={50} />}
+      ListFooterComponentStyle={{ flexGrow: 1, alignItems: 'center', justifyContent: 'center' }}
       contentContainerStyle={style}
-      keyExtractor={item => item.submittedAt}
+      keyExtractor={item => item.id}
+      onEndReached={fetchPrev}
+      onEndReachedThreshold={1}
+      directionalDistanceChangeThreshold={1}
       {...props}
     />
   );
-}
+});
+
+const styles = StyleSheet.create({
+  emptyText: {
+    color: Color.silver,
+    textAlign: 'center',
+  },
+});

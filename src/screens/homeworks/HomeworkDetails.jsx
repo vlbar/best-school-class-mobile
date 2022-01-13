@@ -28,10 +28,17 @@ export const HOMEWORKS_DETAILS_SCREEN = 'homeworkDetails';
 export default function HomeworkDetails({ route, navigation }) {
   const { translate } = useTranslation();
   const [isInfoShow, setIsInfoShow] = useState(false);
-  const [homework, setHomework] = useState(null);
-  const { interviews, setInterviews, setTasks } = useContext(HomeworkContext);
+  const { homework, setHomework, interviews, setInterviews, setTasks } = useContext(HomeworkContext);
   const [creator, setCreator] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    return () => {
+      setInterviews([]);
+      setTasks([]);
+      setHomework(null);
+    };
+  }, []);
 
   useEffect(() => {
     fetchHomework(new Link(`${HOMEWORK_URL}/${route.params.homeworkId}`));
@@ -79,7 +86,7 @@ export default function HomeworkDetails({ route, navigation }) {
             interviews={interviews}
             setInterviews={setInterviews}
             onSelect={onDetailsPress}
-            withInactive={homework.link('group')}
+            withInactive={new Link(homework.group._links.groupMembers.href)}
             ListHeaderComponent={
               <>
                 <TouchableOpacity onPress={toggleInfo}>
