@@ -8,10 +8,11 @@ import { HomeworkContext } from './HomeworksNavigationConstants';
 const Stack = createStackNavigator();
 
 const HomeworksNavigation = () => {
+  const [homework, setHomework] = useState(null);
   const [interviews, setInterviews] = useState([]);
   const [tasks, setTasks] = useState([]);
   return (
-    <HomeworkContext.Provider value={{ interviews, setInterviews, tasks, setTasks }}>
+    <HomeworkContext.Provider value={{ interviews, setInterviews, tasks, setTasks, homework, setHomework }}>
       <Stack.Navigator
         initialRouteName={HOMEWORKS_SCREEN}
         screenOptions={{ headerShown: false, ...TransitionPresets.ScaleFromCenterAndroid }}

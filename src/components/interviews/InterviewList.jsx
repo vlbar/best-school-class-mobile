@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, FlatList, StyleSheet, TouchableNativeFeedback, View } from 'react-native';
 import Color from '../../constants';
+import Resource from '../../utils/Hateoas/Resource';
 import { useTranslation } from '../../utils/Internationalization';
 import HorizontalMenu from '../common/HorizontalMenu';
 import SearchBar from '../common/SearchBar';
@@ -55,7 +56,6 @@ export default function InterviewList({
   }
 
   function fetchGroups(link) {
-    console.log('AUF');
     link
       .fetch(setLoading)
       .then(newPage => {
@@ -95,7 +95,11 @@ export default function InterviewList({
       onlyClosed == null &&
       (groupPage.current === undefined || groupPage.current?.link('next'))
     )
-      fetchGroups(groupPage.current === undefined ? withInactive.fill('name', search) : groupPage.current.link('next'));
+      fetchGroups(
+        groupPage.current === undefined
+          ? withInactive.fill('name', search).fill('roles', 'student')
+          : groupPage.current.link('next'),
+      );
   }
 
   function onNext() {
@@ -150,7 +154,7 @@ export default function InterviewList({
         );
       }}
       onEndReached={onNext}
-      onEndReachedThreshold={0.5}
+      onEndReachedThreshold={1}
       keyExtractor={interview => interview.interviewer.id}
     />
   );

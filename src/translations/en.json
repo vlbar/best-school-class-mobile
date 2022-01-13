@@ -269,8 +269,12 @@
     "interview": {
       "tasks": "Tasks",
       "messages": "Messages",
+      "noMessages": "Looks like no one has posted here yet.\nBe the first to start!",
+      "messageEdit": "Editing a post",
       "messagePlaceholder": "Enter your message...",
       "messageDeleted": "Message deleted",
+      "taskMessage": "Task answer",
+      "deleteConfirmation": "Are you sure you want to delete the message? This action cannot be undone...",
       "taskNoDesctiption": "No description.",
       "actions": {
         "title": "Actions",

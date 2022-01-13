@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { createDrawerNavigator } from '@react-navigation/drawer';
-import { NavigationContainer } from '@react-navigation/native';
+import { getFocusedRouteNameFromRoute, NavigationContainer } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import Color from './../constants';
@@ -11,6 +11,8 @@ import SettingsNavigation from './profile/SettingsNavigation';
 import SidebarContent from '../components/navigation/SidebarContent';
 import { ProfileContext, profileNavigatorNames } from './NavigationConstants';
 import { STUDENT, types } from '../components/state/State';
+import { INTERVIEW_SCREEN } from '../screens/homeworks/Interview';
+import { State } from 'react-native-gesture-handler';
 
 const Drawer = createDrawerNavigator();
 
@@ -40,6 +42,9 @@ function ProfileNavigation() {
             headerShown: false,
             drawerType: 'slide',
             swipeEdgeWidth: 320,
+            gestureHandlerProps: {
+              activeOffsetX: 100,
+            },
           }}
         >
           <Drawer.Screen name={MAIN_NAVIGATION} component={MainNavigation} />
