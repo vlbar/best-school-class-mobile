@@ -8,6 +8,8 @@ import SearchBar from '../common/SearchBar';
 import Text from '../common/Text';
 import User from '../user/User';
 
+const PAGE_SIZE = 10;
+
 export default function InterviewList({
   fetchLink,
   interviews,
@@ -31,75 +33,93 @@ export default function InterviewList({
     page.current = undefined;
     groupPage.current = undefined;
 
-    fetchInterviews(fetchLink.fill('name', search).fill('closed', onlyClosed));
+    fetchInterviews(fetchLink.fill('name', search).fill('closed', onlyClosed).fill('size', PAGE_SIZE));
     return () => {
       setInterviews([]);
     };
   }, []);
 
   function fetchInterviews(link) {
+    setLoading(true);
     link
-      .fetch(setLoading)
+      .fetch()
       .then(newPage => {
+        let newInterviews;
         if (newPage.list('interviews')) {
-          if (page.current)
-            setInterviews([...interviews, ...newPage.list('interviews')]).filter(
-              (value, index, self) => self.findIndex(elem => elem.interviewer.id === value.interviewer.id) === index,
-            );
-          else setInterviews(newPage.list('interviews'));
-        } else if (!page.current) setInterviews([]);
+          if (page.current) newInterviews = [...interviews, ...newPage.list('interviews')];
+          else newInterviews = newPage.list('interviews');
+        } else if (!page.current) newInterviews = [];
         page.current = newPage;
+
+        if (!newPage.list('interview') || newPage.list('interviews').length < PAGE_SIZE) fetch(newInterviews);
+        else {
+          setLoading(false);
+          setInterviews(newInterviews);
+        }
       })
       .catch(err => {
+        console.log(err);
         page.current = null;
+        setLoading(false);
       });
   }
 
-  function fetchGroups(link) {
+  function mapMembers(members) {
+    return members.map(member => {
+      return Resource.basedList(
+        {
+          undefined: fetchLink.withPathTale(member.user.id),
+          interviewMessages: fetchLink.withPathTale(member.user.id).withPathTale('messages'),
+          changeMark: fetchLink.withPathTale(member.user.id),
+        },
+        {
+          interviewer: member.user,
+          inactive: true,
+        },
+      );
+    });
+  }
+
+  function fetchGroups(link, curInterviews) {
     link
       .fetch(setLoading)
       .then(newPage => {
+        if (newPage.list('members')) {
+          if (!groupPage.current && !page.current.list('interviews'))
+            setInterviews(mapMembers(newPage.list('members')));
+          else {
+            let newInterviews = curInterviews ?? interviews;
+            mapMembers(newPage.list('members')).forEach(i => {
+              if (!newInterviews.find(newI => newI.interviewer.id == i.interviewer.id)) newInterviews.push(i);
+            });
+            setInterviews(newInterviews);
+          }
+        }
         groupPage.current = newPage;
-        if (newPage.list('members'))
-          setInterviews(
-            [
-              ...interviews,
-              ...newPage.list('members').map(member => {
-                return Resource.basedList(
-                  {
-                    undefined: fetchLink.withPathTale(member.user.id),
-                    interviewMessages: fetchLink.withPathTale(member.user.id).withPathTale('messages'),
-                    changeMark: fetchLink.withPathTale(member.user.id),
-                  },
-                  {
-                    interviewer: member.user,
-                    inactive: true,
-                  },
-                );
-              }),
-            ].filter(
-              (value, index, self) => self.findIndex(elem => elem.interviewer.id === value.interviewer.id) === index,
-            ),
-          );
       })
       .catch(err => {
+        console.log(err);
         groupPage.current = null;
       });
   }
 
-  function fetch() {
-    if (page.current && page.current.link('next')) fetchInterviews(page.current.link('next'));
-    else if (
-      page.current &&
-      withInactive &&
-      onlyClosed == null &&
-      (groupPage.current === undefined || groupPage.current?.link('next'))
-    )
-      fetchGroups(
-        groupPage.current === undefined
-          ? withInactive.fill('name', search).fill('roles', 'student')
-          : groupPage.current.link('next'),
-      );
+  function fetch(interviews) {
+    if (page.current) {
+      if (page.current.link('next')) fetchInterviews(page.current.link('next'));
+      else if (
+        withInactive &&
+        onlyClosed == null &&
+        (groupPage.current === undefined || groupPage.current?.link('next'))
+      ) {
+        fetchGroups(
+          (groupPage.current === undefined
+            ? withInactive.fill('name', page.current.link().param('name')).fill('roles', 'student')
+            : groupPage.current.link('next')
+          ).fill('size', PAGE_SIZE),
+          interviews,
+        );
+      }
+    }
   }
 
   function onNext() {
@@ -111,7 +131,7 @@ export default function InterviewList({
     groupPage.current = undefined;
     setInterviews([]);
     setSearch(search);
-    fetchInterviews(fetchLink.fill('name', search).fill('closed', onlyClosed));
+    fetchInterviews(fetchLink.fill('name', search).fill('closed', onlyClosed).fill('size', PAGE_SIZE));
   }
 
   return (
@@ -119,7 +139,7 @@ export default function InterviewList({
       ListHeaderComponent={
         <View>
           {ListHeaderComponent}
-          <SearchBar onSearch={onSearch} />
+          <SearchBar onSearch={onSearch} emptyAfterValue={interviews.length == 0 ? search : null} />
         </View>
       }
       ListFooterComponent={loading && <ActivityIndicator color={Color.primary} size={50} />}
