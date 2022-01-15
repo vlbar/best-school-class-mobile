@@ -3,7 +3,7 @@ import axios from "axios";
 //Class with utility functions
 export default class Hateoas {
   //Fills parameter with replacing list of templated parameters ('{?...}')
-  static fill(href, name, value = true) {
+  static fill(href, name, value) {
     if (href.includes("{")) href = href.slice(0, href.indexOf("{"));
 
     if (href.includes("?")) {

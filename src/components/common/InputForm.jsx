@@ -22,17 +22,17 @@ export default function InputForm({
     let placeholderPrefix = getI(pPrefixKey);
     let placeholderPostfix = getI(pPostfixKey);
 
-    placeholderText =
+    placeholderText = label ?
       (placeholderPrefix
         ? placeholderPrefix + ' ' + label.toLowerCase()
         : label) +
       (placeholderPostfix ? ' ' + placeholderPostfix : '') +
-      '...';
+      '...' : getI(pPrefixKey);
   }
 
   return (
     <View style={[styles.container, style]}>
-      <Text style={styles.label}>{label}</Text>
+      {label && <Text style={styles.label}>{label}</Text>}
       <TextInput
         style={[styles.input, errorMessage ? styles.errorInput : styles.input]}
         onChangeText={onChange}
