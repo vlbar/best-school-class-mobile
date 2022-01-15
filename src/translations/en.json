@@ -198,6 +198,7 @@
     "delete-course-confirmation": "Are you sure you want to delete the selected courses?"
   },
   "tasks": {
+    "task": "Task",
     "title": "Tasks",
     "search": "Enter a task name",
     "empty": "Tasks list is empty",
@@ -206,6 +207,17 @@
       "title": "Add task",
       "name": "Task name",
       "submit": "Add"
+    },
+    "edit": {
+      "title": "Edit task",
+      "name": "Task name",
+      "description": "Task description",
+      "maxScore": "Max score",
+      "maxScoreSubtitle": "The number of points received by the student will be translated to this number.",
+      "duration": "Duration",
+      "taskType": "Task type",
+      "noTaskType": "Not selected",
+      "loading": "Loading task..."
     },
     "sortBy": {
       "title": "Sort by",
@@ -265,6 +277,20 @@
         "empty": "Looks like no one is here yet.\nThis is possible if there are no students in the group.\nFirst you need to invite students to the group!",
         "emptySearch": "No one was found for the specified search criteria :("
       }
+    },
+    "try": {
+      "infinity": "Infinity",
+      "start": "Start",
+      "continue": "Continue",
+      "questionCount": "Question {{number}}",
+      "timeLeft": "Time left",
+      "yourAnswer": "Your answer",
+      "confirmationPerform": "Are you sure you want to complete this task and submit it for review?\nOnce confirmed, you will no longer be able to change your answer.",
+      "completion": "Completion",
+      "questionSaving": "Question saving",
+      "saveError": "An error has occurred",
+      "retrySave": "Retry",
+      "saved": "Saved"
     },
     "interview": {
       "tasks": "Tasks",
