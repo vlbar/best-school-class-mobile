@@ -1,12 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
+import Resource from '../../utils/Hateoas/Resource';
 
 import Avatar from './Avatar';
 import UserName from './UserName';
 
+const USER_URL = 'v1/users';
+const getUserLink = id => Resource.basedOnHref(`${USER_URL}/${id}`).link();
+
 function User({
   user,
   fetchLink,
+  userId,
   iconSize = 26,
   short = false,
   showCurrent = false,
@@ -28,6 +33,15 @@ function User({
         .then(setFinalUser)
         .catch(err => console.log(errorMsg ?? 'Не удалось загрузить пользователя.', err));
   }, [fetchLink]);
+
+  useEffect(() => {
+    if (userId && !finalUser && !loading) {
+      getUserLink(userId)
+        .fetch(setLoading)
+        .then(setFinalUser)
+        .catch(err => console.log(errorMsg ?? 'Не удалось загрузить пользователя.', err));
+    }
+  }, [userId]);
 
   if (finalUser)
     return (

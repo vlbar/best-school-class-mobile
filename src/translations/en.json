@@ -202,6 +202,7 @@
     "title": "Tasks",
     "search": "Enter a task name",
     "empty": "Tasks list is empty",
+    "noDescription": "No description",
     "course-not-selected": "Select a course to display its tasks",
     "add": {
       "title": "Add task",
@@ -290,7 +291,15 @@
       "questionSaving": "Question saving",
       "saveError": "An error has occurred",
       "retrySave": "Retry",
-      "saved": "Saved"
+      "saved": "Your answers have been saved",
+      "goBack": "Exit",
+      "started": "Started",
+      "finished": "Finished",
+      "runtime": "Runtime",
+      "appreciated": "Appreciated",
+      "notAppreciated": "Not Appreciated",
+      "returned": "Returned",
+      "score": "Score"
     },
     "interview": {
       "tasks": "Tasks",

@@ -13,8 +13,9 @@ const HomeworksNavigation = () => {
   const [interviews, setInterviews] = useState([]);
   const [tasks, setTasks] = useState([]);
   const [answers, setAnswers] = useState([]);
+  const [answerTry, setAnswerTry] = useState([]);
   return (
-    <HomeworkContext.Provider value={{ interviews, setInterviews, tasks, setTasks, homework, setHomework, answers, setAnswers }}>
+    <HomeworkContext.Provider value={{ interviews, setInterviews, tasks, setTasks, homework, setHomework, answers, setAnswers, answerTry, setAnswerTry }}>
       <Stack.Navigator
         initialRouteName={HOMEWORKS_SCREEN}
         screenOptions={{ headerShown: false, ...TransitionPresets.ScaleFromCenterAndroid }}
