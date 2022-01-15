@@ -96,9 +96,9 @@
   "state": {
     "teacher": "Teacher",
     "student": "Student",
-    "assistant": "Assistant" 
+    "assistant": "Assistant"
   },
-  "workspace":{
+  "workspace": {
     "title": "Workspace",
     "planned-lesson": {
       "not-started": "It looks like the lesson has not started yet :/",
@@ -121,7 +121,7 @@
     "emptyJoinAdviceContinue": "his group",
     "or": "or",
     "create": "Create",
-    "emptyCreateAdviceContinue" : "your own group",
+    "emptyCreateAdviceContinue": "your own group",
     "groupCreation": "Adding a group",
     "inviteQuestion": "Do you have an invitation?",
     "invitePlaceholder": "Enter your invitation code...",
@@ -163,7 +163,7 @@
       "teachers": "Teachers",
       "teachersSearchPlaceholder": "Enter teacher name...",
       "tasks": "Tasks",
-      "accessSettings": "Access settings", 
+      "accessSettings": "Access settings",
       "memberSettings": "Members settings",
       "studentsLimit": "Limiting the number of members",
       "groupOpened": "Group open",
@@ -179,7 +179,7 @@
       "leave": "Leave",
       "kick": "Kick",
       "leaveConfirmation": "Are you sure you want to leave the group?",
-      "kickConfirmation" : "Are you sure you want to kick the member?"
+      "kickConfirmation": "Are you sure you want to kick the member?"
     }
   },
   "course": {
@@ -240,11 +240,11 @@
   "task-types": {
     "search": "Enter name of task type",
     "modify": {
-      "add-title":"Add new task type",
-      "edit-title":"Edit task type",
-      "name":"Task type name",
-      "add-submit":"Add",
-      "edit-submit":"Update",
+      "add-title": "Add new task type",
+      "edit-title": "Edit task type",
+      "name": "Task type name",
+      "add-submit": "Add",
+      "edit-submit": "Update",
       "delete": "Delete",
       "delete-confirmation": "Are you sure you want to delete this task type?"
     }
@@ -268,7 +268,7 @@
     "details": {
       "title": "Homework",
       "info": {
-        "title" : "Information",
+        "title": "Information",
         "group": "Group",
         "appointed": "Appointed",
         "deadline": "Deadline"
@@ -331,6 +331,8 @@
     "input-placeholder-postfix": "",
     "confirmation": "Confirmation",
     "ok": "Ok",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "error": "An error has occurred",
+    "refresh": "Refresh"
   }
 }

@@ -5,6 +5,7 @@ import HomeworkDetails, { HOMEWORKS_DETAILS_SCREEN } from '../../screens/homewor
 import Interview, { INTERVIEW_SCREEN } from '../../screens/homeworks/Interview';
 import { HomeworkContext } from './HomeworksNavigationConstants';
 import TaskAnswer, { TASK_ANSWER_SCREEN } from '../../screens/homeworks/TaskAnswer';
+import TaskTry, { TASK_TRY_SCREEN } from '../../screens/homeworks/TaskTry';
 
 const Stack = createStackNavigator();
 
@@ -24,6 +25,7 @@ const HomeworksNavigation = () => {
         <Stack.Screen name={HOMEWORKS_DETAILS_SCREEN} component={HomeworkDetails} />
         <Stack.Screen name={INTERVIEW_SCREEN} component={Interview} />
         <Stack.Screen name={TASK_ANSWER_SCREEN} component={TaskAnswer} />
+        <Stack.Screen name={TASK_TRY_SCREEN} component={TaskTry} />
       </Stack.Navigator>
     </HomeworkContext.Provider>
   );

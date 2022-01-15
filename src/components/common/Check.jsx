@@ -193,6 +193,8 @@ const styles = StyleSheet.create({
   },
   titleContainer: {
     marginLeft: 20,
+    flex: 1,
+    flexGrow: 1,
   },
   title: {
     fontSize: 17,

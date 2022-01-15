@@ -11,6 +11,7 @@ import ShortDate from '../../components/common/ShortDate';
 import Text from '../../components/common/Text';
 import User from './../../components/user/User';
 import { HomeworkContext } from '../../navigation/main/HomeworksNavigationConstants';
+import { TASK_TRY_SCREEN } from './TaskTry';
 import { clearHtmlTags } from '../../utils/TextUtils';
 import { useTranslation } from '../../utils/Internationalization';
 
@@ -108,7 +109,7 @@ function TaskAnswer({ navigation, route }) {
 
   const continueTry = answerTry => {
     setAnswerTry(answerTry ?? selectedAnswerTry);
-    //navigation.navigate(TASK_TRY_SCREEN);
+    navigation.navigate(TASK_TRY_SCREEN);
   };
 
   return (
