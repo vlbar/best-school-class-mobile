@@ -297,5 +297,10 @@
     "confirmation": "Confirmation",
     "ok": "Ok",
     "cancel": "Cancel"
+  },
+  "date": {
+    "today": "Today",
+    "tomorrow": "Tomorrow",
+    "yesterday": "Yesterday" 
   }
 }
