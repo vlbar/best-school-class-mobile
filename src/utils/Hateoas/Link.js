@@ -23,7 +23,8 @@ export default class Link {
 
   //returns value of filled param
   param(name) {
-    return this.params.find((param) => param.key === name)?.value;
+    const value = this.params.find(param => param.key === name)?.value;
+    return value ? decodeURIComponent(value) : value;
   }
 
   //fill('auf', 'volki')
