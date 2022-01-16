@@ -366,6 +366,8 @@
     "ok": "Ok",
     "discard": "Discard",
     "apply": "Apply",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "error": "An error has occurred",
+    "refresh": "Refresh"
   }
 }

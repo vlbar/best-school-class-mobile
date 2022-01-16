@@ -1,12 +1,5 @@
 import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
-import {
-  StyleSheet,
-  FlatList,
-  View,
-  TouchableOpacity,
-  ActivityIndicator,
-  TouchableNativeFeedback,
-} from 'react-native';
+import { StyleSheet, FlatList, View, TouchableOpacity, ActivityIndicator, TouchableNativeFeedback } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 import Color from '../../constants';
@@ -14,7 +7,7 @@ import IconButton from './../common/IconButton';
 import Resource from '../../utils/Hateoas/Resource';
 import SearchBar from '../common/SearchBar';
 import Text from '../common/Text';
-import translate from '../../utils/Internationalization';
+import { useTranslation } from '../../utils/Internationalization';
 
 const baseUrl = '/v1/courses';
 const subCoursesPartUrl = 'sub-courses';
@@ -35,9 +28,11 @@ function CourseList(
   },
   ref,
 ) {
+  const { translate } = useTranslation();
   const [courses, setCourses] = useState([]);
   const [isFetching, setIsFetching] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isHasError, setIsHasError] = useState(false);
   const nextPage = useRef(undefined);
 
   const [refreshOffset, setRefreshOffset] = useState(0);
@@ -74,7 +69,7 @@ function CourseList(
 
   function fetchCourses(link, isRefreshing = false) {
     const targetId = parentCourseId ?? parentCourse?.id ?? NULL_PARENT_ID;
-
+    console.log(isRefreshing);
     link
       ?.fetch(isRefreshing ? setIsRefreshing : setIsFetching)
       .then(page => {
@@ -87,8 +82,12 @@ function CourseList(
         } else {
           setCourses([...courses, ...fetchedCourses]);
         }
+        setIsHasError(false);
       })
-      .catch(error => console.log('Не удалось загрузить список курсов.', error));
+      .catch(error => {
+        console.log('Не удалось загрузить список курсов.', error);
+        setIsHasError(true);
+      });
   }
 
   const fetchPage = (isRefreshing = false) => {
@@ -103,6 +102,11 @@ function CourseList(
 
   const refreshPage = () => {
     fetchPage(true);
+  };
+
+  const updatePage = () => {
+    if (courses.length > 0) fetchNextPage();
+    else fetchPage();
   };
 
   const fetchNextPage = () => {
@@ -154,7 +158,23 @@ function CourseList(
     );
   };
 
-  const loadingItemsIndicator = isFetching && !courses.length && <ActivityIndicator color={Color.primary} size={50} />;
+  console.log(isHasError);
+  const loadingItemsIndicator = isFetching ? (
+    isFetching && !courses.length && <ActivityIndicator color={Color.primary} size={50} />
+  ) : (
+    <>
+      {isHasError && (
+        <TouchableOpacity activeOpacity={0.7} onPress={updatePage}>
+          <View style={{ marginVertical: 20 }}>
+            <Text color={Color.silver} style={{ textAlign: 'center' }}>
+              {translate('common.error')}
+            </Text>
+            <Text style={{ textAlign: 'center' }}>{translate('common.refresh')}</Text>
+          </View>
+        </TouchableOpacity>
+      )}
+    </>
+  );
 
   const headerLayoutHandler = event => {
     setRefreshOffset(event.nativeEvent.layout.height);
@@ -194,7 +214,7 @@ function CourseList(
   const isSearching = filterParams.current.name.trim().length > 0;
   const emptyMessageArray = parseEmptyMessage(translate('course.empty'));
   const emptyCourse = () => {
-    return !isFetching ? (
+    return !isFetching && !isHasError ? (
       isSearching ? (
         <Text style={styles.emptyCourse}>{translate('course.emptySearch')}</Text>
       ) : (
@@ -259,9 +279,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     paddingVertical: 12,
     marginVertical: 2,
-    paddingHorizontal: 10,
+    marginHorizontal: 10,
     alignItems: 'center',
-    width: '100%',
   },
   arrowHolder: {
     minWidth: 30,
