@@ -1,16 +1,15 @@
 import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
-import { StyleSheet, View, FlatList, TouchableNativeFeedback, Alert, ActivityIndicator } from 'react-native';
+import { StyleSheet, View, FlatList, TouchableNativeFeedback, Alert, ActivityIndicator, TouchableOpacity } from 'react-native';
 
 import Bandage from './filters/Bandage';
 import Color from '../../constants';
 import IconButton from '../common/IconButton';
-import ProcessView from '../common/ProcessView';
 import SearchBar from './../common/SearchBar';
 import TaskFilterPopup from './filters/TaskFilterPopup';
 import Text from '../common/Text';
 import { MODIFY_TASK_TYPE_SCREEN } from '../../screens/course/ModifyTaskType';
-import { useTranslation } from '../../utils/Internationalization';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
+import { useTranslation } from '../../utils/Internationalization';
 
 // colors
 const taskTypesColors = ['#69c44d', '#007bff', '#db4242', '#2cc7b2', '#8000ff', '#e68e29', '#d4d5d9', '#38c7d1'];
@@ -50,6 +49,7 @@ function TaskList(
   const [tasks, setTasks] = useState([]);
   const [isFetching, setIsFetching] = useState(false);
   const [isRefresing, setIsRefresing] = useState(false);
+  const [isHasError, setIsHasError] = useState(false);
   const nextPage = useRef(undefined);
   const lastParentCourse = useRef(undefined);
 
@@ -71,7 +71,6 @@ function TaskList(
       refreshPage();
     },
     updateTask: task => {
-      console.log(task);
       const prevTasks = tasks;
       const targetIndex = prevTasks.findIndex(x => x.id === task.id);
       if (targetIndex > -1) {
@@ -138,8 +137,12 @@ function TaskList(
 
         if (page.page.number == 1) setTasks(fetchedTasks);
         else setTasks([...tasks, ...fetchedTasks]);
+        setIsHasError(false);
       })
-      .catch(error => console.log('Не удалось загрузить список курсов.', error));
+      .catch(error => {
+        console.log('Не удалось загрузить список курсов.', error);
+        setIsHasError(true);
+      });
   }
 
   const fetchPage = (isRefres = false) => {
@@ -152,6 +155,15 @@ function TaskList(
 
   const refreshPage = () => {
     fetchPage(true);
+  };
+
+  const fetchNextPage = () => {
+    fetchTasks(nextPage.current);
+  };
+
+  const updatePage = () => {
+    if (tasks.length > 0) fetchNextPage();
+    else fetchPage();
   };
 
   const fetchFirstPage = () => {
@@ -167,10 +179,6 @@ function TaskList(
         .fill('taskTypeId', filterParams.current.taskTypeId ?? null)
         .fill('order', filterParams.current.orderBy),
     );
-  };
-
-  const fetchNextPage = () => {
-    fetchTasks(nextPage.current);
   };
 
   const setFilterParams = params => {
@@ -270,7 +278,22 @@ function TaskList(
     );
   };
 
-  const loadingItemsIndicator = isFetching && !tasks.length && <ActivityIndicator color={Color.primary} size={50} />;
+  const loadingItemsIndicator = isFetching ? (
+    !tasks.length && <ActivityIndicator color={Color.primary} size={50} />
+  ) : (
+    <>
+      {isHasError && (
+        <TouchableOpacity activeOpacity={0.7} onPress={updatePage}>
+          <View style={{ marginVertical: 20 }}>
+            <Text color={Color.silver} style={{ textAlign: 'center' }}>
+              {translate('common.error')}
+            </Text>
+            <Text style={{ textAlign: 'center' }}>{translate('common.refresh')}</Text>
+          </View>
+        </TouchableOpacity>
+      )}
+    </>
+  );
 
   const defaultActionMenu = (
     <>

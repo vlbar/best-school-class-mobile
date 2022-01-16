@@ -69,7 +69,6 @@ function CourseList(
 
   function fetchCourses(link, isRefreshing = false) {
     const targetId = parentCourseId ?? parentCourse?.id ?? NULL_PARENT_ID;
-    console.log(isRefreshing);
     link
       ?.fetch(isRefreshing ? setIsRefreshing : setIsFetching)
       .then(page => {
@@ -158,9 +157,8 @@ function CourseList(
     );
   };
 
-  console.log(isHasError);
   const loadingItemsIndicator = isFetching ? (
-    isFetching && !courses.length && <ActivityIndicator color={Color.primary} size={50} />
+    !courses.length && <ActivityIndicator color={Color.primary} size={50} />
   ) : (
     <>
       {isHasError && (
