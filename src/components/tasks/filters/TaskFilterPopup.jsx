@@ -1,15 +1,15 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { StyleSheet, View, Pressable, ScrollView } from 'react-native';
+import { StyleSheet, View, Pressable, ScrollView, Vibration, ToastAndroid, ActivityIndicator } from 'react-native';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 import Bandage from './Bandage';
 import BottomPopup from './../../common/BottomPopup';
 import Button from '../../common/Button';
 import Color from '../../../constants';
-import ProcessView from '../../common/ProcessView';
 import Resource from '../../../utils/Hateoas/Resource';
 import SearchBar from './../../common/SearchBar';
 import Text from '../../common/Text';
-import translate from '../../../utils/Internationalization';
+import { useTranslation } from '../../../utils/Internationalization';
 import { getTaskTypeColor, defaultOrder } from './../TaskList';
 
 const baseUrl = '/v1/task-types';
@@ -17,6 +17,8 @@ const baseLink = Resource.basedOnHref(baseUrl).link();
 const pageLink = baseLink.fill('size', 20);
 
 function TaskFilterPopup({ show, onApply, onClose, onAddTaskType, isNeedRefesh = false }) {
+  const { translate } = useTranslation();
+
   const orders = {
     'name-asc': translate('tasks.sortBy.name'),
     'createdAt-desc': translate('tasks.sortBy.newest'),
@@ -88,6 +90,13 @@ function TaskFilterPopup({ show, onApply, onClose, onAddTaskType, isNeedRefesh =
     fetchFirstPage();
   };
 
+  const onTaskTypeLongPress = taskType => {
+    if (taskType && taskType.creatorId === null) {
+      Vibration.vibrate(400);
+      ToastAndroid.show(translate('task-types.modify.modifyDefaultNotAllowed'), ToastAndroid.LONG);
+    } else onAddTaskType(taskType);
+  };
+
   // render
   const emptyTypes = <Text style={{ textAlign: 'center' }}>{translate('common.filters.empty-filtered')}</Text>;
 
@@ -128,25 +137,33 @@ function TaskFilterPopup({ show, onApply, onClose, onAddTaskType, isNeedRefesh =
                   key={taskType.id}
                   style={[styles.bandage]}
                   onPress={() => selectType(taskType)}
-                  onLongPress={() => onAddTaskType(taskType)}
+                  onLongPress={() => onTaskTypeLongPress(taskType)}
                 >
                   <Bandage
                     title={taskType.name}
                     size={18}
                     color={selectedTypes.includes(taskType) ? getTaskTypeColor(taskType.id) : Color.veryLightGray}
-                  />
+                  >
+                    {taskType.creatorId !== null && (
+                      <>
+                        {'  '}
+                        <Icon name={'ellipsis-horizontal-outline'} size={20} />
+                      </>
+                    )}
+                  </Bandage>
                 </Pressable>
               );
             })}
-          {isFetching && (
-            <>
-              <ProcessView style={styles.bandage} width={200} height={32} />
-              <ProcessView style={styles.bandage} width={200} height={32} />
-              <ProcessView style={styles.bandage} width={200} height={32} />
-            </>
-          )}
         </ScrollView>
+        {isFetching && (
+          <ActivityIndicator size={30} color={Color.primary} style={{ width: '100%', marginVertical: 10 }} />
+        )}
         {!taskTypes?.length && !isFetching && emptyTypes}
+        {!isFetching && (
+          <Text fontSize={14} color={Color.silver} style={{ textAlign: 'center' }}>
+            *{translate('task-types.longPressToModify')}
+          </Text>
+        )}
         <View style={styles.filterHeader}>
           <Pressable onPress={onCancelHandler}>
             <Text color={Color.silver} fontSize={16}>
