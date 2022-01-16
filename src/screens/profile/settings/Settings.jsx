@@ -15,7 +15,7 @@ function Settings({ navigation }) {
 
   return (
     <>
-      <Header title={translate('profile.settings.title')} />
+      <Header title={translate('profile.settings.title')} canBack={true} />
       <Container>
         <Button
           title={translate('profile.settings.change-language.title')}
