@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import Text from '../../common/Text';
+import LinkedText from '../../tasks/linkedText/LinkedText';
 import TestQuestionAnswer from './TestQuestionAnswer';
 import TextQuestionAnswer from './TextQuestionAnswer';
 
@@ -47,7 +47,7 @@ export default function QuestionAnswer({ show, question, setQuestion, progress, 
   return (
     <View style={[{ flexGrow: 1, flexDirection: 'column', justifyContent: 'space-between' }, !show && styles.hidden]}>
       {questionRef.current.questionVariant.formulation && (
-        <Text>{questionRef.current.questionVariant.formulation}</Text>
+        <LinkedText text={questionRef.current.questionVariant.formulation} />
       )}
       {QuestionInput && <QuestionInput question={question} setQuestion={setQuestionHandler} style={style} />}
     </View>

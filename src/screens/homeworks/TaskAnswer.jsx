@@ -6,13 +6,13 @@ import { useIsFocused } from '@react-navigation/native';
 import Button from '../../components/common/Button';
 import Color from '../../constants';
 import Header from '../../components/navigation/Header';
+import LinkedText from '../../components/tasks/linkedText/LinkedText';
 import Resource from './../../utils/Hateoas/Resource';
 import ShortDate from '../../components/common/ShortDate';
 import Text from '../../components/common/Text';
 import User from './../../components/user/User';
 import { HomeworkContext } from '../../navigation/main/HomeworksNavigationConstants';
 import { TASK_TRY_SCREEN } from './TaskTry';
-import { clearHtmlTags } from '../../utils/TextUtils';
 import { useTranslation } from '../../utils/Internationalization';
 
 const STATUS_APPRECIATED = 'APPRECIATED';
@@ -118,7 +118,7 @@ function TaskAnswer({ navigation, route }) {
       <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 20 }}>
         <Text weight="bold">{task?.name}</Text>
         {task?.description?.length ? (
-          <Text style={{ marginVertical: 10 }}>{clearHtmlTags(task?.description)}</Text>
+          <LinkedText text={task.description} style={{ marginVertical: 10 }} />
         ) : (
           <Text color={Color.silver} style={{ marginVertical: 10 }}>
             {translate('tasks.noDescription')}
