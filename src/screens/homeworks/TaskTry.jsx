@@ -1,13 +1,13 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import {
-  SafeAreaView,
-  View,
-  StyleSheet,
   ActivityIndicator,
-  ScrollView,
+  Animated,
   BackHandler,
   Modal,
-  Animated,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  View,
 } from 'react-native';
 import moment from 'moment';
 
@@ -17,6 +17,7 @@ import Header from '../../components/navigation/Header';
 import IconButton from '../../components/common/IconButton';
 import ProgressBar from '../../components/common/ProgressBar';
 import QuestionAnswer from '../../components/homeworks/questionTypes/QuestionAnswer';
+import QuestionContentsPopup from '../../components/homeworks/QuestionContentsPopup';
 import Resource from '../../utils/Hateoas/Resource';
 import Text from '../../components/common/Text';
 import useIsKeyboardShow from '../../utils/useIsKeyboardShow';
@@ -55,6 +56,7 @@ function TaskTry({ navigation }) {
   const [isConfrimPerformShow, setIsConfrimPerformShow] = useState(false);
   const [isCompeted, setIsCompeted] = useState(false);
   const [completionModalState, setCompletionModalState] = useState(modalStateConst.NONE);
+  const [isContentsPopupShow, setIsContentsPopupShow] = useState(false);
 
   const questionAnim = useRef(new Animated.Value(0)).current;
   const scrollRef = useRef();
@@ -217,6 +219,15 @@ function TaskTry({ navigation }) {
     setQuestions([...prevQuestions]);
   };
 
+  const selectQuestion = index => {
+    if (index >= questions.length) {
+      fetchNextPage();
+    } else {
+      setIsContentsPopupShow(false);
+      changeQuestion(index - questionIndex);
+    }
+  };
+
   // progress
   const addProgress = (count = 1) => {
     setCurrentProgress(currentProgress + count);
@@ -300,7 +311,7 @@ function TaskTry({ navigation }) {
             </Text>
           </View>
         </View>
-        <ProgressBar max={total} value={currentProgress} />
+        <ProgressBar max={total} value={questions.length ? currentProgress : 0} />
       </View>
       <Animated.View style={[{ flexGrow: 1 }, transform]}>
         <ScrollView
@@ -312,7 +323,9 @@ function TaskTry({ navigation }) {
             <>
               {isHasErrors ? (
                 <>
-                  <Text style={{ textAlign: 'center', marginTop: 20, marginVertical: 10}}>{translate('common.error')}</Text>
+                  <Text style={{ textAlign: 'center', marginTop: 20, marginVertical: 10 }}>
+                    {translate('common.error')}
+                  </Text>
                   <Button title={translate('common.refresh')} onPress={refresh} />
                 </>
               ) : (
@@ -347,7 +360,12 @@ function TaskTry({ navigation }) {
             onPress={() => changeQuestion(-1)}
             disabled={questionIndex === 0}
           />
-          <Button iconName="menu-outline" color={Color.silver} style={styles.button} />
+          <Button
+            iconName="menu-outline"
+            color={Color.silver}
+            style={styles.button}
+            onPress={() => setIsContentsPopupShow(true)}
+          />
           {!nextPage.current && questionIndex === total - 1 ? (
             <Button iconName="checkmark-outline" style={styles.button} onPress={confirmPerform} />
           ) : (
@@ -360,6 +378,15 @@ function TaskTry({ navigation }) {
         text={translate('homeworks.try.confirmationPerform')}
         onReject={() => setIsConfrimPerformShow(false)}
         onConfirm={completeAnswer}
+      />
+      <QuestionContentsPopup
+        show={isContentsPopupShow}
+        isFetching={isFetching}
+        questions={questions}
+        current={questionIndex}
+        total={total}
+        onPressQuestion={selectQuestion}
+        onClose={() => setIsContentsPopupShow(false)}
       />
       <Modal animationType="fade" transparent={true} visible={isCompeted}>
         <View style={styles.backdrop}>

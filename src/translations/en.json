@@ -288,6 +288,7 @@
       "yourAnswer": "Your answer",
       "confirmationPerform": "Are you sure you want to complete this task and submit it for review?\nOnce confirmed, you will no longer be able to change your answer.",
       "completion": "Completion",
+      "questions": "Questions",
       "questionSaving": "Question saving",
       "saveError": "An error has occurred",
       "retrySave": "Retry",
@@ -299,7 +300,11 @@
       "appreciated": "Appreciated",
       "notAppreciated": "Not Appreciated",
       "returned": "Returned",
-      "score": "Score"
+      "score": "Score",
+      "unloaded": "unloaded",
+      "loaded": "loaded",
+      "selected": "selected",
+      "answered": "answered"
     },
     "interview": {
       "tasks": "Tasks",

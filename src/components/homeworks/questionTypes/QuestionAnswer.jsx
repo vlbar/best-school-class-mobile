@@ -8,7 +8,7 @@ import TextQuestionAnswer from './TextQuestionAnswer';
 const TEXT_QUESTION = 'TEXT_QUESTION';
 const TEST_QUESTION = 'TEST_QUESTION';
 
-const questionTypeInputs = [
+export const questionTypeInputs = [
   { type: TEXT_QUESTION, component: TextQuestionAnswer },
   { type: TEST_QUESTION, component: TestQuestionAnswer },
 ];
