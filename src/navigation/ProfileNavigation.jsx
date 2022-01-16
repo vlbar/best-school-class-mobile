@@ -30,17 +30,27 @@ function ProfileNavigation() {
     AsyncStorage.setItem('state', state.name);
   }
 
+  const isCanOpen = navigation => {
+    const state = navigation.getState();
+    const tabState = state.routes[state.index].state;
+    if (tabState) {
+      const tabRoute = tabState.routes[tabState.index]
+      return tabRoute.state?.index ? tabRoute.state.index === 0 : true
+    } else return true;
+  };
+
   return (
     <ProfileContext.Provider value={{ user, setUser, state, setState: onStateChange }}>
       <NavigationContainer theme={{ dark: false, colors: { background: Color.white } }}>
         <Drawer.Navigator
           initialRouteName={MAIN_NAVIGATION}
           drawerContent={props => <SidebarContent {...props} />}
-          screenOptions={{
+          screenOptions={({ route, navigation }) => ({
             headerShown: false,
             drawerType: 'slide',
             swipeEdgeWidth: 320,
-          }}
+            swipeEnabled: isCanOpen(navigation),
+          })}
         >
           <Drawer.Screen name={MAIN_NAVIGATION} component={MainNavigation} />
           <Drawer.Screen name={NOTIFICATIONS_SCREEN} component={Notifications} />
