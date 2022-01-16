@@ -37,7 +37,7 @@ const answerLink = (answersId, questironsId) =>
 export const TASK_TRY_SCREEN = 'taskTry';
 function TaskTry({ navigation }) {
   const { translate } = useTranslation();
-  const { answerTry } = useContext(HomeworkContext);
+  const { answerTry, setAnswerTry } = useContext(HomeworkContext);
   const isKeyboardShow = useIsKeyboardShow();
 
   const [questionIndex, setQuestionIndex] = useState(undefined);
@@ -57,6 +57,7 @@ function TaskTry({ navigation }) {
   const [isCompeted, setIsCompeted] = useState(false);
   const [completionModalState, setCompletionModalState] = useState(modalStateConst.NONE);
   const [isContentsPopupShow, setIsContentsPopupShow] = useState(false);
+  const [isOutsideAnswerStatus, setIsOutsideAnswerStatus] = useState(false);
 
   const questionAnim = useRef(new Animated.Value(0)).current;
   const scrollRef = useRef();
@@ -69,13 +70,26 @@ function TaskTry({ navigation }) {
       let currentSeconds = getSecondsLeft();
       callTimerEvents(currentSeconds);
       setSecondsLeft(formatTime(currentSeconds + 60000));
+      checkAnswerStatus();
     }, UPDATE_TIME_LEFT_INTERVAL);
     return () => clearInterval(timeLeftInterval.current);
   }, []);
 
+  const checkAnswerStatus = () => {
+    answerTry
+      .link()
+      .fetch()
+      .then(data => {
+        console.log(data);
+        if (data.answerStatus !== 'NOT_PERFORMED') {
+          completeAnswer();
+          setIsOutsideAnswerStatus(true);
+        }
+      });
+  };
+
   const callTimerEvents = secondsLeft => {
     if (secondsLeft <= 0) {
-      clearInterval(timeLeftInterval.current);
       completeAnswer();
     }
   };
@@ -157,6 +171,7 @@ function TaskTry({ navigation }) {
   // competion
   const completeAnswer = () => {
     setIsCompeted(true);
+    clearInterval(timeLeftInterval.current);
     setCompletionModalState(modalStateConst.SAVING);
     forceQuestionAnswersSave();
   };
@@ -392,9 +407,20 @@ function TaskTry({ navigation }) {
         <View style={styles.backdrop}>
           <View style={styles.centeredView}>
             <View style={styles.modal}>
+              <IconButton
+                name="close-outline"
+                style={styles.close}
+                onPress={() => {
+                  setIsCompeted(false);
+                  navigation.goBack();
+                }}
+              />
               <Text weight="bold" style={styles.header}>
                 {translate('homeworks.try.completion')}
               </Text>
+              {isOutsideAnswerStatus && (
+                <Text style={{ textAlign: 'center' }}>{translate('homeworks.try.statusOutside')}</Text>
+              )}
               {completionModalState === modalStateConst.SAVING && (
                 <View style={styles.centerRow}>
                   <ActivityIndicator color={Color.primary} size={30} />
@@ -493,6 +519,13 @@ const styles = StyleSheet.create({
   header: {
     textAlign: 'center',
     marginVertical: 10,
+  },
+  close: {
+    position: 'absolute',
+    right: 0,
+    top: -2,
+    padding: 10,
+    zIndex: 10,
   },
 });
 
