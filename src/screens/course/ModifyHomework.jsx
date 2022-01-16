@@ -18,6 +18,7 @@ import { GROUP_SELECT_SCREEN } from './GroupSelect';
 import { GroupItem } from '../../components/groups/GroupSelect';
 import { TASK_SCREEN } from './TaskQuestions';
 import { useTranslation } from '../../utils/Internationalization';
+import ShortDate from '../../components/common/ShortDate';
 
 const OPEN_DATE = 'openingDate';
 const CLOSE_DATE = 'endingDate';
@@ -223,42 +224,36 @@ function ModifyHomework({ navigation }) {
         <View style={{ flexGrow: 1 }}>
           <BestValidation.Context validation={homeworkValidation} entity={homework}>
             <View style={[styles.row]}>
-              <Text style={styles.rowText} fontSize={14}>
-                {translate('homeworks.modify.group')}
-              </Text>
+              <Text style={styles.rowText}>{translate('homeworks.modify.group')}</Text>
               <Pressable onPress={selectGroup} style={styles.rowValue}>
                 {homework.group ? (
                   <GroupItem group={homework.group} circleStyle={styles.groupCircle} textStyle={styles.groupName} />
                 ) : (
-                  <Text>{translate('homeworks.modify.noGroup')}</Text>
+                  <Text color={Color.silver}>{translate('homeworks.modify.noGroup')}</Text>
                 )}
               </Pressable>
             </View>
             <BestValidation.ErrorMessage name="group" />
 
             <View style={[styles.row]}>
-              <Text style={styles.rowText} fontSize={14}>
-                {translate('homeworks.modify.openingDate')}
-              </Text>
+              <Text style={styles.rowText}>{translate('homeworks.modify.openingDate')}</Text>
               <Pressable onPress={() => pickDate(OPEN_DATE)} style={styles.rowValue}>
-                <Text>
+               
                   {homework?.openingDate
-                    ? moment(homework.openingDate).format('llll')
-                    : translate('homeworks.modify.noDate')}
-                </Text>
+                    ? <ShortDate date={homework.openingDate} color={Color.silver} /> 
+                    : <Text color={Color.silver}>{translate('homeworks.modify.noDate')}</Text>}
+                
               </Pressable>
             </View>
             <BestValidation.ErrorMessage name="openingDate" />
 
             <View style={[styles.row]}>
-              <Text style={styles.rowText} fontSize={14}>
-                {translate('homeworks.modify.endingDate')}
-              </Text>
+              <Text style={styles.rowText}>{translate('homeworks.modify.endingDate')}</Text>
               <Pressable onPress={() => pickDate(CLOSE_DATE)} style={styles.rowValue}>
-                <Text>
+                <Text color={Color.silver}>
                   {homework?.endingDate
-                    ? moment(homework.endingDate).format('llll')
-                    : translate('homeworks.modify.noDate')}
+                    ? <ShortDate date={homework.endingDate} color={Color.silver} /> 
+                    : <Text color={Color.silver}>{translate('homeworks.modify.noDate')}</Text>}
                 </Text>
               </Pressable>
             </View>
@@ -320,7 +315,6 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   rowText: {
-    color: Color.silver,
     marginVertical: 5,
   },
   rowInput: {
@@ -331,6 +325,7 @@ const styles = StyleSheet.create({
     height: 18,
   },
   groupName: {
+    color: Color.silver,
     fontSize: 17,
     flex: 0,
   },
