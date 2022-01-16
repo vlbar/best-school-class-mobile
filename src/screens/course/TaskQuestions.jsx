@@ -65,7 +65,7 @@ function TaskQuestions({ navigation, route }) {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <Header title={task ? task.name : translate('task.loading')} headerRight={headerContent} onBack={onBack} />
+      <Header title={task ? task.name : translate('tasks.edit.loading')} headerRight={headerContent} onBack={onBack} />
       <QuestionList taskId={id} setIsSaving={setIsSaving} />
     </SafeAreaView>
   );
