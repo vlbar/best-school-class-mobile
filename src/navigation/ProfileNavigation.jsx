@@ -42,9 +42,6 @@ function ProfileNavigation() {
             headerShown: false,
             drawerType: 'slide',
             swipeEdgeWidth: 320,
-            gestureHandlerProps: {
-              activeOffsetX: 100,
-            },
           }}
         >
           <Drawer.Screen name={MAIN_NAVIGATION} component={MainNavigation} />

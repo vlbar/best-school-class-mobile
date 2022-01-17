@@ -7,6 +7,7 @@ import 'moment/locale/ru';
 import 'moment/locale/fr';
 import 'moment/locale/ja';
 import 'moment/locale/de';
+import moment from 'moment';
 
 const defaultLanguage = 'en';
 const translations = [
@@ -59,21 +60,24 @@ export async function configureInternationalization() {
       console.log(err);
       language = getFallbackAvailableLanguage(getSystemLanguage());
     });
-
+  moment.locale(language);
   return initInternationalization(language, resources);
 }
 
 function initInternationalization(language, resources) {
-  return i18n.use(intervalPlural).use(initReactI18next).init({
-    resources,
-    lng: language,
-    fallbackLng: defaultLanguage,
-    compatibilityJSON: 'v3',
-    keySeparator: '.',
-    interpolation: {
-      escapeValue: false,
-    },
-  });
+  return i18n
+    .use(intervalPlural)
+    .use(initReactI18next)
+    .init({
+      resources,
+      lng: language,
+      fallbackLng: defaultLanguage,
+      compatibilityJSON: 'v3',
+      keySeparator: '.',
+      interpolation: {
+        escapeValue: false,
+      },
+    });
 }
 
 function getSystemLanguage() {
@@ -86,10 +90,7 @@ function getSystemLanguage() {
 
 function getFallbackAvailableLanguage(language) {
   let targetLanguage = availableLanguages.find(x => x.name === language);
-  if (!targetLanguage)
-    targetLanguage = availableLanguages.find(
-      x => x.name === language.substring(0, 2),
-    );
+  if (!targetLanguage) targetLanguage = availableLanguages.find(x => x.name === language.substring(0, 2));
   if (!targetLanguage) return defaultLanguage;
   else return targetLanguage.name;
 }
@@ -97,9 +98,7 @@ function getFallbackAvailableLanguage(language) {
 export function getCurrentLanguage() {
   const { i18n } = useI18nTranslations();
   let languageName = i18n.language;
-  let displayName = availableLanguages.find(
-    x => x.name === languageName,
-  ).displayName;
+  let displayName = availableLanguages.find(x => x.name === languageName).displayName;
 
   return {
     languageName,
@@ -109,6 +108,7 @@ export function getCurrentLanguage() {
 
 export function changeLanguage(lng) {
   i18n.changeLanguage(lng);
+  moment.locale(lng);
   AsyncStorage.setItem('@language', lng).catch(err => console.log(err));
 }
 

@@ -121,7 +121,7 @@
     "emptyJoinAdviceContinue": "his group",
     "or": "or",
     "create": "Create",
-    "emptyCreateAdviceContinue" : "your own group",
+    "emptyCreateAdviceContinue": "your own group",
     "groupCreation": "Adding a group",
     "inviteQuestion": "Do you have an invitation?",
     "invitePlaceholder": "Enter your invitation code...",
@@ -163,7 +163,7 @@
       "teachers": "Teachers",
       "teachersSearchPlaceholder": "Enter teacher name...",
       "tasks": "Tasks",
-      "accessSettings": "Access settings", 
+      "accessSettings": "Access settings",
       "memberSettings": "Members settings",
       "studentsLimit": "Limiting the number of members",
       "groupOpened": "Group open",
@@ -179,7 +179,7 @@
       "leave": "Leave",
       "kick": "Kick",
       "leaveConfirmation": "Are you sure you want to leave the group?",
-      "kickConfirmation" : "Are you sure you want to kick the member?"
+      "kickConfirmation": "Are you sure you want to kick the member?"
     }
   },
   "course": {
@@ -198,9 +198,11 @@
     "delete-course-confirmation": "Are you sure you want to delete the selected courses?"
   },
   "tasks": {
+    "task": "Task",
     "title": "Tasks",
     "search": "Enter a task name",
     "empty": "Tasks list is empty",
+    "noDescription": "No description",
     "course-not-selected": "Select a course to display its tasks",
     "add": {
       "title": "Add task",
@@ -232,26 +234,7 @@
       "duration": "Duration",
       "taskType": "Task type",
       "noTaskType": "Not selected",
-      "validation": {
-        "name": {
-          "required": "Task name has not been entered",
-          "min": "Task name must contain at least {{min}} letters",
-          "max": "Task name too long"
-        },
-        "description": {
-          "max": "Task description too long"
-        },
-        "maxScore": {
-          "required": "Max score has not been entered",
-          "positive": "Max score must be a positive number",
-          "max": "Too many number of score"
-        },
-        "duration": {
-          "required": "Duration has not been entered",
-          "positive": "Duration must be a positive number",
-          "max": "Too many number of duration"
-        }
-      }
+      "loading": "Loading task..."
     },
     "question": {
       "title": "Question",
@@ -339,7 +322,7 @@
     "details": {
       "title": "Homework",
       "info": {
-        "title" : "Information",
+        "title": "Information",
         "group": "Group",
         "appointed": "Appointed",
         "deadline": "Deadline"
@@ -349,6 +332,34 @@
         "empty": "Looks like no one is here yet.\nThis is possible if there are no students in the group.\nFirst you need to invite students to the group!",
         "emptySearch": "No one was found for the specified search criteria :("
       }
+    },
+    "try": {
+      "infinity": "Infinity",
+      "start": "Start",
+      "continue": "Continue",
+      "questionCount": "Question {{number}}",
+      "timeLeft": "Time left",
+      "yourAnswer": "Your answer",
+      "confirmationPerform": "Are you sure you want to complete this task and submit it for review?\nOnce confirmed, you will no longer be able to change your answer.",
+      "completion": "Completion",
+      "questions": "Questions",
+      "questionSaving": "Question saving",
+      "saveError": "An error has occurred",
+      "retrySave": "Retry",
+      "saved": "Your answers have been saved",
+      "goBack": "Exit",
+      "started": "Started",
+      "finished": "Finished",
+      "runtime": "Runtime",
+      "appreciated": "Appreciated",
+      "notAppreciated": "Not Appreciated",
+      "returned": "Returned",
+      "score": "Score",
+      "unloaded": "unloaded",
+      "loaded": "loaded",
+      "selected": "selected",
+      "answered": "answered",
+      "statusOutside": "Answer status changed outside"
     },
     "interview": {
       "tasks": "Tasks",
@@ -400,6 +411,9 @@
   "date": {
     "today": "Today",
     "tomorrow": "Tomorrow",
-    "yesterday": "Yesterday" 
+    "yesterday": "Yesterday",
+    "cancel": "Cancel",
+    "error": "An error has occurred",
+    "refresh": "Refresh"
   }
 }

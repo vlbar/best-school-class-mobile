@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useMemo, useState } from 'react';
-import { FlatList, Modal, StyleSheet, View } from 'react-native';
+import { FlatList, TouchableNativeFeedback, Modal, StyleSheet, View } from 'react-native';
 import Bandage from '../../components/common/Bandage';
 import BottomPopup from '../../components/common/BottomPopup';
 import Container from '../../components/common/Container';
@@ -20,15 +20,17 @@ import { HomeworkContext } from '../../navigation/main/HomeworksNavigationConsta
 import { ProfileContext } from '../../navigation/NavigationConstants';
 import Link from '../../utils/Hateoas/Link';
 import { useTranslation } from '../../utils/Internationalization';
+import { TASK_ANSWER_SCREEN } from './TaskAnswer';
 
 const HOMEWORK_URL = 'v1/homeworks';
 const fetchLink = new Link(HOMEWORK_URL);
 
 export const INTERVIEW_SCREEN = 'interview';
-export default function Interview({ route }) {
+export default function Interview({ navigation, route }) {
   const { translate } = useTranslation();
   const { user, state } = useContext(ProfileContext);
-  const { interviews, setInterviews, tasks, setTasks, homework, setHomework } = useContext(HomeworkContext);
+  const { interviews, setInterviews, tasks, setTasks, homework, setHomework, answers, setAnswers } =
+    useContext(HomeworkContext);
 
   const [interview, setInterview] = useState(undefined);
   const [loading, setLoading] = useState(true);
@@ -44,8 +46,9 @@ export default function Interview({ route }) {
 
   useEffect(() => {
     return () => {
-      if (state == types.STUDENT) {
+      if (state === types.STUDENT) {
         setTasks([]);
+        setAnswers([]);
         setHomework(null);
       }
     };
@@ -84,6 +87,17 @@ export default function Interview({ route }) {
       setTasks(homework.tasks);
     }
   }, [homework]);
+
+  useEffect(() => {
+    if (interview) {
+      setInterviews([interview]);
+      interview
+        .link('interviewMessages')
+        ?.fill('type', 'ANSWER')
+        .fetch()
+        .then(page => setAnswers(page.list('messages') ?? []));
+    }
+  }, [interview]);
 
   function handleMessage(message) {
     if (interview == null) {
@@ -127,22 +141,32 @@ export default function Interview({ route }) {
               data={tasks}
               renderItem={({ item: task }) => {
                 return (
-                  <View key={task.id}>
-                    <View style={styles.titleRow}>
-                      <Text weight="medium" style={styles.title} numberOfLines={1}>
-                        {task.name}
-                      </Text>
-                      {task.taskType && (
-                        <View style={styles.badge}>
-                          <Bandage color={getTaskTypeColor(task.taskType.id)} title={task.taskType.name} />
-                        </View>
-                      )}
-                    </View>
+                  <TouchableNativeFeedback
+                    key={answer.id}
+                    onPress={() =>
+                      state == types.STUDENT &&
+                      navigation.navigate(TASK_ANSWER_SCREEN, { interviewId: interview.id, taskId: task.id })
+                    }
+                  >
+                    <View>
+                      <View style={styles.titleRow}>
+                        <Text weight="medium" style={styles.title} numberOfLines={1}>
+                          {task?.name}
+                        </Text>
+                        {task?.taskType && (
+                          <View style={styles.badge}>
+                            <Bandage color={getTaskTypeColor(task?.taskType.id)} title={task?.taskType.name} />
+                          </View>
+                        )}
+                      </View>
 
-                    <Text style={styles.description} numberOfLines={1}>
-                      {task.description?.length ? task.description : translate('homeworks.interview.taskNoDesctiption')}
-                    </Text>
-                  </View>
+                      <Text style={styles.description} numberOfLines={1}>
+                        {task?.description?.length
+                          ? task?.description
+                          : translate('homeworks.interview.taskNoDesctiption')}
+                      </Text>
+                    </View>
+                  </TouchableNativeFeedback>
                 );
               }}
             />
