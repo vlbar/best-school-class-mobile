@@ -2,6 +2,8 @@ import i18n from 'i18next';
 import { NativeModules, Platform } from 'react-native';
 import { initReactI18next, useTranslation as useI18nTranslations } from 'react-i18next';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+
+import moment from 'moment';
 import 'moment/locale/ru';
 import 'moment/locale/fr';
 import 'moment/locale/ja';
@@ -59,6 +61,7 @@ export async function configureInternationalization() {
       language = getFallbackAvailableLanguage(getSystemLanguage());
     });
 
+  moment.locale(language);
   return initInternationalization(language, resources);
 }
 
@@ -95,18 +98,22 @@ function getFallbackAvailableLanguage(language) {
 
 export function getCurrentLanguage() {
   const { i18n } = useI18nTranslations();
-  let languageName = i18n.language;
-  let displayName = availableLanguages.find(
-    x => x.name === languageName,
-  ).displayName;
+  const languageCode = i18n.language;
+  const languageName = languageCode;
+  const displayName = availableLanguages.find(x => x.name === languageName).displayName;
 
   return {
+    /**
+     * @deprecated use languageCode
+     */
     languageName,
+    languageCode,
     displayName,
   };
 }
 
 export function changeLanguage(lng) {
+  moment.locale(lng);
   i18n.changeLanguage(lng);
   AsyncStorage.setItem('@language', lng).catch(err => console.log(err));
 }
@@ -116,13 +123,18 @@ export function useTranslation() {
   return { translate: t, options: i18n };
 }
 
-/*
-  Examples of using:
-  translate('jabroni.cringe');
-  translate('jabroni.cringe', 'Jabromi Cringme');
-  translate('jabroni.cringe', {name: 'Master'});
-  translate('jabroni.cringe', 'Jabromi Cringme is {{name}}', {name: 'Slave'});
-*/
+/**
+ * @param {string} key
+ * @param {(string|object)} [defaultValueOrOptions]
+ * @param {object} [options]
+ * @return string
+ * 
+ * @example
+ * translate('jabroni.cringe');
+ * translate('jabroni.cringe', 'Jabromi Cringme');
+ * translate('jabroni.cringe', {name: 'Master'});
+ * translate('jabroni.cringe', 'Jabromi Cringme is {{name}}', {name: 'Slave'});
+ */
 export function translate(key, defaultValueOrOptions, options) {
   if (!i18n.isInitialized) return key;
   let defaultValue = undefined;
