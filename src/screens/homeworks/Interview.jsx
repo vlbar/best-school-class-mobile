@@ -1,10 +1,15 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
+import { FlatList, Modal, StyleSheet, View } from 'react-native';
 import Bandage from '../../components/common/Bandage';
+import BottomPopup from '../../components/common/BottomPopup';
 import Container from '../../components/common/Container';
 import HorizontalMenu from '../../components/common/HorizontalMenu';
+import IconButton from '../../components/common/IconButton';
 import Text from '../../components/common/Text';
+import HomeworkInfo from '../../components/homeworks/HomeworkInfo';
+import MarkPanel, { MarkForm } from '../../components/interviews/MarkPanel';
 import MessageList from '../../components/interviews/MessageList';
+import { StatusBadge } from '../../components/interviews/StatusBadge';
 import Header from '../../components/navigation/Header';
 import { types } from '../../components/state/State';
 import { getTaskTypeColor } from '../../components/tasks/TaskList';
@@ -23,8 +28,17 @@ export const INTERVIEW_SCREEN = 'interview';
 export default function Interview({ route }) {
   const { translate } = useTranslation();
   const { user, state } = useContext(ProfileContext);
-  const { interviews, tasks, setTasks, homework, setHomework } = useContext(HomeworkContext);
+  const { interviews, setInterviews, tasks, setTasks, homework, setHomework } = useContext(HomeworkContext);
+
   const [interview, setInterview] = useState(undefined);
+  const [loading, setLoading] = useState(true);
+  const [showMarkPopup, setShowMarkPopup] = useState(false);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
+
+  const maxWorkScore = useMemo(() => {
+    if (tasks.length == 0) return null;
+    return tasks.map(task => task.maxScore).reduce((a, b) => a + b, 0);
+  }, [tasks]);
 
   const interviewId = route.params.interviewId;
 
@@ -38,16 +52,27 @@ export default function Interview({ route }) {
   }, []);
 
   useEffect(() => {
-    if (state == types.STUDENT) {
+    if (state === types.STUDENT) {
       const homeworkId = route.params.homeworkId;
       fetchLink.withPathTale(homeworkId).fetch().then(setHomework);
     } else {
       const interviewId = route.params.interviewId;
-      const savedInterview = interviews.find(i => i.id === interviewId);
+      const savedInterview = interviews.find(i => i.interviewer.id === interviewId);
       if (savedInterview) setInterview(savedInterview);
-      else homework.link('interviews').withPathTale(interviewId).fetch(setInterview);
+      if (!savedInterview?.full) {
+        homework
+          .link('interviews')
+          .withPathTale(interviewId)
+          .fetch(setLoading)
+          .then(interview => {
+            let newInterviews = [...interviews];
+            const savedIndex = interviews.findIndex(i => i.interviewer.id === interviewId);
+            newInterviews[savedIndex] = { ...interview, full: true };
+            setInterviews(newInterviews);
+          });
+      }
     }
-  }, [route]);
+  }, [route, interviews]);
 
   useEffect(() => {
     if (homework && state == types.STUDENT) {
@@ -68,9 +93,26 @@ export default function Interview({ route }) {
     }
   }
 
+  function handleMark(mark) {
+    let newInterviews = [...interviews];
+    const savedIndex = interviews.findIndex(i => i == interview);
+    newInterviews[savedIndex] = { ...interview, ...mark, evaluator: user };
+    setInterviews(newInterviews);
+    setShowMarkPopup(false);
+  }
+
   return (
     <>
-      <Header title={state == types.STUDENT && translate('homeworks.details.title')}>
+      <Header
+        title={state == types.STUDENT && translate('homeworks.details.title')}
+        headerRight={
+          state != types.STUDENT ? (
+            <IconButton name="ribbon-outline" color={Color.black} onPress={() => setShowMarkPopup(true)} />
+          ) : (
+            <IconButton name="document-text-outline" color={Color.black} onPress={() => setShowDetailsModal(true)} />
+          )
+        }
+      >
         {interview && state != types.STUDENT && (
           <>
             <Avatar email={interview.interviewer.email} size={30}></Avatar>
@@ -81,8 +123,9 @@ export default function Interview({ route }) {
       <Container>
         <HorizontalMenu>
           <HorizontalMenu.Item title={translate('homeworks.interview.tasks')}>
-            {tasks &&
-              tasks.map(task => {
+            <FlatList
+              data={tasks}
+              renderItem={({ item: task }) => {
                 return (
                   <View key={task.id}>
                     <View style={styles.titleRow}>
@@ -101,7 +144,19 @@ export default function Interview({ route }) {
                     </Text>
                   </View>
                 );
-              })}
+              }}
+            />
+
+            <View style={styles.markContainer}>
+              <MarkPanel
+                result={interview?.result}
+                evaluator={interview?.evaluator}
+                total={0}
+                max={maxWorkScore}
+                withActions={state != types.STUDENT}
+                onMarkPress={() => setShowMarkPopup(true)}
+              />
+            </View>
           </HorizontalMenu.Item>
           <HorizontalMenu.Item title={translate('homeworks.interview.messages')}>
             {interview != null && (
@@ -110,6 +165,7 @@ export default function Interview({ route }) {
                 messageCreateLink={interview?.link('interviewMessages')}
                 currentUser={user}
                 tasks={tasks}
+                closed={interview?.closed}
                 onMessageCreate={handleMessage}
               />
             )}
@@ -127,6 +183,36 @@ export default function Interview({ route }) {
           </HorizontalMenu.Item>
         </HorizontalMenu>
       </Container>
+      {showMarkPopup && (
+        <BottomPopup onClose={() => setShowMarkPopup(false)} title={translate('homeworks.interview.mark.title')}>
+          <MarkForm
+            total={interview?.result}
+            max={maxWorkScore}
+            onMark={handleMark}
+            markLink={interview?.link('changeMark')}
+          />
+        </BottomPopup>
+      )}
+      {state == types.STUDENT && homework && (
+        <Modal
+          animationType="fade"
+          transparent={true}
+          visible={showDetailsModal}
+          onRequestClose={() => setShowDetailsModal(false)}
+        >
+          <View style={styles.centeredView}>
+            <View style={styles.modalView}>
+              <View style={styles.modalHeader}>
+                <Text weight="medium" style={styles.modalTitle}>
+                  {translate('homeworks.info')}
+                </Text>
+                <IconButton name="close" onPress={() => setShowDetailsModal(false)} style={styles.modalClose} />
+              </View>
+              <HomeworkInfo homework={homework} />
+            </View>
+          </View>
+        </Modal>
+      )}
     </>
   );
 }
@@ -153,5 +239,39 @@ const styles = StyleSheet.create({
   description: {
     color: Color.silver,
     fontSize: 14,
+  },
+  markContainer: {
+    marginBottom: 10,
+  },
+
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#000000AA',
+  },
+  modalView: {
+    minHeight: 200,
+    width: '80%',
+    marginHorizontal: 40,
+    backgroundColor: Color.white,
+    borderRadius: 10,
+    paddingHorizontal: 20,
+    alignItems: 'center',
+  },
+  modalTitle: {
+    textAlign: 'center',
+    paddingVertical: 10,
+    color: Color.black,
+    flex: 1,
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  modalClose: {
+    position: 'absolute',
+    right: 0,
+    padding: 0,
   },
 });
