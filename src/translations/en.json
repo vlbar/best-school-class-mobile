@@ -321,6 +321,7 @@
   },
   "homeworks": {
     "title": "Tasks",
+    "info": "Details",
     "homework": "Homework",
     "from": "from {{date}}",
     "until": "until {{date}}",
@@ -352,11 +353,21 @@
     "interview": {
       "tasks": "Tasks",
       "messages": "Messages",
+      "closed": "The interview is closed.\nIt is no longer possible to write messages.",
       "noMessages": "Looks like no one has posted here yet.\nBe the first to start!",
       "messageEdit": "Editing a post",
       "messagePlaceholder": "Enter your message...",
       "messageDeleted": "Message deleted",
       "taskMessage": "Task answer",
+      "markAction": "Evaluation",
+      "result": "Evaluated",
+      "remarkAction": "Re-evaluate",
+      "mark": {
+        "title": "Work Evaluation",
+        "result": "Final score",
+        "closeAction": "Close interview"
+      },
+      "total": "Total",
       "deleteConfirmation": "Are you sure you want to delete the message? This action cannot be undone...",
       "taskNoDesctiption": "No description.",
       "actions": {
