@@ -1,13 +1,10 @@
-import React, { createContext, useEffect, useRef, useState } from 'react';
-import { KeyboardAvoidingView, Platform, StyleSheet, TextInput, View } from 'react-native';
+import React, { createContext, useRef, useState } from 'react';
+import { StyleSheet, View } from 'react-native';
 import Color from '../../constants';
-import { getI } from '../../utils/Internationalization';
-import IconButton from '../common/IconButton';
+import { useTranslation } from '../../utils/Internationalization';
 import Text from '../common/Text';
-import UserName, { getName } from '../user/UserName';
 import MessageGroupContainer from './MessageGroupContainer';
 import MessageInput from './MessageInput';
-import ReplyMessage from './ReplyMessage';
 
 const BLOCK_TIME_RANGE_IN_MILLIS = 1000 * 60 * 5;
 
@@ -22,10 +19,11 @@ export default function MessageList({
   onMessageCreate,
   tasks,
 }) {
+  const { translate } = useTranslation();
+
   const [replyMessage, setReply] = useState(null);
   const [editingMessage, setEdit] = useState(null);
   const [ping, setPing] = useState(null);
-  const [disabled, setDisabled] = useState(closed);
 
   const listRef = useRef(null);
 
@@ -35,20 +33,24 @@ export default function MessageList({
   }
 
   return (
-    <MessageContext.Provider
-      value={{ replyMessage, setReply, editingMessage, setEdit, disabled, setDisabled, ping, setPing }}
-    >
+    <MessageContext.Provider value={{ replyMessage, setReply, editingMessage, setEdit, ping, setPing }}>
       <View style={styles.container}>
         <MessageGroupContainer
           fetchLink={fetchLink}
           onAnswer={onAnswer}
+          disabled={closed}
           tasks={tasks}
           currentUser={currentUser}
           style={styles.messageContainer}
           blockTimeRange={BLOCK_TIME_RANGE_IN_MILLIS}
           listViewRef={listRef}
         />
-        <MessageInput onSubmit={handleMessage} messageCreateLink={messageCreateLink} />
+        {!closed && <MessageInput onSubmit={handleMessage} messageCreateLink={messageCreateLink} />}
+        {closed && (
+          <View style={styles.closedContainer}>
+            <Text style={styles.closedText}>{translate('homeworks.interview.closed')}</Text>
+          </View>
+        )}
       </View>
     </MessageContext.Provider>
   );
@@ -68,7 +70,7 @@ const styles = StyleSheet.create({
   },
   messageInputContainer: {
     flexDirection: 'row',
-    marginBottom: 10,
+    marginBottom: 20,
     marginTop: 10,
   },
   messageInput: {
@@ -88,5 +90,20 @@ const styles = StyleSheet.create({
   replyContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+  },
+  closedContainer: {
+    backgroundColor: '#E6E6E6',
+    
+    padding: 8,
+    marginHorizontal: -12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    justifyContent: 'space-between',
+    marginTop: 10,
+  },
+  closedText: {
+    color: Color.gray,
+    fontSize: 15,
+    textAlign: 'center',
   },
 });
