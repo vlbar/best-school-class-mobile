@@ -13,6 +13,7 @@ import IconButton from '../../components/common/IconButton';
 import Text from '../../components/common/Text';
 import { GroupItem } from '../../components/groups/GroupSelect';
 import HomeworkDate from '../../components/homeworks/HomeworkDate';
+import HomeworkInfo from '../../components/homeworks/HomeworkInfo';
 import InterviewList from '../../components/interviews/InterviewList';
 import Header from '../../components/navigation/Header';
 import UserName from '../../components/user/UserName';
@@ -29,7 +30,6 @@ export default function HomeworkDetails({ route, navigation }) {
   const { translate } = useTranslation();
   const [isInfoShow, setIsInfoShow] = useState(false);
   const { homework, setHomework, interviews, setInterviews, setTasks } = useContext(HomeworkContext);
-  const [creator, setCreator] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -44,13 +44,9 @@ export default function HomeworkDetails({ route, navigation }) {
     fetchHomework(new Link(`${HOMEWORK_URL}/${route.params.homeworkId}`));
   }, [route]);
 
-  useEffect(() => {
-    if (homework) homework.link('creator').fetch(setLoading).then(setCreator);
-  }, [homework]);
-
   function fetchHomework(link) {
     link
-      .fetch()
+      .fetch(setLoading)
       .then(homework => {
         setHomework(homework);
         setTasks(homework.tasks);
@@ -66,7 +62,7 @@ export default function HomeworkDetails({ route, navigation }) {
     navigation.navigate({
       name: INTERVIEW_SCREEN,
       params: {
-        interviewId: interview.id,
+        interviewId: interview.interviewer.id,
       },
     });
   }
@@ -79,7 +75,7 @@ export default function HomeworkDetails({ route, navigation }) {
           <ActivityIndicator color={Color.primary} size={50} />
         </View>
       )}
-      {!loading && homework && creator && (
+      {!loading && homework && (
         <Container>
           <InterviewList
             fetchLink={homework.link('interviews')}
@@ -96,25 +92,7 @@ export default function HomeworkDetails({ route, navigation }) {
                   </View>
                 </TouchableOpacity>
                 <Collapsible collapsed={!isInfoShow}>
-                  <View style={styles.row}>
-                    <Text>{translate('homeworks.details.info.group')}</Text>
-                    <View style={styles.infoContainer}>
-                      <GroupItem group={homework.group} textStyle={[styles.infoText, { flex: 0 }]} />
-                    </View>
-                  </View>
-                  <View style={styles.row}>
-                    <Text>{translate('homeworks.details.info.appointed')}</Text>
-                    <View style={styles.infoContainer}>
-                      <UserName user={creator} style={styles.infoText} numberOfLines={1} />
-                    </View>
-                  </View>
-                  <View style={styles.row}>
-                    <Text>{translate('homeworks.details.info.deadline')}</Text>
-                    <View style={[styles.row, styles.infoContainer, { flexWrap: 'wrap' }]}>
-                      <HomeworkDate style={styles.infoText} date={homework.openingDate} />
-                      <HomeworkDate style={styles.infoText} until date={homework.endingDate} />
-                    </View>
-                  </View>
+                  <HomeworkInfo homework={homework} />
                 </Collapsible>
                 <View style={styles.row}>
                   <Text style={styles.headerText}>{translate('homeworks.details.members.title')}</Text>
@@ -138,20 +116,6 @@ const styles = StyleSheet.create({
   },
   headerText: {
     fontSize: 15,
-  },
-
-  infoContainer: {
-    marginLeft: 40,
-    flex: 1,
-    justifyContent: 'flex-end',
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  infoText: {
-    fontSize: 14,
-    color: Color.silver,
-    marginLeft: 3,
-    textAlign: 'right',
   },
   loading: {
     flexGrow: 1,

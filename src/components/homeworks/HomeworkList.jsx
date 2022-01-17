@@ -59,7 +59,7 @@ export default function HomeworkList({ active, role, order, containerStyles, onS
       onEndReached={onNext}
       onRefresh={onRefresh}
       refreshing={refreshing}
-      onEndReachedThreshold={0.2}
+      onEndReachedThreshold={0.7}
       data={homeworks}
       renderItem={({ item }) => {
         return (
