@@ -1,8 +1,9 @@
 import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
-import { StyleSheet, FlatList, View, TouchableOpacity, ActivityIndicator, TouchableNativeFeedback } from 'react-native';
+import { StyleSheet, View, TouchableOpacity, ActivityIndicator, TouchableNativeFeedback } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 import Color from '../../constants';
+import DraggableFlatList from 'react-native-draggable-flatlist';
 import IconButton from './../common/IconButton';
 import Resource from '../../utils/Hateoas/Resource';
 import SearchBar from '../common/SearchBar';
@@ -139,13 +140,35 @@ function CourseList(
     setSelectedCourses([]);
   };
 
+  const moveCourse = ({ from, to }) => {
+    closeActionMenu();
+    const toPosition = courses[to].position;
+    let movedCourse = courses[from];
+
+    let movedCourses = courses;
+    movedCourses.filter(x => x.position >= toPosition).forEach(x => x.position++)
+
+    movedCourses = arrayMove(movedCourses, from, to);
+    movedCourse.position = toPosition;
+    setCourses([...movedCourses]);
+
+    movedCourse.link().put(movedCourse)
+        .then(res => { })
+        .catch(error => console.log('Не удалось переместить курс, возможно изменения не сохранятся.', error))
+  }
+
   // render
-  const renderCourseItem = ({ item }) => {
+  const renderCourseItem = ({ item, drag, isActive }) => {
     const isSelected = selectedCourses.find(x => x.id === item.id) !== undefined;
     return (
       <TouchableNativeFeedback
         onPress={() => (isActionMenuShow ? courseLongPress(item) : onCoursePress?.(item))}
-        onLongPress={() => !isActionMenuShow && courseLongPress(item)}
+        onLongPress={() => {
+          if (!isActionMenuShow) {
+            courseLongPress(item);
+            drag();
+          }
+        }}
       >
         <View style={[styles.course, isSelected && styles.selected]}>
           <View style={styles.arrowHolder}>
@@ -238,7 +261,7 @@ function CourseList(
   return (
     <View style={styles.listContainer}>
       {isActionMenuShow && <View style={styles.actionHeader}>{actionMenu}</View>}
-      <FlatList
+      <DraggableFlatList
         data={courses}
         renderItem={renderCourseItem}
         keyExtractor={item => item.id}
@@ -253,11 +276,23 @@ function CourseList(
         onRefresh={refreshPage}
         onEndReached={fetchNextPage}
         onEndReachedThreshold={0.7}
-        style={[styles.coursesList]}
-        contentContainerStyle={{ flexGrow: 1 }}
+        onDragEnd={moveCourse}
+        //style={[styles.coursesList]}
+        //contentContainerStyle={{ flexGrow: 1 }}
       />
     </View>
   );
+}
+
+function arrayMove(arr, oldIndex, newIndex) {
+  if (newIndex >= arr.length) {
+    var k = newIndex - arr.length + 1;
+    while (k--) {
+      arr.push(undefined);
+    }
+  }
+  arr.splice(newIndex, 0, arr.splice(oldIndex, 1)[0]);
+  return arr;
 }
 
 const parseEmptyMessage = message => {
