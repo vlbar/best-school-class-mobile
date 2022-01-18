@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { StyleSheet, Animated, BackHandler, TouchableNativeFeedback, View, Alert, Pressable } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { useNavigation } from '@react-navigation/native';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
 
 import AddCoursePopup from './AddCoursePopup';
 import AddTaskPopup from '../tasks/AddTaskPopup';
@@ -37,12 +37,12 @@ function CourseManager({ onPushSelectedTasks }) {
   const { contextTask } = useContext(CourseNavigationContext);
   const taskListRef = useRef();
 
+  const isFocused = useIsFocused();
+
   useEffect(() => {
-    BackHandler.addEventListener('hardwareBackPress', onBackPress);
-    return () => {
-      BackHandler.removeEventListener('hardwareBackPress', onBackPress);
-    };
-  }, []);
+    if (isFocused) BackHandler.addEventListener('hardwareBackPress', onBackPress);
+    else BackHandler.removeEventListener('hardwareBackPress', onBackPress);
+  }, [isFocused]);
 
   // travel
   function onCourseSelect(course) {
