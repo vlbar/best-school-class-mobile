@@ -350,6 +350,12 @@
       "delete": "Delete",
       "delete-confirmation": "Are you sure you want to delete this task type?",
       "modifyDefaultNotAllowed": "Modify the default task type is not allowed"
+    },
+    "name": {
+      "Контрольная": "Proof",
+      "Проверочная": "Check",
+      "Самостоятельная": "Independent",
+      "На закрепление": "Consolidation"
     }
   },
   "common": {

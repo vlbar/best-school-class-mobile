@@ -140,7 +140,7 @@ function TaskFilterPopup({ show, onApply, onClose, onAddTaskType, isNeedRefesh =
                   onLongPress={() => onTaskTypeLongPress(taskType)}
                 >
                   <Bandage
-                    title={taskType.name}
+                    title={taskType.creatorId ? taskType.name : translate('task-types.name.' + taskType.name)}
                     size={18}
                     color={selectedTypes.includes(taskType) ? getTaskTypeColor(taskType.id) : Color.veryLightGray}
                   >
