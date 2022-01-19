@@ -3,6 +3,7 @@ import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import NumericInput from 'react-native-numeric-input';
 import ProgressBar from 'react-native-progress/Bar';
 import Color from '../../constants';
+import Link from '../../utils/Hateoas/Link';
 import { useTranslation } from '../../utils/Internationalization';
 import Button from '../common/Button';
 import Check from '../common/Check';
@@ -73,7 +74,7 @@ export default function MarkPanel({ total, result, evaluator, max, withActions, 
   );
 }
 
-export function MarkForm({ total, max, onMark, markLink }) {
+export function MarkForm({ total, max, onMark, markHref }) {
   const { translate } = useTranslation();
 
   const [result, setResult] = useState(total);
@@ -82,7 +83,7 @@ export function MarkForm({ total, max, onMark, markLink }) {
 
   function handleMark() {
     const mark = { result, closed };
-    markLink.put(mark, setLoading).then(() => {
+    new Link(markHref).put(mark, setLoading).then(() => {
       onMark?.(mark);
     });
   }

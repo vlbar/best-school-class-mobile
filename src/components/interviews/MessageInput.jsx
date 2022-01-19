@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { StyleSheet, TextInput, View } from 'react-native';
 import Color from '../../constants';
+import Link from '../../utils/Hateoas/Link';
 import { getI, useTranslation } from '../../utils/Internationalization';
 import IconButton from '../common/IconButton';
 import Text from '../common/Text';
@@ -8,7 +9,7 @@ import { getName } from '../user/UserName';
 import { MessageContext } from './MessageList';
 import ReplyMessage from './ReplyMessage';
 
-export default function MessageInput({ onSubmit, messageCreateLink }) {
+export default function MessageInput({ onSubmit, messageCreateHref }) {
   const { translate } = useTranslation();
   const [message, setMessage] = useState('');
   const { replyMessage, setReply, ping, setPing, editingMessage, setEdit } = useContext(MessageContext);
@@ -48,10 +49,9 @@ export default function MessageInput({ onSubmit, messageCreateLink }) {
 
     let request;
     if (editingMessage) request = editingMessage.link().put(msg);
-    else request = messageCreateLink?.post(msg);
+    else request = new Link(messageCreateHref).post(msg).then(onSubmit);
 
-    request.then(message => {
-      onSubmit(message ?? msg);
+    request.then(() => {
       reset(!!editingMessage);
     });
   }
@@ -82,7 +82,9 @@ export default function MessageInput({ onSubmit, messageCreateLink }) {
               borderLeftColor: Color.lightPrimary,
             }}
           >
-            <Text style={{ color: Color.lightPrimary, fontWeight: 'bold' }}>{translate("homeworks.interview.messageEdit")}</Text>
+            <Text style={{ color: Color.lightPrimary, fontWeight: 'bold' }}>
+              {translate('homeworks.interview.messageEdit')}
+            </Text>
             <Text numberOfLines={1}>{editingMessage.content}</Text>
           </View>
           <IconButton

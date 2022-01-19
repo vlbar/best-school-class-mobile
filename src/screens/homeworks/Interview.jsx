@@ -44,13 +44,28 @@ export default function Interview({ navigation, route }) {
 
   const interviewId = route.params.interviewId;
 
+  const memoComp = useMemo(() => {
+    if (!interview) return;
+    return (
+      <MessageList
+        fetchHref={interview?.link('interviewMessages').originHref}
+        messageCreateHref={interview?.link('interviewMessages').originHref}
+        currentUser={user}
+        tasks={tasks}
+        onAnswer={handleAnswer}
+        closed={interview?.closed}
+        onMessageCreate={handleMessage}
+      />
+    );
+  }, [interview, user, tasks]);
+
   useEffect(() => {
     return () => {
       if (state === types.STUDENT) {
         setTasks([]);
-        setAnswers([]);
         setHomework(null);
       }
+      setAnswers([]);
     };
   }, []);
 
@@ -90,7 +105,7 @@ export default function Interview({ navigation, route }) {
 
   useEffect(() => {
     if (interview) {
-      setInterviews([interview]);
+      if (state == types.STUDENT) setInterviews([interview]);
       interview
         .link('interviewMessages')
         ?.fill('type', 'ANSWER')
@@ -113,6 +128,10 @@ export default function Interview({ navigation, route }) {
     newInterviews[savedIndex] = { ...interview, ...mark, evaluator: user };
     setInterviews(newInterviews);
     setShowMarkPopup(false);
+  }
+
+  function handleAnswer(answer) {
+    setAnswers([...answers.filter(a => a.taskId !== answer.taskId), answer]);
   }
 
   return (
@@ -140,16 +159,16 @@ export default function Interview({ navigation, route }) {
             <FlatList
               data={tasks}
               renderItem={({ item: task }) => {
+                const answer = answers.find(a => a.taskId == task.id);
                 return (
                   <TouchableNativeFeedback
-                    key={answer.id}
                     onPress={() =>
-                      state == types.STUDENT &&
                       navigation.navigate(TASK_ANSWER_SCREEN, { interviewId: interview.id, taskId: task.id })
                     }
                   >
-                    <View>
+                    <View style={{ paddingVertical: 10 }}>
                       <View style={styles.titleRow}>
+                        {answer && <StatusBadge status={answer.answerStatus} size={25} />}
                         <Text weight="medium" style={styles.title} numberOfLines={1}>
                           {task?.name}
                         </Text>
@@ -183,22 +202,15 @@ export default function Interview({ navigation, route }) {
             </View>
           </HorizontalMenu.Item>
           <HorizontalMenu.Item title={translate('homeworks.interview.messages')}>
-            {interview != null && (
-              <MessageList
-                fetchLink={interview?.link('interviewMessages')}
-                messageCreateLink={interview?.link('interviewMessages')}
-                currentUser={user}
-                tasks={tasks}
-                closed={interview?.closed}
-                onMessageCreate={handleMessage}
-              />
-            )}
+            {interview != null && memoComp}
             {interview === null && (
               <MessageList
-                messageCreateLink={homework
-                  .link('interviews')
-                  .withPathTale(interviewId ?? user.id)
-                  .withPathTale('messages')}
+                messageCreateLink={
+                  homework
+                    .link('interviews')
+                    .withPathTale(interviewId ?? user.id)
+                    .withPathTale('messages').originHref
+                }
                 currentUser={user}
                 tasks={tasks}
                 onMessageCreate={handleMessage}
@@ -213,7 +225,7 @@ export default function Interview({ navigation, route }) {
             total={interview?.result}
             max={maxWorkScore}
             onMark={handleMark}
-            markLink={interview?.link('changeMark')}
+            markHref={interview?.link('changeMark').originHref}
           />
         </BottomPopup>
       )}
@@ -251,7 +263,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     alignItems: 'center',
-    marginTop: 20,
   },
   title: {
     marginRight: 10,

@@ -1,4 +1,4 @@
-import React, { createContext, useRef, useState } from 'react';
+import React, { createContext, useMemo, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Color from '../../constants';
 import { useTranslation } from '../../utils/Internationalization';
@@ -11,11 +11,11 @@ const BLOCK_TIME_RANGE_IN_MILLIS = 1000 * 60 * 5;
 export const MessageContext = createContext();
 
 export default function MessageList({
-  fetchLink,
+  fetchHref,
   closed = false,
   currentUser,
   onAnswer,
-  messageCreateLink,
+  messageCreateHref,
   onMessageCreate,
   tasks,
 }) {
@@ -27,32 +27,49 @@ export default function MessageList({
 
   const listRef = useRef(null);
 
+  console.log('LIST RERENDER');
+
+  const memoComp = useMemo(() => {
+    return (
+      <MessageGroupContainer
+        fetchHref={fetchHref}
+        onAnswer={onAnswer}
+        disabled={closed}
+        tasks={tasks}
+        currentUser={currentUser}
+        style={styles.messageContainer}
+        blockTimeRange={BLOCK_TIME_RANGE_IN_MILLIS}
+        listViewRef={listRef}
+        onReply={setReply}
+        onEdit={setEdit}
+        onPing={setPing}
+        onScrollEnabled={handleScroll}
+      />
+    );
+  }, [fetchHref, tasks, currentUser]);
+
   function handleMessage(message) {
     onMessageCreate?.(message);
     listRef.current.scrollToOffset({ animated: true, offset: 0 });
   }
 
+  //REACT CRINGE REFS DIFFER ON FROM WHAT COMPONENT IS
+  function handleScroll(enabled) {
+    listRef.current.setNativeProps({ scrollEnabled: enabled });
+  }
+
   return (
-    <MessageContext.Provider value={{ replyMessage, setReply, editingMessage, setEdit, ping, setPing }}>
-      <View style={styles.container}>
-        <MessageGroupContainer
-          fetchLink={fetchLink}
-          onAnswer={onAnswer}
-          disabled={closed}
-          tasks={tasks}
-          currentUser={currentUser}
-          style={styles.messageContainer}
-          blockTimeRange={BLOCK_TIME_RANGE_IN_MILLIS}
-          listViewRef={listRef}
-        />
-        {!closed && <MessageInput onSubmit={handleMessage} messageCreateLink={messageCreateLink} />}
-        {closed && (
-          <View style={styles.closedContainer}>
-            <Text style={styles.closedText}>{translate('homeworks.interview.closed')}</Text>
-          </View>
-        )}
-      </View>
-    </MessageContext.Provider>
+    <View style={styles.container}>
+      {memoComp}
+      <MessageContext.Provider value={{ replyMessage, setReply, ping, setPing, editingMessage, setEdit }}>
+        {!closed && <MessageInput onSubmit={handleMessage} messageCreateHref={messageCreateHref} />}
+      </MessageContext.Provider>
+      {closed && (
+        <View style={styles.closedContainer}>
+          <Text style={styles.closedText}>{translate('homeworks.interview.closed')}</Text>
+        </View>
+      )}
+    </View>
   );
 }
 
@@ -93,7 +110,7 @@ const styles = StyleSheet.create({
   },
   closedContainer: {
     backgroundColor: '#E6E6E6',
-    
+
     padding: 8,
     marginHorizontal: -12,
     alignItems: 'center',

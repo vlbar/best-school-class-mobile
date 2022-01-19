@@ -1,13 +1,13 @@
-import React, { useContext, useEffect, useState } from 'react';
+import SortedSet from 'collections/sorted-set';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useRef } from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { SwipeListView } from 'react-native-swipe-list-view';
 import Color from '../../constants';
+import Link from '../../utils/Hateoas/Link';
 import { useTranslation } from '../../utils/Internationalization';
 import Text from '../common/Text';
 import Message from './Message';
-import { MessageContext } from './MessageList';
-import MessageSectionDate from './MessageSectionDate';
 
 export function isDatesEquals(date1, date2) {
   return (
@@ -15,125 +15,123 @@ export function isDatesEquals(date1, date2) {
   );
 }
 
-export default React.forwardRef(
-  ({ fetchLink, tasks, onAnswer, currentUser, blockTimeRange, disabled, style, ...props }, ref) => {
-    const { setReply, setPing, setEdit } = useContext(MessageContext);
-    const { translate } = useTranslation();
+function MessageGroupContainer(
+  {
+    fetchHref,
+    tasks,
+    onAnswer,
+    currentUser,
+    blockTimeRange,
+    disabled,
+    style,
+    onReply,
+    onPing,
+    onEdit,
+    onScrollEnabled,
+    ...props
+  },
+  ref,
+) {
+  const { translate } = useTranslation();
 
-    const page = useRef(null);
-    const messagesRef = useRef({});
-    const [messages, setMessages] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const timeout = useRef(null);
-    const fetchLinkHref = useRef(null);
+  const page = useRef(null);
+  const messagesRef = useRef(
+    new SortedSet(
+      [],
+      (a, b) => a.submittedAt === b.submittedAt && a.author.id === b.author.id,
+      (a, b) => b.submittedAt - a.submittedAt || b.author.id - a.author.id,
+    ),
+  ).current;
+  const [messages, setMessages] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const timeout = useRef(null);
 
-    useEffect(() => {
-      return () => {
-        clearTimeout(timeout.current);
-      };
-    }, []);
-
-    useEffect(() => {
-      if (fetchLink && page.current == null) {
-        // && fetchLink.href != fetchLinkHref.current) {
-        fetchLinkHref.current = fetchLink.href;
-        clearTimeout(timeout.current);
-        fetchMessages(fetchLink.fill('size', 30));
-      }
-    }, [fetchLink]);
-
-    function reloadChanges(link) {
+  useEffect(() => {
+    if (fetchHref && page.current == null) {
       clearTimeout(timeout.current);
-      timeout.current = setTimeout(() => {
-        fetchChanges(link);
-      }, 2000);
+      fetchMessages(new Link(fetchHref).fill('size', 30));
     }
+    return () => {
+      clearTimeout(timeout.current);
+    };
+  }, []);
 
-    function fetchMessages(link) {
-      link?.fetch(setLoading).then(newPage => {
-        let newMessages = newPage.list('messages');
-        if (newMessages) {
-          newMessages = newMessages.reduce((map, message) => {
-            map[message.submittedAt] = message;
-            return map;
-          }, {});
-          if (page.current == null) {
-            messagesRef.current = newMessages;
-          } else {
-            messagesRef.current = { ...messagesRef.current, ...newMessages };
-          }
-          setMessages(Object.values(messagesRef.current));
-        }
-        page.current = newPage;
-        if (!disabled) reloadChanges(newPage.link('changedAfter'));
-      });
-    }
+  console.log('GROUP RERENDER');
 
-    function fetchChanges(link) {
-      link?.fetch().then(changes => {
-        let changedMessages = changes.list('messages');
+  function reloadChanges(link) {
+    clearTimeout(timeout.current);
+    timeout.current = setTimeout(() => {
+      fetchChanges(link);
+    }, 2000);
+  }
 
-        if (changedMessages) {
-          updateMessages(changedMessages);
-          reloadChanges(changes.link('changedAfter'));
-        } else reloadChanges(link);
-      });
-    }
+  function fetchMessages(link) {
+    link?.fetch(setLoading).then(newPage => {
+      let newMessages = newPage.list('messages') ?? [];
+      messagesRef.addEach(newMessages);
 
-    function updateMessages(changedMessages) {
-      let keys = Object.keys(messagesRef.current);
-      let lastKey = keys.pop();
-      let firstKey = keys.shift();
-      if (!firstKey) firstKey = lastKey;
-      let addedMessages = {};
+      setMessages(messagesRef.toArray());
 
-      changedMessages = changedMessages.reduce((map, message) => {
-        if (!firstKey || Number(firstKey) < message.submittedAt) addedMessages[message.submittedAt] = message;
-        else if (Number(lastKey) <= message.submittedAt) map[message.submittedAt] = message;
-        if (message.type == 'ANSWER') onAnswer?.(message);
-        return map;
-      }, {});
+      page.current = newPage;
+      if (!disabled) reloadChanges(newPage.link('changedAfter'));
+    });
+  }
 
-      messagesRef.current = {
-        ...addedMessages,
-        ...messagesRef.current,
-        ...changedMessages,
-      };
-      setMessages(Object.values(messagesRef.current));
-    }
+  function fetchChanges(link) {
+    link?.fetch().then(changes => {
+      let changedMessages = changes.list('messages');
 
-    function fetchPrev() {
-      if (!loading) fetchMessages(page.current.link('next'));
-    }
+      if (changedMessages) {
+        updateMessages(changedMessages);
+        reloadChanges(changes.link('changedAfter'));
+      } else reloadChanges(link);
+    });
+  }
 
-    function renderItem(data) {
-      const message = data.item;
-      const nextMessage = messages[data.index + 1];
-      const isAuthor = currentUser.id === message.author.id;
-      const anotherDate =
-        (!nextMessage && !page.current?.link('next')) ||
-        (nextMessage && !isDatesEquals(new Date(message.submittedAt), new Date(nextMessage.submittedAt)));
-      const anotherBlock =
-        !nextMessage ||
-        nextMessage.author.id != message.author.id ||
-        message.submittedAt - nextMessage.submittedAt > blockTimeRange;
+  function updateMessages(changedMessages) {
+    changedMessages.forEach(message => {
+      messagesRef.delete(message);
+      messagesRef.add(message);
+      if (message.type == 'ANSWER') onAnswer?.(message);
+    });
 
-      return (
-        <Message
-          message={message}
-          tasks={tasks}
-          disabled={disabled}
-          withAvatar={!isAuthor && anotherBlock}
-          isCreator={isAuthor}
-          withTime={anotherBlock}
-          withDate={anotherDate}
-          onEdit={setEdit}
-          onReply={setReply}
-          onPing={setPing}
-        />
-      );
-    }
+    setMessages(messagesRef.toArray());
+  }
 
+  function fetchPrev() {
+    if (!loading) fetchMessages(page.current.link('next'));
+  }
+
+  function renderItem(data) {
+    const message = data.item;
+    const nextMessage = messages[data.index + 1];
+    const isAuthor = currentUser.id === message.author.id;
+    const anotherDate =
+      (!nextMessage && !page.current?.link('next')) ||
+      (nextMessage && !isDatesEquals(new Date(message.submittedAt), new Date(nextMessage.submittedAt)));
+    const anotherBlock =
+      !nextMessage ||
+      nextMessage.author.id != message.author.id ||
+      message.submittedAt - nextMessage.submittedAt > blockTimeRange;
+
+    return (
+      <Message
+        message={message}
+        tasks={tasks}
+        disabled={disabled}
+        withAvatar={!isAuthor && anotherBlock}
+        isCreator={isAuthor}
+        withTime={anotherBlock}
+        withDate={anotherDate}
+        onEdit={onEdit}
+        onReply={onReply}
+        onPing={onPing}
+        onScrollEnabled={onScrollEnabled}
+      />
+    );
+  }
+
+  const memoList = useMemo(() => {
     return (
       <SwipeListView
         ref={ref}
@@ -159,8 +157,12 @@ export default React.forwardRef(
         {...props}
       />
     );
-  },
-);
+  }, [messages, loading, tasks, disabled]);
+
+  return memoList;
+}
+
+export default React.forwardRef(MessageGroupContainer);
 
 const styles = StyleSheet.create({
   emptyText: {

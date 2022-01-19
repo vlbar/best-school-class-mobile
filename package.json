@@ -20,6 +20,7 @@
     "@react-navigation/stack": "^6.0.11",
     "axios": "^0.24.0",
     "axios-auth-refresh": "^3.2.1",
+    "collections": "^5.1.13",
     "formik": "^2.2.9",
     "i18next": "^21.4.0",
     "i18next-intervalplural-postprocessor": "^3.0.0",
