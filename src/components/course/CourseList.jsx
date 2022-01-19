@@ -1,5 +1,12 @@
 import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
-import { StyleSheet, View, TouchableOpacity, ActivityIndicator, TouchableNativeFeedback } from 'react-native';
+import {
+  StyleSheet,
+  View,
+  TouchableOpacity,
+  ActivityIndicator,
+  TouchableNativeFeedback,
+  RefreshControl,
+} from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 import Color from '../../constants';
@@ -146,16 +153,18 @@ function CourseList(
     let movedCourse = courses[from];
 
     let movedCourses = courses;
-    movedCourses.filter(x => x.position >= toPosition).forEach(x => x.position++)
+    movedCourses.filter(x => x.position >= toPosition).forEach(x => x.position++);
 
     movedCourses = arrayMove(movedCourses, from, to);
     movedCourse.position = toPosition;
     setCourses([...movedCourses]);
 
-    movedCourse.link().put(movedCourse)
-        .then(res => { })
-        .catch(error => console.log('Не удалось переместить курс, возможно изменения не сохранятся.', error))
-  }
+    movedCourse
+      .link()
+      .put(movedCourse)
+      .then(res => {})
+      .catch(error => console.log('Не удалось переместить курс, возможно изменения не сохранятся.', error));
+  };
 
   // render
   const renderCourseItem = ({ item, drag, isActive }) => {
@@ -181,7 +190,7 @@ function CourseList(
   };
 
   const loadingItemsIndicator = isFetching ? (
-    !courses.length && <ActivityIndicator color={Color.primary} size={50} />
+    !courses.length && <ActivityIndicator color={Color.primary} size={50} style={{ marginTop: 120 }} />
   ) : (
     <>
       {isHasError && (
@@ -265,20 +274,16 @@ function CourseList(
         data={courses}
         renderItem={renderCourseItem}
         keyExtractor={item => item.id}
-        refreshing={isRefreshing}
         stickyHeaderIndices={[0]}
         stickyHeaderHiddenOnScroll={true}
         ListHeaderComponent={listHeader}
         ListFooterComponent={loadingItemsIndicator}
         ListFooterComponentStyle={styles.indicator}
         ListEmptyComponent={emptyCourse}
-        progressViewOffset={refreshOffset}
-        onRefresh={refreshPage}
         onEndReached={fetchNextPage}
         onEndReachedThreshold={0.7}
         onDragEnd={moveCourse}
-        //style={[styles.coursesList]}
-        //contentContainerStyle={{ flexGrow: 1 }}
+        refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={refreshPage} />}
       />
     </View>
   );
