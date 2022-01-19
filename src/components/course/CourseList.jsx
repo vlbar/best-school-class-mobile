@@ -336,7 +336,7 @@ const styles = StyleSheet.create({
   },
   listHeader: {
     backgroundColor: Color.white,
-    marginHorizontal: 20,
+    paddingHorizontal: 20,
   },
   searchBar: {
     marginBottom: 0,
