@@ -27,6 +27,7 @@ function MessageGroupContainer(
     onReply,
     onPing,
     onEdit,
+    onAnswerPress,
     onScrollEnabled,
     ...props
   },
@@ -43,23 +44,36 @@ function MessageGroupContainer(
     ),
   ).current;
   const [messages, setMessages] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!!fetchHref);
   const timeout = useRef(null);
+
+  useEffect(() => {
+    return () => {
+      resetTimeout();
+    };
+  }, []);
 
   useEffect(() => {
     if (fetchHref && page.current == null) {
       clearTimeout(timeout.current);
       fetchMessages(new Link(fetchHref).fill('size', 30));
     }
-    return () => {
-      clearTimeout(timeout.current);
-    };
-  }, []);
+  }, [fetchHref]);
+
+  useEffect(() => {
+    if (disabled) resetTimeout();
+    else if (!timeout.current && page.current) reloadChanges(page.current.link('changedAfter'));
+  }, [disabled]);
 
   console.log('GROUP RERENDER');
 
-  function reloadChanges(link) {
+  function resetTimeout() {
     clearTimeout(timeout.current);
+    timeout.current = null;
+  }
+
+  function reloadChanges(link) {
+    resetTimeout();
     timeout.current = setTimeout(() => {
       fetchChanges(link);
     }, 2000);
@@ -126,6 +140,7 @@ function MessageGroupContainer(
         onEdit={onEdit}
         onReply={onReply}
         onPing={onPing}
+        onAnswerPress={onAnswerPress}
         onScrollEnabled={onScrollEnabled}
       />
     );

@@ -14,6 +14,11 @@ import User from './../../components/user/User';
 import { HomeworkContext } from '../../navigation/main/HomeworksNavigationConstants';
 import { TASK_TRY_SCREEN } from './TaskTry';
 import { useTranslation } from '../../utils/Internationalization';
+import { ProfileContext } from '../../navigation/NavigationConstants';
+import { types } from '../../components/state/State';
+import ConfirmationAlert from '../../components/common/ConfirmationAlert';
+import Avatar from '../../components/user/Avatar';
+import { TASK_EVALUATION_SCREEN } from './TaskEvaluation';
 
 const STATUS_APPRECIATED = 'APPRECIATED';
 const STATUS_NOT_APPRECIATED = 'NOT_APPRECIATED';
@@ -26,13 +31,14 @@ const ANSWER_UPDATE_TIME = 10 * 1000;
 export const TASK_ANSWER_SCREEN = 'taskAnswer';
 function TaskAnswer({ navigation, route }) {
   const { translate } = useTranslation();
-  const { interviews, tasks, setAnswerTry } = useContext(HomeworkContext);
+  const { state } = useContext(ProfileContext);
+  const { interviews, setInterviews, tasks, setAnswerTry, onAnswer } = useContext(HomeworkContext);
   const [interview, setInterview] = useState();
   const [task, setTask] = useState();
 
   const [isFetching, setIsFetching] = useState(false);
   const [selectedAnswerTry, setSelectedAnswerTry] = useState(undefined);
-  const [isCreatingTry, setIsCreatingTry] = useState(false);
+  const [tryActionPerforming, setTryActionPerforming] = useState(false);
   const [isСompleted, setIsСompleted] = useState(undefined);
 
   const updateTimeout = useRef();
@@ -49,6 +55,7 @@ function TaskAnswer({ navigation, route }) {
 
     return () => {
       clearTimeout(updateTimeout.current);
+      setAnswerTry(null);
     };
   }, []);
 
@@ -57,10 +64,16 @@ function TaskAnswer({ navigation, route }) {
   }, [ifFocused, task]);
 
   const fetchAnswerTry = () => {
-    interview
-      .link('answers')
-      .fill('taskId', task.id)
-      .fill('size', 1)
+    let link;
+    if (selectedAnswerTry) link = selectedAnswerTry.link();
+    else if (interview.link('answers')) {
+      link = interview.link('answers').fill('taskId', task.id).fill('size', 1).fill('role', state.name);
+    } else {
+      setIsСompleted(false);
+      return;
+    }
+
+    link
       .fetch()
       .then(data => {
         if (data.page.totalElements > 0) {
@@ -82,7 +95,7 @@ function TaskAnswer({ navigation, route }) {
         }
         updateAnswerTryOvertime();
       })
-      .catch(err => log(err));
+      .catch(err => console.log(err));
   };
 
   const updateAnswerTryOvertime = () => {
@@ -98,10 +111,12 @@ function TaskAnswer({ navigation, route }) {
       taskId: task.id,
     };
 
+    console.log(interview);
     interview
       .link('interviewMessages')
-      .post(taskAnswer, setIsCreatingTry)
+      .post(taskAnswer, setTryActionPerforming)
       .then(data => {
+        onAnswer?.(data);
         continueTry(data);
       })
       .catch(error => console.log('Не удалось создать ответ на задание.', error));
@@ -112,9 +127,27 @@ function TaskAnswer({ navigation, route }) {
     navigation.navigate(TASK_TRY_SCREEN);
   };
 
+  const interruptTry = () => {
+    selectedAnswerTry
+      .link()
+      .put({ answerStatus: STATUS_PERFORMED, type: 'ANSWER' }, setTryActionPerforming)
+      .then(() => {
+        setSelectedAnswerTry({ ...selectedAnswerTry, answerStatus: STATUS_PERFORMED });
+        setIsСompleted(true);
+      });
+  };
+
+  const goToEvaluation = () => {
+    setAnswerTry(selectedAnswerTry);
+    navigation.navigate(TASK_EVALUATION_SCREEN);
+  };
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <Header title={translate('tasks.task')} />
+      <Header
+        title={translate('tasks.task')}
+        headerRight={state == types.TEACHER && interview && <Avatar email={interview.interviewer.email} />}
+      />
       <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 20 }}>
         <Text weight="bold">{task?.name}</Text>
         {task?.description?.length ? (
@@ -169,54 +202,81 @@ function TaskAnswer({ navigation, route }) {
                 </Text>
               </View>
             )}
-            {selectedAnswerTry.evaluatorId &&
-              selectedAnswerTry.answerStatus != STATUS_NOT_PERFORMED &&
-              selectedAnswerTry.answerStatus != STATUS_PERFORMED && (
-                <View style={styles.scoreBlock}>
-                  <View style={styles.row}>
-                    {selectedAnswerTry.answerStatus == STATUS_APPRECIATED && (
-                      <Text weight="bold">{translate('homeworks.try.appreciated')}</Text>
-                    )}
-                    {selectedAnswerTry.answerStatus == STATUS_NOT_APPRECIATED && (
-                      <Text weight="bold">{translate('homeworks.try.notAppreciated')}</Text>
-                    )}
-                    {selectedAnswerTry.answerStatus == STATUS_RETURNED && (
-                      <Text weight="bold">{translate('homeworks.try.returned')}</Text>
-                    )}
-                    <View>
-                      {selectedAnswerTry.answerStatus == 'APPRECIATED' && (
-                        <Text weight="bold">
-                          {selectedAnswerTry.score}/{task.maxScore}
-                        </Text>
-                      )}
-                    </View>
-                  </View>
-                  <View style={[styles.row, { flexWrap: 'wrap' }]}>
-                    <View style={{ flexShrink: 1, marginBottom: 10 }}>
-                      <User short userId={selectedAnswerTry.evaluatorId} />
-                    </View>
-                    <ShortDate
-                      date={selectedAnswerTry.editedAt}
-                      fontSize={15}
-                      style={{ marginTop: 2, marginBottom: 10 }}
-                    />
-                  </View>
-                </View>
-              )}
           </View>
         )}
       </ScrollView>
-      {isСompleted === false && !isCreatingTry && (
+      {selectedAnswerTry?.evaluatorId &&
+        selectedAnswerTry.answerStatus != STATUS_NOT_PERFORMED &&
+        selectedAnswerTry.answerStatus != STATUS_PERFORMED && (
+          <View style={styles.scoreBlock}>
+            <View style={styles.row}>
+              {selectedAnswerTry.answerStatus == STATUS_APPRECIATED && (
+                <Text weight="bold">{translate('homeworks.try.appreciated')}</Text>
+              )}
+              {selectedAnswerTry.answerStatus == STATUS_NOT_APPRECIATED && (
+                <Text weight="bold">{translate('homeworks.try.notAppreciated')}</Text>
+              )}
+              {selectedAnswerTry.answerStatus == STATUS_RETURNED && (
+                <Text weight="bold">{translate('homeworks.try.returned')}</Text>
+              )}
+              <View>
+                {selectedAnswerTry.answerStatus == 'APPRECIATED' && (
+                  <Text weight="bold">
+                    {selectedAnswerTry.score}/{task.maxScore}
+                  </Text>
+                )}
+              </View>
+            </View>
+            <View style={[styles.row, { flexWrap: 'wrap' }]}>
+              <View style={{ flexShrink: 1, marginBottom: 10 }}>
+                <User short userId={selectedAnswerTry.evaluatorId} />
+              </View>
+              <ShortDate date={selectedAnswerTry.editedAt} fontSize={15} style={{ marginTop: 2, marginBottom: 10 }} />
+            </View>
+          </View>
+        )}
+      {isСompleted === false && !tryActionPerforming && (
         <>
           {selectedAnswerTry === undefined && (
             <Button title={translate('homeworks.try.start')} style={styles.button} onPress={createTaskAnswer} />
           )}
-          {selectedAnswerTry !== undefined && (
+          {state == types.STUDENT && selectedAnswerTry !== undefined && (
             <Button title={translate('homeworks.try.continue')} style={styles.button} onPress={() => continueTry()} />
           )}
+          {state != types.STUDENT &&
+            selectedAnswerTry !== undefined &&
+            selectedAnswerTry?.answerStatus === STATUS_NOT_PERFORMED && (
+              <ConfirmationAlert
+                onConfirm={interruptTry}
+                title={translate('common.confirmation')}
+                text={translate('homeworks.try.interruptConfirmation')}
+              >
+                {({ confirm }) => (
+                  <Button
+                    color={Color.danger}
+                    title={translate('homeworks.try.interrupt')}
+                    style={styles.button}
+                    onPress={confirm}
+                  />
+                )}
+              </ConfirmationAlert>
+            )}
         </>
       )}
-      {(isСompleted === undefined || isCreatingTry) && (
+      {state != types.STUDENT &&
+        selectedAnswerTry !== undefined &&
+        selectedAnswerTry?.answerStatus !== STATUS_NOT_PERFORMED && (
+          <Button
+            title={translate(
+              selectedAnswerTry?.answerStatus == STATUS_PERFORMED
+                ? 'homeworks.interview.markAction'
+                : 'homeworks.interview.remarkAction',
+            )}
+            style={styles.button}
+            onPress={goToEvaluation}
+          />
+        )}
+      {(isСompleted === undefined || tryActionPerforming) && (
         <ActivityIndicator color={Color.primary} size={50} style={{ marginBottom: 10 }} />
       )}
     </SafeAreaView>
@@ -238,7 +298,8 @@ const styles = StyleSheet.create({
   },
   scoreBlock: {
     backgroundColor: Color.ultraLightPrimary,
-    marginTop: 20,
+    marginTop: 10,
+    marginHorizontal: 20,
     paddingHorizontal: 14,
     paddingTop: 0,
     borderRadius: 10,

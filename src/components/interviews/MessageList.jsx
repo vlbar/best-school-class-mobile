@@ -15,6 +15,7 @@ export default function MessageList({
   closed = false,
   currentUser,
   onAnswer,
+  onAnswerPress,
   messageCreateHref,
   onMessageCreate,
   tasks,
@@ -43,6 +44,7 @@ export default function MessageList({
         onReply={setReply}
         onEdit={setEdit}
         onPing={setPing}
+        onAnswerPress={onAnswerPress}
         onScrollEnabled={handleScroll}
       />
     );

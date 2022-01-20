@@ -9,17 +9,20 @@ import UserName from '../user/UserName';
 import { getStatusIcon } from './Message';
 import UserManager from './UserManager';
 
-export default function ReplyMessage({ reply, short }) {
+export default function ReplyMessage({ reply, short, children, ...props }) {
   const { translate } = useTranslation();
 
   return (
     <View style={styles.reply}>
-      <Text style={{ flex: 1 }} numberOfLines={short ? 1 : undefined}>
+      <Text style={{ flex: 1 }} numberOfLines={short ? 1 : undefined} {...props}>
         {reply.content}
       </Text>
-      <Text style={styles.replyAuthor}>
-        — <UserName user={reply.author} textSize={14} short />
-      </Text>
+      {reply.author && (
+        <Text style={styles.replyAuthor}>
+          — <UserName user={reply.author} textSize={14} short />
+        </Text>
+      )}
+      {children}
     </View>
   );
 }

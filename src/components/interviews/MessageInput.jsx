@@ -9,7 +9,7 @@ import { getName } from '../user/UserName';
 import { MessageContext } from './MessageList';
 import ReplyMessage from './ReplyMessage';
 
-export default function MessageInput({ onSubmit, messageCreateHref }) {
+export default function MessageInput({ onSubmit, messageCreateHref, extraInputProps, messageBuilder }) {
   const { translate } = useTranslation();
   const [message, setMessage] = useState('');
   const { replyMessage, setReply, ping, setPing, editingMessage, setEdit } = useContext(MessageContext);
@@ -45,7 +45,12 @@ export default function MessageInput({ onSubmit, messageCreateHref }) {
   }
 
   function handleMessage() {
-    let msg = { id: editingMessage?.id, type: 'MESSAGE', content: message, replyOnId: replyMessage?.id };
+    let msg = messageBuilder?.(message) ?? {
+      id: editingMessage?.id,
+      type: 'MESSAGE',
+      content: message,
+      replyOnId: replyMessage?.id,
+    };
 
     let request;
     if (editingMessage) request = editingMessage.link().put(msg);
@@ -107,6 +112,7 @@ export default function MessageInput({ onSubmit, messageCreateHref }) {
             placeholder={getI('homeworks.interview.messagePlaceholder')}
             multiline
             ref={inputRef}
+            {...extraInputProps}
           />
         </View>
         <View style={styles.sendButton}>

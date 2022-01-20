@@ -286,6 +286,7 @@
     }
   },
   "common": {
+    "actions": "Действия",
     "search": "Поиск",
     "filters": {
       "title": "Фильтрация",

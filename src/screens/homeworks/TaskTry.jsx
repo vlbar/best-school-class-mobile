@@ -80,7 +80,6 @@ function TaskTry({ navigation }) {
       .link()
       .fetch()
       .then(data => {
-        console.log(data);
         if (data.answerStatus !== 'NOT_PERFORMED') {
           completeAnswer();
           setIsOutsideAnswerStatus(true);

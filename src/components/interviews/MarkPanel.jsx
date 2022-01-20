@@ -11,7 +11,7 @@ import Container from '../common/Container';
 import Text from '../common/Text';
 import Avatar from '../user/Avatar';
 
-export default function MarkPanel({ total, result, evaluator, max, withActions, disabled, onMarkPress }) {
+export default function MarkPanel({ total, result, evaluator, max, withActions, disabled, onMarkPress, loading }) {
   const { translate } = useTranslation();
 
   const isCompleteInfo = total != null && max != null;
@@ -31,16 +31,16 @@ export default function MarkPanel({ total, result, evaluator, max, withActions, 
           <ProgressBar
             progress={isCompleteInfo ? total / max : 0}
             width={null}
-            indeterminate={!isCompleteInfo}
+            indeterminate={loading}
             height={8}
             unfilledColor={'#DBDBDB'}
             borderWidth={0}
           />
         </View>
       </View>
-      <View style={styles.resultContainer}>
+      <View style={[(result != null || withActions) && styles.resultContainer]}>
         {result != null && (
-          <View style={styles.result}>
+          <View style={[styles.result, styles.fistingContainer]}>
             <Text style={styles.markedText}>{translate('homeworks.interview.result')}:</Text>
 
             <View style={styles.container}>
@@ -52,14 +52,7 @@ export default function MarkPanel({ total, result, evaluator, max, withActions, 
           </View>
         )}
         {withActions && (
-          <View
-            style={[
-              result != null && {
-                marginLeft: 25,
-              },
-              result == null && { flexGrow: 1 },
-            ]}
-          >
+          <View style={[{ flexGrow: 1, marginTop: 20 }, styles.fistingContainer]}>
             <View>
               <Button
                 disabled={disabled}
@@ -77,7 +70,7 @@ export default function MarkPanel({ total, result, evaluator, max, withActions, 
 export function MarkForm({ total, max, onMark, markHref }) {
   const { translate } = useTranslation();
 
-  const [result, setResult] = useState(total);
+  const [result, setResult] = useState(total ?? 0);
   const [closed, setClosed] = useState(true);
   const [loading, setLoading] = useState(false);
 
@@ -130,13 +123,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
+  fistingContainer: {
+    marginHorizontal: 10,
+  },
   resultContainer: {
+    marginHorizontal: -10,
     flexDirection: 'row',
+    flexWrap: 'wrap',
     alignItems: 'center',
-    marginVertical: 10,
-    marginTop: 20,
   },
   result: {
+    marginTop: 20,
     flexGrow: 1,
     backgroundColor: '#E6E6E6',
     borderRadius: 12,

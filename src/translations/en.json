@@ -337,6 +337,8 @@
       "infinity": "Infinity",
       "start": "Start",
       "continue": "Continue",
+      "interrupt": "Interrupt",
+      "interruptConfirmation": "Are you sure you want to abort task execution?\nThe student will no longer be able to change answer.",
       "questionCount": "Question {{number}}",
       "timeLeft": "Time left",
       "yourAnswer": "Your answer",
@@ -370,7 +372,7 @@
       "messagePlaceholder": "Enter your message...",
       "messageDeleted": "Message deleted",
       "taskMessage": "Task answer",
-      "markAction": "Evaluation",
+      "markAction": "Evaluate",
       "result": "Evaluated",
       "remarkAction": "Re-evaluate",
       "mark": {

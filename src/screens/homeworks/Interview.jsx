@@ -19,6 +19,7 @@ import Color from '../../constants';
 import { HomeworkContext } from '../../navigation/main/HomeworksNavigationConstants';
 import { ProfileContext } from '../../navigation/NavigationConstants';
 import Link from '../../utils/Hateoas/Link';
+import Resource from '../../utils/Hateoas/Resource';
 import { useTranslation } from '../../utils/Internationalization';
 import { TASK_ANSWER_SCREEN } from './TaskAnswer';
 
@@ -29,8 +30,18 @@ export const INTERVIEW_SCREEN = 'interview';
 export default function Interview({ navigation, route }) {
   const { translate } = useTranslation();
   const { user, state } = useContext(ProfileContext);
-  const { interviews, setInterviews, tasks, setTasks, homework, setHomework, answers, setAnswers } =
-    useContext(HomeworkContext);
+  const {
+    interviews,
+    setInterviews,
+    tasks,
+    setTasks,
+    homework,
+    setHomework,
+    answers,
+    setAnswers,
+    onAnswer,
+    setOnAnswer,
+  } = useContext(HomeworkContext);
 
   const [interview, setInterview] = useState(undefined);
   const [loading, setLoading] = useState(true);
@@ -41,25 +52,31 @@ export default function Interview({ navigation, route }) {
     if (tasks.length == 0) return null;
     return tasks.map(task => task.maxScore).reduce((a, b) => a + b, 0);
   }, [tasks]);
+  const totalScore = useMemo(() => {
+    return answers.map(answer => answer.score).reduce((a, b) => a + b, 0);
+  }, [answers]);
 
   const interviewId = route.params.interviewId;
 
   const memoComp = useMemo(() => {
     if (!interview) return;
+
     return (
       <MessageList
-        fetchHref={interview?.link('interviewMessages').originHref}
-        messageCreateHref={interview?.link('interviewMessages').originHref}
+        fetchHref={interview?.link('interviewMessages').href}
+        messageCreateHref={interview?.link('interviewMessages').href}
         currentUser={user}
         tasks={tasks}
         onAnswer={handleAnswer}
-        closed={interview?.closed}
+        onAnswerPress={goToAnswer}
+        closed={interview?.closed ?? null}
         onMessageCreate={handleMessage}
       />
     );
   }, [interview, user, tasks]);
 
   useEffect(() => {
+    setOnAnswer(() => handleMessage);
     return () => {
       if (state === types.STUDENT) {
         setTasks([]);
@@ -71,6 +88,8 @@ export default function Interview({ navigation, route }) {
 
   useEffect(() => {
     if (state === types.STUDENT) {
+      if (interview) return;
+
       const homeworkId = route.params.homeworkId;
       fetchLink.withPathTale(homeworkId).fetch().then(setHomework);
     } else {
@@ -87,6 +106,9 @@ export default function Interview({ navigation, route }) {
             const savedIndex = interviews.findIndex(i => i.interviewer.id === interviewId);
             newInterviews[savedIndex] = { ...interview, full: true };
             setInterviews(newInterviews);
+          })
+          .catch(() => {
+            setLoading(false);
           });
       }
     }
@@ -94,32 +116,48 @@ export default function Interview({ navigation, route }) {
 
   useEffect(() => {
     if (homework && state == types.STUDENT) {
+      console.log('called');
       homework
         .link('myInterview')
         .fetch()
-        .then(setInterview)
-        .catch(() => setInterview(null));
+        .then(interview => setInterview({ ...interview, full: true }))
+        .catch(() => {
+          onAnswer();
+          setInterview(
+            Resource.basedList(
+              {
+                interviewMessages: homework.link('interviews').withPathTale(user.id).withPathTale('messages'),
+              },
+              { id: user.id },
+            ),
+          );
+          setLoading(false);
+        });
       setTasks(homework.tasks);
     }
   }, [homework]);
 
   useEffect(() => {
-    if (interview) {
-      if (state == types.STUDENT) setInterviews([interview]);
+    if (interview?.full && answers.length == 0) {
       interview
         .link('interviewMessages')
         ?.fill('type', 'ANSWER')
-        .fetch()
+        .fetch(setLoading)
         .then(page => setAnswers(page.list('messages') ?? []));
     }
   }, [interview]);
 
   function handleMessage(message) {
+    if (!message) return;
+
+    let fetchLink;
     if (interview == null) {
-      if (state == types.STUDENT) homework.link('myInterview').fetch().then(setInterview);
+      if (state == types.STUDENT) fetchLink = homework.link('myInterview');
     } else if (interview.inactive) {
-      interview.link().fetch().then(setInterview);
+      fetchLink = interview.link();
     }
+
+    fetchLink?.fetch().then(interview => setInterview({ ...interview, full: true }));
   }
 
   function handleMark(mark) {
@@ -131,7 +169,13 @@ export default function Interview({ navigation, route }) {
   }
 
   function handleAnswer(answer) {
-    setAnswers([...answers.filter(a => a.taskId !== answer.taskId), answer]);
+    setAnswers([...(answers.filter(a => a.taskId !== answer.taskId) ?? []), answer]);
+    console.log(answers.filter(a => a.taskId !== answer.taskId));
+  }
+
+  function goToAnswer({ interviewId, taskId }) {
+    if (state == types.STUDENT) setInterviews([interview]);
+    navigation.navigate(TASK_ANSWER_SCREEN, { interviewId: interview.id, taskId: taskId });
   }
 
   return (
@@ -162,16 +206,21 @@ export default function Interview({ navigation, route }) {
                 const answer = answers.find(a => a.taskId == task.id);
                 return (
                   <TouchableNativeFeedback
-                    onPress={() =>
-                      navigation.navigate(TASK_ANSWER_SCREEN, { interviewId: interview.id, taskId: task.id })
-                    }
+                    disabled={!answer && state != types.STUDENT}
+                    onPress={() => goToAnswer({ interviewId: interview.id, taskId: task.id })}
                   >
                     <View style={{ paddingVertical: 10 }}>
                       <View style={styles.titleRow}>
-                        {answer && <StatusBadge status={answer.answerStatus} size={25} />}
-                        <Text weight="medium" style={styles.title} numberOfLines={1}>
-                          {task?.name}
-                        </Text>
+                        <View style={{ flexDirection: 'row' }}>
+                          {answer && (
+                            <View style={{ marginRight: 5 }}>
+                              <StatusBadge status={answer.answerStatus} size={25} />
+                            </View>
+                          )}
+                          <Text weight="medium" style={styles.title} numberOfLines={1}>
+                            <Text>{task?.name}</Text>
+                          </Text>
+                        </View>
                         {task?.taskType && (
                           <View style={styles.badge}>
                             <Bandage color={getTaskTypeColor(task?.taskType.id)} title={task?.taskType.name} />
@@ -194,22 +243,23 @@ export default function Interview({ navigation, route }) {
               <MarkPanel
                 result={interview?.result}
                 evaluator={interview?.evaluator}
-                total={0}
+                total={totalScore}
                 max={maxWorkScore}
+                loading={loading}
                 withActions={state != types.STUDENT}
                 onMarkPress={() => setShowMarkPopup(true)}
               />
             </View>
           </HorizontalMenu.Item>
           <HorizontalMenu.Item title={translate('homeworks.interview.messages')}>
-            {interview != null && memoComp}
-            {interview === null && (
+            {interview?.full && memoComp}
+            {!interview?.full && (
               <MessageList
-                messageCreateLink={
+                messageCreateHref={
                   homework
-                    .link('interviews')
+                    ?.link('interviews')
                     .withPathTale(interviewId ?? user.id)
-                    .withPathTale('messages').originHref
+                    .withPathTale('messages').href
                 }
                 currentUser={user}
                 tasks={tasks}
@@ -225,7 +275,7 @@ export default function Interview({ navigation, route }) {
             total={interview?.result}
             max={maxWorkScore}
             onMark={handleMark}
-            markHref={interview?.link('changeMark').originHref}
+            markHref={interview?.link('changeMark').href}
           />
         </BottomPopup>
       )}

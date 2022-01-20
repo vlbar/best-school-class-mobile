@@ -96,7 +96,6 @@ export default function HomeworkDetails({ route, navigation }) {
                 </Collapsible>
                 <View style={styles.row}>
                   <Text style={styles.headerText}>{translate('homeworks.details.members.title')}</Text>
-                  <IconButton name="filter-outline" color={Color.darkGray} />
                 </View>
               </>
             }

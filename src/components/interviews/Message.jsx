@@ -1,6 +1,14 @@
 import moment from 'moment';
 import React, { useMemo, useRef, useState } from 'react';
-import { Dimensions, Pressable, StyleSheet, TouchableNativeFeedback, Vibration, View } from 'react-native';
+import {
+  Dimensions,
+  Pressable,
+  StyleSheet,
+  TouchableNativeFeedback,
+  TouchableOpacity,
+  Vibration,
+  View,
+} from 'react-native';
 import Animated from 'react-native-reanimated';
 import { SwipeRow } from 'react-native-swipe-list-view';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -14,6 +22,9 @@ import MessageSectionDate from './MessageSectionDate';
 import ReplyMessage from './ReplyMessage';
 import UserManager from './UserManager';
 import { StatusBadge } from './StatusBadge';
+import { TestQuestionContent, TextQuestionContent } from './QuestionAnswer';
+import { clearHtmlTags } from '../tasks/TaskList';
+import Check from '../common/Check';
 
 const MAX_SWIPE_LENGTH = 60;
 const REPLY_SWIPE_LENGTH = 50;
@@ -28,7 +39,20 @@ export function getStatusIcon(status) {
 }
 
 function Message(
-  { message, tasks, disabled, withAvatar, withTime, withDate, isCreator, onEdit, onReply, onPing, onScrollEnabled },
+  {
+    message,
+    tasks,
+    disabled,
+    withAvatar,
+    withTime,
+    withDate,
+    isCreator,
+    onEdit,
+    onReply,
+    onPing,
+    onAnswerPress,
+    onScrollEnabled,
+  },
   ref,
 ) {
   const { translate } = useTranslation();
@@ -70,92 +94,139 @@ function Message(
 
   function renderItem() {
     return (
-      <>
-        <Pressable
-          disabled={!!message.deletedAt || message.type == 'ANSWER' || disabled}
-          onLongPress={() => setPopupShow(true)}
+      <Pressable
+        disabled={
+          message.type == 'ANSWER' ||
+          message.deletedAt ||
+          disabled ||
+          (message.type == 'COMMENT' && !message.questionAnswer)
+        }
+        onLongPress={() => message.type != 'ANSWER' && setPopupShow(true)}
+        onPress={() => message.type == 'ANSWER' && onAnswerPress?.(message)}
+      >
+        <View
+          style={[
+            { flexGrow: 1, flexDirection: 'row', paddingVertical: 4 },
+            isCreator && { flexDirection: 'row-reverse' },
+          ]}
         >
-          <View
-            style={[
-              { flexGrow: 1, flexDirection: 'row', paddingVertical: 4 },
-              isCreator && { flexDirection: 'row-reverse' },
-            ]}
-          >
-            {withAvatar && (
-              <UserManager user={message.author}>
-                {({ user }) => (
-                  <Avatar
-                    email={user.email}
-                    size={32}
-                    style={[{ marginTop: 15 }, isCreator ? { marginLeft: 8 } : { marginRight: 8 }]}
-                  />
-                )}
-              </UserManager>
-            )}
-            <View style={!withAvatar && !isCreator && { marginLeft: 40 }}>
-              {withTime && (
-                <Text style={[styles.messageGroupTime, isCreator && { textAlign: 'right' }]}>
-                  {moment(new Date(message.submittedAt)).format('HH:mm')}
-                </Text>
+          {withAvatar && (
+            <UserManager user={message.author}>
+              {({ user }) => (
+                <Avatar
+                  email={user.email}
+                  size={32}
+                  style={[{ marginTop: 15 }, isCreator ? { marginLeft: 8 } : { marginRight: 8 }]}
+                />
               )}
-              <View
-                style={[
-                  styles.message,
-                  isCreator && { borderTopRightRadius: 3 },
-                  !isCreator && { borderTopLeftRadius: 3 },
-                ]}
-              >
-                {message.replyOn && (
-                  <View style={{ paddingVertical: 8 }}>
-                    <ReplyMessage reply={message.replyOn} />
-                  </View>
-                )}
-                {message.type == 'MESSAGE' && (
-                  <>
-                    <Text key={message.id} style={[styles.messageText, message.deletedAt && styles.deleted]}>
-                      {message.deletedAt ? translate('homeworks.interview.messageDeleted') : message.content}
-                    </Text>
-                    {!message.deletedAt && message.editedAt && (
-                      <Text style={{ textAlign: 'right', color: Color.silver, fontSize: 12 }}>ред.</Text>
-                    )}
-                  </>
-                )}
-                {message.type == 'ANSWER' && (
-                  <View>
-                    <View style={styles.taskAnswer}>
-                      <Text style={{ fontStyle: 'italic' }}>{translate('homeworks.interview.taskMessage')}</Text>
-                      <View style={styles.taskAnswerStatus}>
-                        <View style={{ marginRight: 10 }}>
-                          <StatusBadge style status={message.answerStatus} size={20} />
-                        </View>
-                        {message.answerStatus != 'NOT_PERFORMED' && message.answerStatus != 'PERFORMED' && (
-                          <UserManager userId={message.evaluatorId} fallbackLink={message.link('evaluator')}>
-                            {({ user }) => (
-                              <Pressable disabled={disabled} onPress={() => onPing(user)}>
-                                <Avatar email={user?.email} size={25} />
-                              </Pressable>
+            </UserManager>
+          )}
+          <View style={!withAvatar && !isCreator && { marginLeft: 40 }}>
+            {withTime && (
+              <Text style={[styles.messageGroupTime, isCreator && { textAlign: 'right' }]}>
+                {moment(new Date(message.submittedAt)).format('HH:mm')}
+              </Text>
+            )}
+            <View
+              style={[
+                styles.message,
+                isCreator && { borderTopRightRadius: 3 },
+                !isCreator && { borderTopLeftRadius: 3 },
+              ]}
+            >
+              {message.replyOn && (
+                <View style={{ paddingVertical: 8 }}>
+                  <ReplyMessage reply={message.replyOn} />
+                </View>
+              )}
+              {message.type == 'MESSAGE' && (
+                <>
+                  <Text key={message.id} style={[styles.messageText, message.deletedAt && styles.deleted]}>
+                    {message.deletedAt ? translate('homeworks.interview.messageDeleted') : message.content}
+                  </Text>
+                  {!message.deletedAt && message.editedAt && (
+                    <Text style={{ textAlign: 'right', color: Color.silver, fontSize: 12 }}>ред.</Text>
+                  )}
+                </>
+              )}
+              {message.type == 'COMMENT' && (
+                <>
+                  {message.questionAnswer && (
+                    <>
+                      <View style={{ paddingVertical: 8 }}>
+                        <ReplyMessage weight="bold" reply={{ content: clearHtmlTags(message.formulation) }}>
+                          <View style={{}}>
+                            {message.questionAnswer.content && <TextQuestionContent question={message} />}
+                            {message.questionAnswer.selectedAnswerVariants && (
+                              <Text style={{ fontSize: 14 }}>
+                                {message.questionAnswer.selectedAnswerVariants.length} выбранный вариант ответа
+                              </Text>
                             )}
-                          </UserManager>
-                        )}
+                            <Text
+                              weight="medium"
+                              style={[
+                                styles.answer,
+                                {
+                                  alignSelf: 'flex-end',
+                                  marginLeft: 10,
+                                  paddingHorizontal: 10,
+                                  backgroundColor: Color.background,
+                                  borderRadius: 8,
+                                },
+                              ]}
+                            >
+                              Балл: {message.score}/{message.maxScore}
+                            </Text>
+                          </View>
+                        </ReplyMessage>
                       </View>
+                      <Text key={message.id} style={[styles.messageText, message.deletedAt && styles.deleted]}>
+                        {message.deletedAt ? translate('homeworks.interview.messageDeleted') : message.content}
+                      </Text>
+                    </>
+                  )}
+                  {!message.questionAnswer && (
+                    <Text key={message.id} style={[styles.messageText, styles.deleted]}>
+                      Комментарий более недействителен
+                    </Text>
+                  )}
+                </>
+              )}
+              {message.type == 'ANSWER' && (
+                <View>
+                  <View style={styles.taskAnswer}>
+                    <Text style={{ fontStyle: 'italic' }}>{translate('homeworks.interview.taskMessage')}</Text>
+                    <View style={styles.taskAnswerStatus}>
+                      <View style={{ marginRight: 10 }}>
+                        <StatusBadge style status={message.answerStatus} size={20} />
+                      </View>
+                      {message.answerStatus != 'NOT_PERFORMED' && message.answerStatus != 'PERFORMED' && (
+                        <UserManager userId={message.evaluatorId} fallbackLink={message.link('evaluator')}>
+                          {({ user }) => (
+                            <Pressable disabled={disabled} onPress={() => onPing(user)}>
+                              <Avatar email={user?.email} size={25} />
+                            </Pressable>
+                          )}
+                        </UserManager>
+                      )}
                     </View>
-                    {message.answerStatus == 'NOT_PERFORMED' && (
-                      <Text>
-                        {message.answeredQuestionCount}/{message.questionCount}
-                      </Text>
-                    )}
-                    {message.answerStatus == 'APPRECIATED' && (
-                      <Text>
-                        {message.score}/{maxScore}
-                      </Text>
-                    )}
                   </View>
-                )}
-              </View>
+                  {message.answerStatus == 'NOT_PERFORMED' && (
+                    <Text>
+                      {message.answeredQuestionCount}/{message.questionCount}
+                    </Text>
+                  )}
+                  {message.answerStatus == 'APPRECIATED' && (
+                    <Text>
+                      {message.score}/{maxScore}
+                    </Text>
+                  )}
+                </View>
+              )}
             </View>
           </View>
-        </Pressable>
-      </>
+        </View>
+      </Pressable>
     );
   }
 
@@ -193,7 +264,12 @@ function Message(
       <>
         <SwipeRow
           ref={ref}
-          disableLeftSwipe={!!message.deletedAt || message.type == 'ANSWER' || disabled}
+          disableLeftSwipe={
+            message.type == 'ANSWER' ||
+            message.deletedAt ||
+            disabled ||
+            (message.type == 'COMMENT' && !message.questionAnswer)
+          }
           disableRightSwipe
           stopRightSwipe={-MAX_SWIPE_LENGTH}
           rightActivationValue={-REPLY_SWIPE_LENGTH}
@@ -295,6 +371,10 @@ const styles = StyleSheet.create({
     marginLeft: 20,
     alignItems: 'center',
     flexDirection: 'row',
+  },
+  answer: {
+    color: Color.gray,
+    fontSize: 14,
   },
   deleted: {
     fontStyle: 'italic',
