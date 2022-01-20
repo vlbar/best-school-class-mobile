@@ -9,6 +9,8 @@ import 'moment/locale/ru';
 import 'moment/locale/fr';
 import 'moment/locale/ja';
 import 'moment/locale/de';
+import 'moment/locale/ko';
+import 'moment/locale/hi';
 
 const defaultLanguage = 'en';
 const translations = [
@@ -36,6 +38,16 @@ const translations = [
     name: 'ja',
     displayName: '日本語 (日本)',
     translation: require('./../translations/ja.json'),
+  },
+  {
+    name: 'ko',
+    displayName: '한국인 (대한민국)',
+    translation: require('./../translations/ko.json'),
+  },
+  {
+    name: 'hi',
+    displayName: 'हिन्दी (भारत)',
+    translation: require('./../translations/hi.json'),
   },
 ];
 
