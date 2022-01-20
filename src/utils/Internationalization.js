@@ -9,7 +9,6 @@ import 'moment/locale/ru';
 import 'moment/locale/fr';
 import 'moment/locale/ja';
 import 'moment/locale/de';
-import moment from 'moment';
 
 const defaultLanguage = 'en';
 const translations = [
