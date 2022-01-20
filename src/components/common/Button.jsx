@@ -1,6 +1,6 @@
 import React from 'react';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { Pressable, StyleSheet } from 'react-native';
+import { StyleSheet, View, TouchableOpacity } from 'react-native';
 
 import Color from '../../constants';
 import Text from './Text';
@@ -27,7 +27,8 @@ export default function Button({
     button: {
       borderRadius: 10,
       backgroundColor: color,
-      padding: 12,
+      paddingVertical: 12,
+      paddingHorizontal: 20,
       flexDirection: 'row',
       justifyContent: 'center',
       alignItems: 'center',
@@ -36,22 +37,24 @@ export default function Button({
       color: textColor,
       textAlign: textAlign ?? (iconName ? 'left' : 'center'),
       fontSize: textSize,
-      flex: 1,
+      flexGrow: 1,
     },
     icon: {
-      marginRight: 10,
+      marginRight: title ? 10 : 0,
     },
     disabled: {
-      opacity: 0.5,
+      opacity: 0.7,
     },
   });
 
   return (
-    <Pressable style={[styles.button, disabled && styles.disabled, style]} onPress={onPress}>
-      {left}
-      {iconName && <Icon name={iconName} size={iconSize ?? textSize * 1.2} color={textColor} style={styles.icon} />}
-      {title && <Text style={[styles.text, { fontSize: textSize }]}>{title}</Text>}
-      {right}
-    </Pressable>
+      <TouchableOpacity activeOpacity={0.7} onPress={onPress} disabled={disabled}>
+        <View style={[styles.button, disabled && styles.disabled, style]}>
+          {left}
+          {iconName && <Icon name={iconName} size={iconSize ?? textSize * 1.2} color={textColor} style={styles.icon} />}
+          {title && <Text style={[styles.text, { fontSize: textSize }]}>{title}</Text>}
+          {right}
+        </View>
+    </TouchableOpacity>
   );
 }

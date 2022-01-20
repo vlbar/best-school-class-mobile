@@ -8,7 +8,7 @@ import { Image, SafeAreaView, StyleSheet, TouchableWithoutFeedback, View } from 
 import Button from '../../components/common/Button';
 import Color from '../../constants';
 import Container from '../../components/common/Container';
-import cumwave from '../../assets/images/cumwave.png'
+import cumwave from '../../assets/images/cumwave.png';
 import ErrorAlert from '../../components/common/ErrorAlert';
 import Text from '../../components/common/Text';
 import { getI, useTranslation } from '../../utils/Internationalization';
@@ -52,20 +52,8 @@ export default function Confirmation({ route }) {
 
   useEffect(() => {
     intervalRef.current = setInterval(() => {
-      if (
-        sendTime.current.getTime() +
-          RESEND_TIMEOUT * 1000 -
-          new Date().getTime() <
-        0
-      )
-        setResendTime(null);
-      else
-        setResendTime(
-          moment(sendTime.current)
-            .add(RESEND_TIMEOUT, 'second')
-            .subtract(new Date())
-            .format('mm:ss'),
-        );
+      if (sendTime.current.getTime() + RESEND_TIMEOUT * 1000 - new Date().getTime() < 0) setResendTime(null);
+      else setResendTime(moment(sendTime.current).add(RESEND_TIMEOUT, 'second').subtract(new Date()).format('mm:ss'));
     }, 500);
 
     return () => {
@@ -74,14 +62,15 @@ export default function Confirmation({ route }) {
   }, []);
 
   function onResend() {
+    if (resendTime) return;
+
     setLoading(true);
     send(route.params.email)
       .then(() => {
         sendTime.current = new Date();
       })
       .catch(err => {
-        if (err.response?.status == 404)
-          setError('confirmation.account-not-found');
+        if (err.response?.status == 404) setError('confirmation.account-not-found');
         console(err);
       })
       .finally(() => setLoading(false));
@@ -93,8 +82,7 @@ export default function Confirmation({ route }) {
       .then(route.params.onSuccess)
       .catch(err => {
         if (err.response?.status == 401) setError('confirmation.wrong-code');
-        else if (err.response?.status == 404)
-          setError('confirmation.not-found');
+        else if (err.response?.status == 404) setError('confirmation.not-found');
         console.log(err);
       })
       .finally(() => setLoading(false));
@@ -106,9 +94,7 @@ export default function Confirmation({ route }) {
       <Container style={styles.container}>
         <View>
           <Text style={styles.title}>{getI('confirmation.title')}</Text>
-          <Text style={styles.info}>
-            {translate('confirmation.info', { email: route.params.email })}
-          </Text>
+          <Text style={styles.info}>{translate('confirmation.info', { email: route.params.email })}</Text>
 
           <ErrorAlert message={getI(error)}></ErrorAlert>
 
@@ -129,17 +115,14 @@ export default function Confirmation({ route }) {
                   style={[styles.cellRoot, isFocused && styles.focusCell]}
                   onLayout={getCellOnLayoutHandler(index)}
                 >
-                  <Text style={styles.cellText}>
+                  <Text style={styles.cellText} allowFontScaling adjustsFontSizeToFit={true} numberOfLines={1}>
                     {symbol || (isFocused ? <Cursor /> : null)}
                   </Text>
                 </View>
               );
             }}
           />
-          <TouchableWithoutFeedback
-            onPress={onResend}
-            disabled={resendTime > 0}
-          >
+          <TouchableWithoutFeedback onPress={onResend} disabled={resendTime}>
             <View>
               <Text style={styles.resend}>
                 {resendTime && (
@@ -152,22 +135,14 @@ export default function Confirmation({ route }) {
                     </Text>
                   </Text>
                 )}
-                <Text
-                  style={
-                    resendTime ? styles.resendDisabled : styles.resendButton
-                  }
-                >
+                <Text style={resendTime ? styles.resendDisabled : styles.resendButton}>
                   {getI('confirmation.resend')}
                 </Text>
               </Text>
             </View>
           </TouchableWithoutFeedback>
         </View>
-        <Button
-          onPress={onNext}
-          title={getI('confirmation.next')}
-          disabled={loading || code.length < 6}
-        />
+        <Button onPress={onNext} title={getI('confirmation.next')} disabled={loading || code.length < 6} />
       </Container>
     </SafeAreaView>
   );
@@ -209,10 +184,13 @@ const styles = StyleSheet.create({
   },
   codeFiledRoot: {
     marginTop: 20,
+    flexDirection: 'row',
+    flexGrow: 1,
   },
   cellRoot: {
-    width: 60,
-    height: 75,
+    flex: 1,
+    marginHorizontal: 2,
+    aspectRatio: 0.9,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: Color.background,
@@ -222,7 +200,7 @@ const styles = StyleSheet.create({
   },
   cellText: {
     color: Color.black,
-    fontSize: 40,
+    fontSize: 30,
     textAlign: 'center',
   },
   focusCell: {

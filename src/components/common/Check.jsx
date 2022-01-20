@@ -10,14 +10,14 @@ export const SWITCH_TYPE = 'switch';
 
 function Item({ type, title, subtitle, color, borderColor, disabled, readonly, name, checked, onChange, style }) {
   const { contextSelected, contextOnChange } = useCheckContext(CheckContext);
-  const [isChecked, setIsChecked] = useState();
+  const [isChecked, setIsChecked] = useState(checked);
 
   if (name == undefined) {
     name = title;
   }
 
   useEffect(() => {
-    setIsChecked(checked != undefined ? checked : false);
+    if (checked != undefined) setIsChecked(checked);
   }, [checked]);
 
   const onPressHandler = () => {
@@ -193,6 +193,8 @@ const styles = StyleSheet.create({
   },
   titleContainer: {
     marginLeft: 20,
+    flex: 1,
+    flexGrow: 1,
   },
   title: {
     fontSize: 17,
