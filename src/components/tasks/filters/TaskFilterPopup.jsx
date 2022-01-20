@@ -164,9 +164,9 @@ function TaskFilterPopup({ show, onApply, onClose, onAddTaskType, isNeedRefesh =
             *{translate('task-types.longPressToModify')}
           </Text>
         )}
-        <View style={styles.filterHeader}>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 20 }}>
           <Pressable onPress={onCancelHandler}>
-            <Text color={Color.silver} fontSize={16}>
+            <Text color={Color.silver} fontSize={16} style={{ marginTop: 12 }}>
               {translate('common.filters.cancel-all')}
             </Text>
           </Pressable>
@@ -209,8 +209,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   apply: {
-    flex: 0,
-    paddingHorizontal: 20,
+    paddingHorizontal: 40,
   },
 });
 
