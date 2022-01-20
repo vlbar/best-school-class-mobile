@@ -93,7 +93,7 @@ function SearchBar({
 function SearchBarIconButton({ name, onPress }) {
   return (
     <View style={styles.button}>
-      <IconButton name={name} onPress={onPress} size={24} />
+      <IconButton name={name} onPress={onPress} size={22} />
     </View>
   );
 }

@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { StyleSheet, Animated, BackHandler, TouchableNativeFeedback, View, Alert, Pressable } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { useNavigation } from '@react-navigation/native';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
 
 import AddCoursePopup from './AddCoursePopup';
 import AddTaskPopup from '../tasks/AddTaskPopup';
@@ -19,7 +19,7 @@ import { TASK_SCREEN } from '../../screens/course/TaskQuestions';
 const SUB_COURSES_TAB = 'subcoursesTab';
 const TASKS_TAB = 'tasksTab';
 
-function CourseManager() {
+function CourseManager({ onPushSelectedTasks }) {
   const navigation = useNavigation();
   const [parentCourse, setParentCourse] = useState(null);
   const [pushCourse, popCourse, Breadcrumbs] = useBreadcrumbs(translate('course.root'), onCourseSelect);
@@ -37,12 +37,12 @@ function CourseManager() {
   const { contextTask } = useContext(CourseNavigationContext);
   const taskListRef = useRef();
 
+  const isFocused = useIsFocused();
+
   useEffect(() => {
-    BackHandler.addEventListener('hardwareBackPress', onBackPress);
-    return () => {
-      BackHandler.removeEventListener('hardwareBackPress', onBackPress);
-    };
-  }, []);
+    if (isFocused) BackHandler.addEventListener('hardwareBackPress', onBackPress);
+    else BackHandler.removeEventListener('hardwareBackPress', onBackPress);
+  }, [isFocused]);
 
   // travel
   function onCourseSelect(course) {
@@ -67,7 +67,7 @@ function CourseManager() {
   }
 
   function onBackFromEdit() {
-    if(contextTask) taskListRef.current.updateTask(contextTask);
+    if (contextTask) taskListRef.current.updateTask(contextTask);
   }
 
   // popits - courses
@@ -230,6 +230,7 @@ function CourseManager() {
             actionMenuContent={courseActions}
             headerContent={horizontalMenu}
             onCourseSelect={onCoursesSelectHandler}
+            onPressEmptyMessage={addCourse}
             ref={courseListRef}
           />
         </Animated.View>
@@ -245,10 +246,11 @@ function CourseManager() {
       <View style={[styles.listContainer, isCoursesTab && styles.hidden]}>
         <TaskList
           parentCourse={parentCourse}
-          headerContent={horizontalMenu}
+          additionalHeaderContent={horizontalMenu}
           canFetch={!isCoursesTab}
           canSelect
           onTaskPress={onTaskPress}
+          onPushSelected={onPushSelectedTasks}
           ref={taskListRef}
         />
         {!isKeyboardShow && parentCourse && <ActionButton onPress={addTask} />}
@@ -297,7 +299,7 @@ OldSchoolHorizontalMenu.Item = OldSchoolHorizontalMenuItem;
 
 const styles = StyleSheet.create({
   breadcrumbs: {
-    marginHorizontal: 10,
+    marginHorizontal: 20,
   },
   listContainer: {
     flex: 1,
@@ -310,7 +312,7 @@ const styles = StyleSheet.create({
   actionButtonContainer: {
     position: 'absolute',
     bottom: 16,
-    right: 6,
+    right: 16,
     width: 56,
     height: 56,
     backgroundColor: Color.primary,

@@ -121,6 +121,7 @@
     "emptyJoinAdviceContinue": "his group",
     "or": "or",
     "create": "Create",
+    "select": "Select group",
     "emptyCreateAdviceContinue": "your own group",
     "groupCreation": "Adding a group",
     "inviteQuestion": "Do you have an invitation?",
@@ -185,7 +186,7 @@
   "course": {
     "title": "Course",
     "root": "Courses",
-    "search": "Enter a name of course",
+    "search": "Search Course",
     "sub-courses": "Subcourses",
     "modify": {
       "add-title": "Add course",
@@ -194,13 +195,15 @@
       "add-submit": "Add",
       "edit-submit": "Edit"
     },
-    "empty": "Courses not yet added",
+    "empty": "Alas, the courses have not been added yet.\n\nTo get into a world of easy-to-use curriculum and knowledge base, you must first **add a course**",
+    "emptySub": "The subcourses have not been added yet.",
+    "emptySearch": "No course with this name was found.",
     "delete-course-confirmation": "Are you sure you want to delete the selected courses?"
   },
   "tasks": {
     "task": "Task",
     "title": "Tasks",
-    "search": "Enter a task name",
+    "search": "Search Task",
     "empty": "Tasks list is empty",
     "noDescription": "No description",
     "course-not-selected": "Select a course to display its tasks",
@@ -234,7 +237,27 @@
       "duration": "Duration",
       "taskType": "Task type",
       "noTaskType": "Not selected",
-      "loading": "Loading task..."
+      "loading": "Loading task...",
+      "validation": {
+        "name": {
+          "required": "Task name has not been entered",
+          "min": "Task name must contain at least {{min}} letters",
+          "max": "Task name too long"
+        },
+        "description": {
+          "max": "Task description too long"
+        },
+        "maxScore": {
+          "required": "Max score has not been entered",
+          "positive": "Max score must be a positive number",
+          "max": "Too many number of score"
+        },
+        "duration": {
+          "required": "Duration has not been entered",
+          "positive": "Duration must be a positive number",
+          "max": "Too many number of duration"
+        }
+      }
     },
     "question": {
       "title": "Question",
@@ -290,8 +313,9 @@
     }
   },
   "task-types": {
-    "search": "Enter name of task type",
+    "search": "Search Task type",
     "select": "Select task type",
+    "longPressToModify": "Long press on a task type badge to modify it",
     "modify": {
       "add-title": "Add new task type",
       "edit-title": "Edit task type",
@@ -299,7 +323,14 @@
       "add-submit": "Add",
       "edit-submit": "Update",
       "delete": "Delete",
-      "delete-confirmation": "Are you sure you want to delete this task type?"
+      "delete-confirmation": "Are you sure you want to delete this task type?",
+      "modifyDefaultNotAllowed": "Modify the default task type is not allowed"
+    },
+    "name": {
+      "Контрольная": "Proof",
+      "Проверочная": "Check",
+      "Самостоятельная": "Independent",
+      "На закрепление": "Consolidation"
     }
   },
   "homeworks": {
@@ -331,6 +362,29 @@
         "title": "Members",
         "empty": "Looks like no one is here yet.\nThis is possible if there are no students in the group.\nFirst you need to invite students to the group!",
         "emptySearch": "No one was found for the specified search criteria :("
+      }
+    },
+    "modify": {
+      "start": "Start",
+      "startNew": "Start new",
+      "or": "or",
+      "select": "Select existing",
+      "ask": "Ask homework",
+      "group": "Group",
+      "noGroup": "not selected",
+      "openingDate": "Start date",
+      "endingDate": "Close date",
+      "noDate": "not selected",
+      "tasks": "Tasks",
+      "askConfirmation": "Are you sure you want to ask this homework?",
+      "howAddTasks": "To add tasks select it from your list in the course with a long press and in the action menu press the 'Add to homework' button",
+      "validation": {
+        "groupRequired": "Group is required",
+        "dateRequired": "Date is required",
+        "tasksRequired": "Tasks not added",
+        "openAfterClose": "Start date must be earlier than end date",
+        "closeBeforeOpen": "Close date must be earlier than start date",
+        "endDateBeforeNow": "Close date must be earlier than now"
       }
     },
     "try": {
@@ -398,7 +452,8 @@
       "title": "Filters",
       "sortBy": "Sort by",
       "apply": "Apply",
-      "cancel-all": "Cancel All"
+      "cancel-all": "Cancel All",
+      "empty-filtered": "Nothing found for the specified parameters"
     },
     "input-placeholder-prefix": "Еnter",
     "input-placeholder-postfix": "",
