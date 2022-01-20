@@ -26,13 +26,13 @@ const STATUS_NOT_PERFORMED = 'NOT_PERFORMED';
 const STATUS_PERFORMED = 'PERFORMED';
 const STATUS_RETURNED = 'RETURNED';
 
-const ANSWER_UPDATE_TIME = 10 * 1000;
+const ANSWER_UPDATE_TIME = 1 * 1000;
 
 export const TASK_ANSWER_SCREEN = 'taskAnswer';
 function TaskAnswer({ navigation, route }) {
   const { translate } = useTranslation();
   const { state } = useContext(ProfileContext);
-  const { interviews, setInterviews, tasks, setAnswerTry, onAnswer } = useContext(HomeworkContext);
+  const { interviews, tasks, setAnswerTry, onAnswer } = useContext(HomeworkContext);
   const [interview, setInterview] = useState();
   const [task, setTask] = useState();
 
@@ -65,8 +65,7 @@ function TaskAnswer({ navigation, route }) {
 
   const fetchAnswerTry = () => {
     let link;
-    if (selectedAnswerTry) link = selectedAnswerTry.link();
-    else if (interview.link('answers')) {
+    if (interview.link('answers')) {
       link = interview.link('answers').fill('taskId', task.id).fill('size', 1).fill('role', state.name);
     } else {
       setIsСompleted(false);
@@ -84,9 +83,11 @@ function TaskAnswer({ navigation, route }) {
               setIsСompleted(false);
               break;
             case STATUS_RETURNED:
+              setSelectedAnswerTry(undefined);
               setIsСompleted(false);
               break;
             default:
+              setSelectedAnswerTry(undefined);
               setIsСompleted(true);
               break;
           }
@@ -111,13 +112,12 @@ function TaskAnswer({ navigation, route }) {
       taskId: task.id,
     };
 
-    console.log(interview);
     interview
       .link('interviewMessages')
       .post(taskAnswer, setTryActionPerforming)
       .then(data => {
-        onAnswer?.(data);
         continueTry(data);
+        onAnswer?.(data);
       })
       .catch(error => console.log('Не удалось создать ответ на задание.', error));
   };
@@ -160,7 +160,7 @@ function TaskAnswer({ navigation, route }) {
         <View style={styles.row}>
           <Text weight="bold">{translate('tasks.edit.duration')}</Text>
           <Text style={styles.infoText}>
-            {task?.duration ? (
+            {task?.duration !== undefined ? (
               <>
                 {task.duration !== null
                   ? moment.duration(task?.duration * 60 * 1000 ?? 0).humanize()
@@ -240,7 +240,7 @@ function TaskAnswer({ navigation, route }) {
           {selectedAnswerTry === undefined && (
             <Button title={translate('homeworks.try.start')} style={styles.button} onPress={createTaskAnswer} />
           )}
-          {state == types.STUDENT && selectedAnswerTry !== undefined && (
+          {selectedAnswerTry !== undefined && (
             <Button title={translate('homeworks.try.continue')} style={styles.button} onPress={() => continueTry()} />
           )}
           {state != types.STUDENT &&
