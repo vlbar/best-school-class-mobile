@@ -40,7 +40,7 @@ export default function Button({
       flexGrow: 1,
     },
     icon: {
-      marginRight: 10,
+      marginRight: title ? 10 : 0,
     },
     disabled: {
       opacity: 0.7,

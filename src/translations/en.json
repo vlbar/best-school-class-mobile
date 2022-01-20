@@ -111,6 +111,7 @@
   },
   "groups": {
     "title": "Groups",
+    "group": "Group",
     "searchPlaceholder": "Enter the name of the group...",
     "emptySearch": "No group with this name was found.",
     "emptySearchAdvice": "Check your search terms, you might need to change your role.",
@@ -199,37 +200,11 @@
     "emptySearch": "No course with this name was found.",
     "delete-course-confirmation": "Are you sure you want to delete the selected courses?"
   },
-  "homeworks": {
-    "homework": "Homework",
-    "taskCount_interval": "(1)[{{count}} task];(2-inf)[{{count}} tasks]",
-    "modify": {
-      "start": "Start",
-      "startNew": "Start new",
-      "or": "or",
-      "select": "Select existing",
-      "ask": "Ask homework",
-      "group": "Group",
-      "noGroup": "not selected",
-      "openingDate": "Start date",
-      "endingDate": "Close date",
-      "noDate": "not selected",
-      "tasks": "Tasks",
-      "askConfirmation": "Are you sure you want to ask this homework?",
-      "howAddTasks": "To add tasks select it from your list in the course with a long press and in the action menu press the 'Add to homework' button",
-      "validation": {
-        "groupRequired": "Group is required",
-        "dateRequired": "Date is required",
-        "tasksRequired": "Tasks not added",
-        "openAfterClose": "Start date must be earlier than end date",
-        "closeBeforeOpen": "Close date must be earlier than start date",
-        "endDateBeforeNow": "Close date must be earlier than now"
-      }
-    }
-  },
   "tasks": {
+    "task": "Task",
     "title": "Tasks",
     "search": "Search Task",
-    "empty": "Tasks not added yet",
+    "empty": "Tasks list is empty",
     "noDescription": "No description",
     "course-not-selected": "Select a course to display its tasks",
     "add": {
@@ -358,11 +333,124 @@
       "На закрепление": "Consolidation"
     }
   },
+  "homeworks": {
+    "title": "Tasks",
+    "info": "Details",
+    "homework": "Homework",
+    "from": "from {{date}}",
+    "until": "until {{date}}",
+    "taskCount_interval": "(1)[{{count}} task];(2-inf)[{{count}} tasks]",
+    "current": "Current",
+    "previous": "Previous",
+    "sortBy": {
+      "newest": "Early first",
+      "oldest": "Late first"
+    },
+    "empty": "It looks like there is no homework yet :(",
+    "filter": {
+      "group": "Group"
+    },
+    "details": {
+      "title": "Homework",
+      "info": {
+        "title": "Information",
+        "group": "Group",
+        "appointed": "Appointed",
+        "deadline": "Deadline"
+      },
+      "members": {
+        "title": "Members",
+        "empty": "Looks like no one is here yet.\nThis is possible if there are no students in the group.\nFirst you need to invite students to the group!",
+        "emptySearch": "No one was found for the specified search criteria :("
+      }
+    },
+    "modify": {
+      "start": "Start",
+      "startNew": "Start new",
+      "or": "or",
+      "select": "Select existing",
+      "ask": "Ask homework",
+      "group": "Group",
+      "noGroup": "not selected",
+      "openingDate": "Start date",
+      "endingDate": "Close date",
+      "noDate": "not selected",
+      "tasks": "Tasks",
+      "askConfirmation": "Are you sure you want to ask this homework?",
+      "howAddTasks": "To add tasks select it from your list in the course with a long press and in the action menu press the 'Add to homework' button",
+      "validation": {
+        "groupRequired": "Group is required",
+        "dateRequired": "Date is required",
+        "tasksRequired": "Tasks not added",
+        "openAfterClose": "Start date must be earlier than end date",
+        "closeBeforeOpen": "Close date must be earlier than start date",
+        "endDateBeforeNow": "Close date must be earlier than now"
+      }
+    },
+    "try": {
+      "infinity": "Infinity",
+      "start": "Start",
+      "continue": "Continue",
+      "interrupt": "Interrupt",
+      "interruptConfirmation": "Are you sure you want to abort task execution?\nThe student will no longer be able to change answer.",
+      "questionCount": "Question {{number}}",
+      "timeLeft": "Time left",
+      "yourAnswer": "Your answer",
+      "confirmationPerform": "Are you sure you want to complete this task and submit it for review?\nOnce confirmed, you will no longer be able to change your answer.",
+      "completion": "Completion",
+      "questions": "Questions",
+      "questionSaving": "Question saving",
+      "saveError": "An error has occurred",
+      "retrySave": "Retry",
+      "saved": "Your answers have been saved",
+      "goBack": "Exit",
+      "started": "Started",
+      "finished": "Finished",
+      "runtime": "Runtime",
+      "appreciated": "Appreciated",
+      "notAppreciated": "Not Appreciated",
+      "returned": "Returned",
+      "score": "Score",
+      "unloaded": "unloaded",
+      "loaded": "loaded",
+      "selected": "selected",
+      "answered": "answered",
+      "statusOutside": "Answer status changed outside"
+    },
+    "interview": {
+      "tasks": "Tasks",
+      "messages": "Messages",
+      "closed": "The interview is closed.\nIt is no longer possible to write messages.",
+      "noMessages": "Looks like no one has posted here yet.\nBe the first to start!",
+      "messageEdit": "Editing a post",
+      "messagePlaceholder": "Enter your message...",
+      "messageDeleted": "Message deleted",
+      "taskMessage": "Task answer",
+      "markAction": "Evaluate",
+      "result": "Evaluated",
+      "remarkAction": "Re-evaluate",
+      "mark": {
+        "title": "Work Evaluation",
+        "result": "Final score",
+        "closeAction": "Close interview"
+      },
+      "total": "Total",
+      "deleteConfirmation": "Are you sure you want to delete the message? This action cannot be undone...",
+      "taskNoDesctiption": "No description.",
+      "actions": {
+        "title": "Actions",
+        "delete": "Delete",
+        "edit": "Edit",
+        "reply": "Reply"
+      }
+    }
+  },
   "common": {
     "actions": "Actions",
     "search": "Search",
     "filters": {
       "title": "Filters",
+      "sortBy": "Sort by",
       "apply": "Apply",
       "cancel-all": "Cancel All",
       "empty-filtered": "Nothing found for the specified parameters"
@@ -375,6 +463,12 @@
     "ok": "Ok",
     "discard": "Discard",
     "apply": "Apply",
+    "cancel": "Cancel"
+  },
+  "date": {
+    "today": "Today",
+    "tomorrow": "Tomorrow",
+    "yesterday": "Yesterday",
     "cancel": "Cancel",
     "error": "An error has occurred",
     "refresh": "Refresh"

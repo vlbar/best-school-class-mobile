@@ -1,11 +1,15 @@
 import i18n from 'i18next';
 import { NativeModules, Platform } from 'react-native';
 import { initReactI18next, useTranslation as useI18nTranslations } from 'react-i18next';
+import intervalPlural from 'i18next-intervalplural-postprocessor';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+
+import moment from 'moment';
 import 'moment/locale/ru';
 import 'moment/locale/fr';
 import 'moment/locale/ja';
 import 'moment/locale/de';
+import moment from 'moment';
 
 const defaultLanguage = 'en';
 const translations = [
@@ -58,21 +62,24 @@ export async function configureInternationalization() {
       console.log(err);
       language = getFallbackAvailableLanguage(getSystemLanguage());
     });
-
+  moment.locale(language);
   return initInternationalization(language, resources);
 }
 
 function initInternationalization(language, resources) {
-  return i18n.use(initReactI18next).init({
-    resources,
-    lng: language,
-    fallbackLng: defaultLanguage,
-    compatibilityJSON: 'v3',
-    keySeparator: '.',
-    interpolation: {
-      escapeValue: false,
-    },
-  });
+  return i18n
+    .use(intervalPlural)
+    .use(initReactI18next)
+    .init({
+      resources,
+      lng: language,
+      fallbackLng: defaultLanguage,
+      compatibilityJSON: 'v3',
+      keySeparator: '.',
+      interpolation: {
+        escapeValue: false,
+      },
+    });
 }
 
 function getSystemLanguage() {
@@ -85,29 +92,31 @@ function getSystemLanguage() {
 
 function getFallbackAvailableLanguage(language) {
   let targetLanguage = availableLanguages.find(x => x.name === language);
-  if (!targetLanguage)
-    targetLanguage = availableLanguages.find(
-      x => x.name === language.substring(0, 2),
-    );
+  if (!targetLanguage) targetLanguage = availableLanguages.find(x => x.name === language.substring(0, 2));
   if (!targetLanguage) return defaultLanguage;
   else return targetLanguage.name;
 }
 
 export function getCurrentLanguage() {
   const { i18n } = useI18nTranslations();
-  let languageName = i18n.language;
-  let displayName = availableLanguages.find(
-    x => x.name === languageName,
-  ).displayName;
+  const languageCode = i18n.language;
+  const languageName = languageCode;
+  const displayName = availableLanguages.find(x => x.name === languageName).displayName;
 
   return {
+    /**
+     * @deprecated use languageCode
+     */
     languageName,
+    languageCode,
     displayName,
   };
 }
 
 export function changeLanguage(lng) {
+  moment.locale(lng);
   i18n.changeLanguage(lng);
+  moment.locale(lng);
   AsyncStorage.setItem('@language', lng).catch(err => console.log(err));
 }
 
@@ -116,13 +125,18 @@ export function useTranslation() {
   return { translate: t, options: i18n };
 }
 
-/*
-  Examples of using:
-  translate('jabroni.cringe');
-  translate('jabroni.cringe', 'Jabromi Cringme');
-  translate('jabroni.cringe', {name: 'Master'});
-  translate('jabroni.cringe', 'Jabromi Cringme is {{name}}', {name: 'Slave'});
-*/
+/**
+ * @param {string} key
+ * @param {(string|object)} [defaultValueOrOptions]
+ * @param {object} [options]
+ * @return string
+ * 
+ * @example
+ * translate('jabroni.cringe');
+ * translate('jabroni.cringe', 'Jabromi Cringme');
+ * translate('jabroni.cringe', {name: 'Master'});
+ * translate('jabroni.cringe', 'Jabromi Cringme is {{name}}', {name: 'Slave'});
+ */
 export function translate(key, defaultValueOrOptions, options) {
   if (!i18n.isInitialized) return key;
   let defaultValue = undefined;

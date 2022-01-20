@@ -14,17 +14,16 @@ const HEADER_PADDING_RIGHT = 10;
 const HEADER_PADDING_LEFT = 0;
 const TITLE_MARGIN = 5;
 
-function Header({ canBack = true, title, backgroundColor = Color.white, headerRight, onBack, children }) {
+function Header({ canBack, title, backgroundColor = Color.white, headerRight, onBack, children }) {
   const navigation = useNavigation();
-  const [canGoBack, setCanGoBack] = useState(navigation.canGoBack());
-  let isGoBackShow = canGoBack && canBack;
+  const [canGoBack, setCanGoBack] = useState(navigation.canGoBack() && (navigation?.getState()?.routes?.length > 1 || canBack));
 
   const onBackHandler = () => {
     const result = onBack?.();
     if (result === undefined || result === true) navigation.goBack();
   };
 
-  let minTitleMarginSize = isGoBackShow ? BACK_SIZE_WITH_PADDING : 0;
+  let minTitleMarginSize = canGoBack ? BACK_SIZE_WITH_PADDING : 0;
   return (
     <View style={[styles.header, { backgroundColor: backgroundColor ?? Color.white }]}>
       <View style={styles.titleBackView}>
@@ -35,7 +34,7 @@ function Header({ canBack = true, title, backgroundColor = Color.white, headerRi
         <View style={[styles.margin, { minWidth: minTitleMarginSize }]}>{headerRight}</View>
       </View>
       <View style={styles.frontContainer}>
-        {isGoBackShow && (
+        {canGoBack && (
           <IconButton
             name="chevron-back-outline"
             size={BACK_SIZE}

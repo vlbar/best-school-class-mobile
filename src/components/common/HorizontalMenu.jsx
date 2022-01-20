@@ -25,12 +25,12 @@ function HorizontalMenu({ children, style }) {
   });
 
   return (
-    <View>
+    <View style={{ flex: 1 }}>
       <View style={[styles.container, style]}>{items}</View>
-      <View>
+      <View style={{ flex: 1 }}>
         {items.map((item, index) => {
           return (
-            <View style={{ display: index === selected ? 'flex' : 'none' }} key={index}>
+            <View style={{ display: index === selected ? 'flex' : 'none', flex: 1 }} key={index}>
               {item.props.children}
             </View>
           );
@@ -58,7 +58,6 @@ function HorizontalMenuItem({ title, onPress, style, __contextValue, __contextSe
 
 const styles = StyleSheet.create({
   container: {
-    width: '100%',
     backgroundColor: Color.ultraLightPrimary,
     borderRadius: 999,
     flexDirection: 'row',
