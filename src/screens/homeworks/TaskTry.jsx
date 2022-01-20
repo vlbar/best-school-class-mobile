@@ -306,7 +306,7 @@ function TaskTry({ navigation }) {
       <Header
         title={translate('course.title')}
         headerRight={headerContent}
-        onBack={() => manageAnswer(questions[questionIndex])}
+        onBack={() => { manageAnswer(questions[questionIndex]) }}
       />
       <View style={{ marginHorizontal: 20 }}>
         <View style={[styles.row]}>
