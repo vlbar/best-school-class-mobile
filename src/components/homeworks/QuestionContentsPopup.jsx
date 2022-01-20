@@ -65,32 +65,11 @@ function QuestionContentsPopup({ show, isFetching, questions, current, total, on
   };
 
   const toggleHelp = () => {
-    setIsHelpShow(!isHelpShow)
-  }
+    setIsHelpShow(!isHelpShow);
+  };
 
   return (
     <BottomPopup title={translate('homeworks.try.questions')} show={show} onClose={onClose}>
-      <IconButton name="help-circle-outline" onPress={toggleHelp} style={styles.help} />
-      {isHelpShow && (
-        <View style={styles.colomnRow}>
-          <View style={styles.infoRow}>
-            <View style={[styles.question, getStyle(questionAnswerState.UNLOADED)]} />
-            <Text>{translate('homeworks.try.unloaded')}</Text>
-          </View>
-          <View style={styles.infoRow}>
-            <View style={[styles.question, getStyle(questionAnswerState.LOADED)]} />
-            <Text>{translate('homeworks.try.loaded')}</Text>
-          </View>
-          <View style={styles.infoRow}>
-            <View style={[styles.question, getStyle(questionAnswerState.SELECTED)]} />
-            <Text>{translate('homeworks.try.selected')}</Text>
-          </View>
-          <View style={styles.infoRow}>
-            <View style={[styles.question, getStyle(questionAnswerState.ANSWERED)]} />
-            <Text>{translate('homeworks.try.answered')}</Text>
-          </View>
-        </View>
-      )}
       <View style={styles.row}>
         {fullQuestionsArray.map((question, index) => {
           let state = questionAnswerState.UNLOADED;
@@ -112,6 +91,27 @@ function QuestionContentsPopup({ show, isFetching, questions, current, total, on
           );
         })}
       </View>
+      {isHelpShow && (
+        <View style={styles.colomnRow}>
+          <View style={styles.infoRow}>
+            <View style={[styles.question, getStyle(questionAnswerState.SELECTED)]} />
+            <Text>{translate('homeworks.try.selected')}</Text>
+          </View>
+          <View style={styles.infoRow}>
+            <View style={[styles.question, getStyle(questionAnswerState.ANSWERED)]} />
+            <Text>{translate('homeworks.try.answered')}</Text>
+          </View>
+          <View style={styles.infoRow}>
+            <View style={[styles.question, getStyle(questionAnswerState.UNLOADED)]} />
+            <Text style={{ flexGrow: 1 }}>{translate('homeworks.try.unloaded')}</Text>
+          </View>
+          <View style={styles.infoRow}>
+            <View style={[styles.question, getStyle(questionAnswerState.LOADED)]} />
+            <Text>{translate('homeworks.try.loaded')}</Text>
+          </View>
+        </View>
+      )}
+      <IconButton name="help-circle-outline" onPress={toggleHelp} style={styles.help} />
     </BottomPopup>
   );
 }
@@ -121,7 +121,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     marginHorizontal: 20,
-    marginBottom: 20,
     marginTop: 10,
   },
   colomnRow: {
@@ -132,11 +131,9 @@ const styles = StyleSheet.create({
   },
   infoRow: {
     flexDirection: 'row',
-    marginRight: 20,
     justifyContent: 'flex-start',
-    flexGrow: 0,
-    flexShrink: 1,
-    flexBasis: 120,
+    paddingRight: 20,
+    width: '50%',
   },
   question: {
     width: 28,
@@ -146,10 +143,6 @@ const styles = StyleSheet.create({
     marginRight: 10,
     marginBottom: 10,
     opacity: 0.6,
-  },
-  help: {
-    position: 'absolute',
-    top: -44,
   },
   unloaded: {},
   loaded: { backgroundColor: Color.gray },
