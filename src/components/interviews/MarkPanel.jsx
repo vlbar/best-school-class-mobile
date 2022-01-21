@@ -8,6 +8,7 @@ import { useTranslation } from '../../utils/Internationalization';
 import Button from '../common/Button';
 import Check from '../common/Check';
 import Container from '../common/Container';
+import FistingContainer from '../common/FistingContainer';
 import Text from '../common/Text';
 import Avatar from '../user/Avatar';
 
@@ -38,9 +39,10 @@ export default function MarkPanel({ total, result, evaluator, max, withActions, 
           />
         </View>
       </View>
-      <View style={[(result != null || withActions) && styles.resultContainer]}>
+
+      <FistingContainer wrapStyle={{ marginTop: 10 }}>
         {result != null && (
-          <View style={[styles.result, styles.fistingContainer]}>
+          <View style={styles.result}>
             <Text style={styles.markedText}>{translate('homeworks.interview.result')}:</Text>
 
             <View style={styles.container}>
@@ -52,17 +54,15 @@ export default function MarkPanel({ total, result, evaluator, max, withActions, 
           </View>
         )}
         {withActions && (
-          <View style={[{ flexGrow: 1, marginTop: 20 }, styles.fistingContainer]}>
-            <View>
-              <Button
-                disabled={disabled}
-                title={translate(`homeworks.interview.${result != null ? 'remarkAction' : 'markAction'}`)}
-                onPress={onMarkPress}
-              />
-            </View>
+          <View>
+            <Button
+              disabled={disabled}
+              title={translate(`homeworks.interview.${result != null ? 'remarkAction' : 'markAction'}`)}
+              onPress={onMarkPress}
+            />
           </View>
         )}
-      </View>
+      </FistingContainer>
     </View>
   );
 }
@@ -123,17 +123,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-  fistingContainer: {
-    marginHorizontal: 10,
-  },
-  resultContainer: {
-    marginHorizontal: -10,
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    alignItems: 'center',
-  },
   result: {
-    marginTop: 20,
     flexGrow: 1,
     backgroundColor: '#E6E6E6',
     borderRadius: 12,
@@ -146,9 +136,9 @@ const styles = StyleSheet.create({
   progress: {
     flexGrow: 1,
     justifyContent: 'space-between',
+    marginVertical: 10,
   },
   total: {
-    marginBottom: 10,
     flexDirection: 'row',
     flexGrow: 1,
     alignItems: 'center',

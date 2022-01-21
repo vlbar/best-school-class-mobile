@@ -14,6 +14,7 @@ import ReplyMessage from './ReplyMessage';
 import Check from '../common/Check';
 import { SwipeRow } from 'react-native-swipe-list-view';
 import { clearHtmlTags } from '../../utils/TextUtils';
+import ReplyView from './ReplyView';
 
 const MAX_SWIPE_LENGTH = 60;
 const REPLY_SWIPE_LENGTH = 50;
@@ -22,17 +23,6 @@ const REPLY_TRIGGER_LENGTH = 25;
 function QuestionAnswer({ question, onScoreChange, commentCreateHref }, ref) {
   const [status, setStatus] = useState(question.questionAnswer?.score != null ? 'saved' : 'normal');
   const [showPopup, setShowPopup] = useState(false);
-
-  const rowSwipeAnimatedValue = useRef({ anime: new Animated.Value(0), vaginated: false });
-  function onSwipeValueChange(swipeData) {
-    let { value } = swipeData;
-    value = Math.abs(value);
-
-    rowSwipeAnimatedValue.current.anime.setValue(value);
-
-    if (value >= REPLY_SWIPE_LENGTH && !rowSwipeAnimatedValue.current.vaginated) Vibration.vibrate(100);
-    rowSwipeAnimatedValue.current.vaginated = value >= REPLY_SWIPE_LENGTH;
-  }
 
   const { value, onChange } = useDelay(updateQuestionScore, 1000, question.questionAnswer?.score);
   const scoreRef = useRef(question.questionAnswer?.score);
@@ -71,55 +61,15 @@ function QuestionAnswer({ question, onScoreChange, commentCreateHref }, ref) {
       questionAnswerId: question.questionAnswer?.questionId,
     };
   }
-  //FIXME: DO REFACTOR
-  const hiddenItem = useMemo(() => {
-    return (
-      <View style={[{ flexGrow: 1, alignItems: 'center', flexDirection: 'row-reverse' }]}>
-        <Animated.View
-          style={[
-            {
-              transform: [
-                {
-                  scale: rowSwipeAnimatedValue.current.anime.interpolate({
-                    inputRange: [REPLY_TRIGGER_LENGTH, REPLY_SWIPE_LENGTH],
-                    outputRange: [0, 1],
-                    extrapolate: 'clamp',
-                  }),
-                },
-                {
-                  translateX: rowSwipeAnimatedValue.current.anime.interpolate({
-                    inputRange: [REPLY_SWIPE_LENGTH, MAX_SWIPE_LENGTH],
-                    outputRange: [0, REPLY_SWIPE_LENGTH - MAX_SWIPE_LENGTH],
-                    extrapolate: 'clamp',
-                  }),
-                },
-              ],
-            },
-          ]}
-        >
-          <Icon name="arrow-undo-circle" size={25} color={Color.lightPrimary} />
-        </Animated.View>
-      </View>
-    );
-  }, []);
 
   return (
-    <SwipeRow
-      ref={ref}
-      disableRightSwipe
-      disableLeftSwipe={!question.questionAnswer}
-      stopRightSwipe={-MAX_SWIPE_LENGTH}
-      rightActivationValue={-REPLY_SWIPE_LENGTH}
-      onRowClose={() => {
-        if (rowSwipeAnimatedValue.current.vaginated) setShowPopup(true);
-      }}
-      onSwipeValueChange={onSwipeValueChange}
-      swipeKey={`${question.id}`}
-      directionalDistanceChangeThreshold={1}
-    >
-      {hiddenItem}
-
-      <Pressable disabled={true} onPress={() => setShowPopup(true)}>
+    <>
+      <ReplyView
+        ref={ref}
+        disabled={!question.questionAnswer}
+        swipeKey={`${question.id}`}
+        onReply={() => setShowPopup(true)}
+      >
         <View style={styles.questionContainer}>
           <View>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
@@ -152,6 +102,8 @@ function QuestionAnswer({ question, onScoreChange, commentCreateHref }, ref) {
             )}
           </View>
         </View>
+      </ReplyView>
+      {showPopup && (
         <BottomPopup show={showPopup} onClose={() => setShowPopup(false)} title={'Комментарий'}>
           <Container>
             <MessageContext.Provider value={{}}>
@@ -160,7 +112,7 @@ function QuestionAnswer({ question, onScoreChange, commentCreateHref }, ref) {
                 reply={{ content: clearHtmlTags(question.questionVariant.formulation) }}
                 short
               >
-                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 5 }}>
                   {question.questionVariant.type == 'TEXT_QUESTION' && (
                     <TextQuestionContent question={question} short />
                   )}
@@ -195,8 +147,8 @@ function QuestionAnswer({ question, onScoreChange, commentCreateHref }, ref) {
             </MessageContext.Provider>
           </Container>
         </BottomPopup>
-      </Pressable>
-    </SwipeRow>
+      )}
+    </>
   );
 }
 

@@ -2,14 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Animated } from 'react-native';
 
 import Icon from 'react-native-vector-icons/Ionicons';
-
-const STATUSES = {
-  NOT_PERFORMED: 'ellipsis-horizontal-outline',
-  PERFORMED: 'checkmark-outline',
-  APPRECIATED: 'shield-checkmark-outline',
-  RETURNED: 'refresh-outline',
-  NOT_APPRECIATED: 'close-outline',
-};
+import { types } from './AnswerStatus';
 
 export function StatusBadge({ status, size }) {
   const animate = useRef(new Animated.Value(0.5)).current;
@@ -42,10 +35,9 @@ export function StatusBadge({ status, size }) {
       },
     ],
   };
-
   return (
     <Animated.View style={[transform, { alignSelf: 'flex-start' }]}>
-      <Icon name={STATUSES[currentStatus]} size={size} />
+      <Icon name={types[currentStatus].icon} size={size} />
     </Animated.View>
   );
 }

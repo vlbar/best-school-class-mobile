@@ -116,7 +116,6 @@ export default function Interview({ navigation, route }) {
 
   useEffect(() => {
     if (homework && state == types.STUDENT) {
-      console.log('called');
       homework
         .link('myInterview')
         .fetch()
@@ -201,6 +200,7 @@ export default function Interview({ navigation, route }) {
         <HorizontalMenu>
           <HorizontalMenu.Item title={translate('homeworks.interview.tasks')}>
             <FlatList
+              fadingEdgeLength={30}
               data={tasks}
               renderItem={({ item: task }) => {
                 const answer = answers.find(a => a.taskId == task.id);

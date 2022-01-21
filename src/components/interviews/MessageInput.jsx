@@ -38,16 +38,15 @@ export default function MessageInput({ onSubmit, messageCreateHref, extraInputPr
 
   function reset(blur = true) {
     setMessage('');
-    setReply(null);
-    setPing(null);
-    setEdit(null);
+    setReply?.(null);
+    setPing?.(null);
+    setEdit?.(null);
     if (blur) inputRef.current.blur();
   }
 
   function handleMessage() {
     let msg = messageBuilder?.(message) ?? {
-      id: editingMessage?.id,
-      type: 'MESSAGE',
+      ...(editingMessage ?? { type: 'MESSAGE' }),
       content: message,
       replyOnId: replyMessage?.id,
     };

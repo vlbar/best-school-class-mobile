@@ -266,7 +266,12 @@
       "messageEdit": "Редактирование сообщения",
       "messagePlaceholder": "Введите сообщение...",
       "messageDeleted": "Сообщение удалено",
+      "messageEdited": "ред.",
+      "commentDeleted": "Комментарий удален",
+      "commentInvalid": "Комментарий более недействителен",
+      "testAnswersSelected_interval": "(0)[{{count}} выбранныx вариантов ответа];(1)[{{count}} выбранный вариант ответа];(2-inf)[{{count}} выбранных варианта ответа]",
       "taskMessage": "Ответ на задание",
+      "commentMessage": "Комментарий",
       "markAction": "Оценить",
       "result": "Оценка",
       "remarkAction": "Переоценить",
@@ -275,6 +280,7 @@
         "result": "Итоговый балл",
         "closeAction": "Закрыть интервью"
       },
+      "score": "Балл",
       "total": "Итого",
       "deleteConfirmation": "Уверены, что хотите удалить сообщение? Это действие невозможно будет отменить...",
       "actions": {
