@@ -87,7 +87,6 @@ function TaskAnswer({ navigation, route }) {
               setIsСompleted(false);
               break;
             default:
-              setSelectedAnswerTry(undefined);
               setIsСompleted(true);
               break;
           }
@@ -237,10 +236,10 @@ function TaskAnswer({ navigation, route }) {
         )}
       {isСompleted === false && !tryActionPerforming && (
         <>
-          {selectedAnswerTry === undefined && (
+          {selectedAnswerTry === undefined || selectedAnswerTry?.status === STATUS_NOT_APPRECIATED && (
             <Button title={translate('homeworks.try.start')} style={styles.button} onPress={createTaskAnswer} />
           )}
-          {selectedAnswerTry !== undefined && (
+          {selectedAnswerTry !== undefined && selectedAnswerTry.status === STATUS_NOT_PERFORMED && (
             <Button title={translate('homeworks.try.continue')} style={styles.button} onPress={() => continueTry()} />
           )}
           {state != types.STUDENT &&
