@@ -339,7 +339,7 @@
     "homework": "Homework",
     "from": "from {{date}}",
     "until": "until {{date}}",
-    "taskCount_interval": "(1)[{{count}} task];(2-inf)[{{count}} tasks]",
+    "taskCount_interval": "(0)[{{count}} tasks];(1)[{{count}} task];(2-inf)[{{count}} tasks]",
     "current": "Current",
     "previous": "Previous",
     "sortBy": {
@@ -412,7 +412,7 @@
       "returned": "Returned",
       "score": "Score",
       "unloaded": "unloaded",
-      "loaded": "loaded",
+      "loaded": "not answered",
       "selected": "selected",
       "answered": "answered",
       "statusOutside": "Answer status changed outside"

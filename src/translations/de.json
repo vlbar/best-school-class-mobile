@@ -125,7 +125,7 @@
     "search": "Kurs suchen",
     "delete-course-confirmation": "Möchten Sie die ausgewählten Kurse wirklich löschen?",
     "emptySearch": "Es wurde kein Kurs mit diesem Namen gefunden.",
-    "empty": "Leider wurden die Kurse noch nicht hinzugefügt. Um in eine Welt mit benutzerfreundlichen Lehrplänen und Wissensdatenbanken einzusteigen, müssen Sie zuerst **einen Kurs hinzufügen**",
+    "empty": "Leider wurden die Kurse noch nicht hinzugefügt.\n\n Um in eine Welt mit benutzerfreundlichen Lehrplänen und Wissensdatenbanken einzusteigen, müssen Sie zuerst **einen Kurs hinzufügen**",
     "emptySub": "Die Unterkurse wurden noch nicht hinzugefügt."
   },
   "groups": {
@@ -211,6 +211,7 @@
     "input-placeholder-prefix": "Eingeben",
     "cancel": "Abbrechen",
     "applyChangesText": "Möchten Sie die Änderungen wirklich übernehmen?",
+    "input-placeholder-postfix": "",
     "filters": {
       "empty-filtered": "Für die angegebenen Parameter wurde nichts gefunden",
       "title": "Filter",
@@ -335,7 +336,7 @@
     "homework": "Hausaufgaben",
     "current": "Strom",
     "info": "Einzelheiten",
-    "taskCount_interval": "(1)[{{count}} Aufgabe];(2-inf)[{{count}} Aufgaben]",
+    "taskCount_interval": "(0-1)[{{count}} Aufgabe];(2-inf)[{{count}} Aufgaben]",
     "until": "bis zum Datum}}",
     "empty": "Anscheinend gibt es noch keine Hausaufgaben :(",
     "from": "ab Datum}}",

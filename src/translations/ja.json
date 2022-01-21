@@ -335,7 +335,7 @@
     "homework": "宿題",
     "current": "電流",
     "info": "詳細",
-    "taskCount_interval": "（1）[{{count}}タスク];（2-inf）[{{count}}タスク]",
+    "taskCount_interval": "（0-inf)[{{count}} タスク];",
     "until": "{{date}}まで",
     "empty": "まだ宿題がないようです:(",
     "from": "{{date}}から",
