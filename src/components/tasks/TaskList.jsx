@@ -1,16 +1,15 @@
 import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
-import { StyleSheet, View, FlatList, TouchableNativeFeedback, Alert } from 'react-native';
+import { StyleSheet, View, FlatList, TouchableNativeFeedback, Alert, ActivityIndicator, TouchableOpacity } from 'react-native';
 
 import Bandage from './filters/Bandage';
 import Color from '../../constants';
 import IconButton from '../common/IconButton';
-import ProcessView from '../common/ProcessView';
 import SearchBar from './../common/SearchBar';
 import TaskFilterPopup from './filters/TaskFilterPopup';
 import Text from '../common/Text';
 import { MODIFY_TASK_TYPE_SCREEN } from '../../screens/course/ModifyTaskType';
-import { translate } from '../../utils/Internationalization';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
+import { useTranslation } from '../../utils/Internationalization';
 
 // colors
 const taskTypesColors = ['#69c44d', '#007bff', '#db4242', '#2cc7b2', '#8000ff', '#e68e29', '#d4d5d9', '#38c7d1'];
@@ -33,17 +32,24 @@ function TaskList(
     showHeader = true,
     canSelect = false,
     headerContent,
+    additionalHeaderContent,
     actionMenuContent,
+    additionalEmptyMessage,
     onSelect,
     onTaskPress,
+    onPushSelected,
+    style,
   },
   ref,
 ) {
+  const { translate } = useTranslation();
   const navigation = useNavigation();
   const isFocused = useIsFocused();
 
   const [tasks, setTasks] = useState([]);
   const [isFetching, setIsFetching] = useState(false);
+  const [isRefresing, setIsRefresing] = useState(false);
+  const [isHasError, setIsHasError] = useState(false);
   const nextPage = useRef(undefined);
   const lastParentCourse = useRef(undefined);
 
@@ -65,10 +71,18 @@ function TaskList(
       refreshPage();
     },
     updateTask: task => {
-      let prevTasks = tasks;
-      let targetIndex = prevTasks.findIndex(x => x.id === task.id);
-      prevTasks[targetIndex] = task;
-      setTasks([...prevTasks]);
+      const prevTasks = tasks;
+      const targetIndex = prevTasks.findIndex(x => x.id === task.id);
+      if (targetIndex > -1) {
+        prevTasks[targetIndex] = task;
+        setTasks([...prevTasks]);
+      } else {
+        setTasks(
+          [...prevTasks, task].sort((a, b) =>
+            a.name.toLowerCase() > b.name.toLowerCase() ? 1 : b.name.toLowerCase() > a.name.toLowerCase() ? -1 : 0,
+          ),
+        );
+      }
     },
   }));
 
@@ -104,22 +118,52 @@ function TaskList(
     }
   }, [parentCourse]);
 
-  function fetchTasks(link) {
+  useEffect(() => {
+    if (canFetch === false) {
+      const existsSelectedTasks = selectedTasks.filter(task => {
+        return data.find(x => task.id === x.id);
+      });
+      setSelectedTasks(existsSelectedTasks);
+      if (!existsSelectedTasks.length) closeActionMenu();
+    }
+  }, [data]);
+
+  function fetchTasks(link, isRefres = false) {
     link
-      ?.fetch(setIsFetching)
+      ?.fetch(isRefres ? setIsRefresing : setIsFetching)
       .then(page => {
         let fetchedTasks = page.list('tasks') ?? [];
         nextPage.current = page.link('next');
 
         if (page.page.number == 1) setTasks(fetchedTasks);
         else setTasks([...tasks, ...fetchedTasks]);
+        setIsHasError(false);
       })
-      .catch(error => console.log('Не удалось загрузить список курсов.', error));
+      .catch(error => {
+        console.log('Не удалось загрузить список курсов.', error);
+        setIsHasError(true);
+      });
   }
 
+  const fetchPage = (isRefres = false) => {
+    if (!parentCourse) {
+      setTasks([]);
+      return;
+    }
+    fetchTasks(parentCourse.link('tasks'), isRefres);
+  };
+
   const refreshPage = () => {
-    if (!parentCourse) setTasks([]);
-    fetchTasks(parentCourse.link('tasks'));
+    fetchPage(true);
+  };
+
+  const fetchNextPage = () => {
+    fetchTasks(nextPage.current);
+  };
+
+  const updatePage = () => {
+    if (tasks.length > 0) fetchNextPage();
+    else fetchPage();
   };
 
   const fetchFirstPage = () => {
@@ -137,10 +181,6 @@ function TaskList(
     );
   };
 
-  const fetchNextPage = () => {
-    fetchTasks(nextPage.current);
-  };
-
   const setFilterParams = params => {
     setIsTaskFiltersShow(false);
     filterParams.current = params;
@@ -153,6 +193,7 @@ function TaskList(
   };
 
   const addTaskType = taskType => {
+    if (taskType && taskType.creatorId === null) return;
     setIsTaskFiltersShow(false);
     needOpenPopupAfterMount.current = true;
     navigation.navigate(MODIFY_TASK_TYPE_SCREEN, { taskTypeName: taskType.name, taskTypeId: taskType.id });
@@ -193,6 +234,11 @@ function TaskList(
     refreshPage();
   };
 
+  const pushSelectedTasks = () => {
+    closeActionMenu();
+    onPushSelected?.(selectedTasks);
+  };
+
   const title = translate('common.confirmation');
   const confirmation = translate('tasks.action.delete-confirmation');
   const ok = translate('common.ok');
@@ -209,7 +255,7 @@ function TaskList(
   }
 
   // render
-  const renderCourseItem = ({ item }) => {
+  const renderTaskItem = ({ item }) => {
     const isSelected = selectedTasks.find(x => x.id === item.id) !== undefined;
     const description = clearHtmlTags(item.description);
     return (
@@ -224,32 +270,45 @@ function TaskList(
             </Text>
             {item.taskType && <Bandage color={getTaskTypeColor(item.taskType.id)} title={item.taskType.name} />}
           </View>
-          {description?.length && (
-            <Text style={styles.description} numberOfLines={1}>
-              {description}
-            </Text>
-          )}
+          <Text style={styles.description} numberOfLines={1}>
+            {description?.length ? description : translate('tasks.noDescription')}
+          </Text>
         </View>
       </TouchableNativeFeedback>
     );
   };
 
-  const loadingItemsIndicator = () => {
-    return isFetching && !tasks.length ? (
-      <View>
-        <View style={[styles.fetchingViewContainer]}>
-          <ProcessView style={[styles.fetchingView, { width: '70%' }]} />
-          <ProcessView style={[styles.fetchingView, { width: '50%' }]} />
-        </View>
-        <View style={[styles.fetchingViewContainer]}>
-          <ProcessView style={[styles.fetchingView, { width: '70%' }]} />
-          <ProcessView style={[styles.fetchingView, { width: '50%' }]} />
-        </View>
-      </View>
-    ) : (
-      <></>
-    );
-  };
+  const loadingItemsIndicator = isFetching ? (
+    !tasks.length && <ActivityIndicator color={Color.primary} size={50} />
+  ) : (
+    <>
+      {isHasError && (
+        <TouchableOpacity activeOpacity={0.7} onPress={updatePage}>
+          <View style={{ marginVertical: 20 }}>
+            <Text color={Color.silver} style={{ textAlign: 'center' }}>
+              {translate('common.error')}
+            </Text>
+            <Text style={{ textAlign: 'center' }}>{translate('common.refresh')}</Text>
+          </View>
+        </TouchableOpacity>
+      )}
+    </>
+  );
+
+  const defaultActionMenu = (
+    <>
+      {selectedTasks?.length === 1 && (
+        <IconButton
+          name="create-outline"
+          size={24}
+          style={styles.actionIcon}
+          onPress={() => onTaskPress(selectedTasks[0])}
+        />
+      )}
+      <IconButton name="push-outline" size={24} style={styles.actionIcon} onPress={pushSelectedTasks} />
+      <IconButton name="trash-outline" size={24} style={styles.actionIcon} onPress={showDeleteTasksAlert} />
+    </>
+  );
 
   const headerLayoutHandler = event => {
     setRefreshOffset(event.nativeEvent.layout.height);
@@ -257,70 +316,67 @@ function TaskList(
 
   const isHasFilters = filterParams.current.taskTypeId !== null || filterParams.current.orderBy !== defaultOrder;
   const listHeader = (
-    <View onLayout={headerLayoutHandler} style={[styles.listHeader]}>
-      {headerContent}
-      <SearchBar placeholder={translate('tasks.search')} style={styles.searchBar} onSearch={searchByName}>
-        <SearchBar.IconButton name="filter-outline" onPress={() => setIsTaskFiltersShow(true)} />
-        {isHasFilters && <View style={styles.hasFilters} />}
-      </SearchBar>
-    </View>
-  );
-
-  const defaultActionMenu = (
     <>
-      {selectedTasks?.length === 1 && (
-        <IconButton name="create-outline" size={24} style={styles.actionIcon} onPress={() => {}} />
-      )}
-      <IconButton name="trash-outline" size={24} style={styles.actionIcon} onPress={showDeleteTasksAlert} />
-    </>
-  );
-
-  const actionMenuContainer = (
-    <View style={styles.actionHeader}>
-      <View style={[styles.listHeader]}>
-        {headerContent}
-        <View style={[styles.actionMenu]}>
-          <View style={[styles.actionRow]}>
-            <IconButton name="close-outline" onPress={closeActionMenu} />
-            <Text style={[styles.selectedCount]}>{selectedTasks.length}</Text>
+      <View onLayout={headerLayoutHandler} style={[styles.listHeader, refreshOffset && { height: refreshOffset }]}>
+        {additionalHeaderContent}
+        {!isActionMenuShow && headerContent && headerContent}
+        {!isActionMenuShow && !headerContent && showHeader && (
+          <SearchBar placeholder={translate('tasks.search')} style={styles.searchBar} onSearch={searchByName}>
+            <SearchBar.IconButton name="filter-outline" onPress={() => setIsTaskFiltersShow(true)} />
+            {isHasFilters && <View style={styles.hasFilters} />}
+          </SearchBar>
+        )}
+        {isActionMenuShow && (
+          <View style={[styles.actionMenu]}>
+            <View style={[styles.actionRow]}>
+              <IconButton name="close-outline" onPress={closeActionMenu} />
+              <Text style={[styles.selectedCount]}>{selectedTasks.length}</Text>
+            </View>
+            {<View style={[styles.actionRow]}>{actionMenuContent?.(selectedTasks) ?? defaultActionMenu}</View>}
           </View>
-          {<View style={[styles.actionRow]}>{actionMenuContent ?? defaultActionMenu}</View>}
-        </View>
+        )}
       </View>
-    </View>
+    </>
   );
 
   const emptyTasks = () => {
     let emptyText;
     if (!isFetching) {
-      if (data) emptyText = 'tasks.empty';
+      if (data && !canFetch) emptyText = 'tasks.empty';
       else {
         if (parentCourse) emptyText = 'tasks.empty';
         else emptyText = 'tasks.course-not-selected';
       }
     }
-
-    if (emptyText) return <Text style={styles.emptyTasks}>{translate(emptyText)}</Text>;
+    if (emptyText)
+      return (
+        <>
+          <Text style={styles.emptyTasks}>{translate(emptyText)}</Text>
+          <Text style={[styles.emptyTasks, { paddingTop: 10 }]}>{additionalEmptyMessage}</Text>
+        </>
+      );
     else return <View />;
   };
 
   return (
-    <View style={[styles.container]}>
-      {isActionMenuShow && actionMenuContainer}
+    <>
       <FlatList
         data={data ?? tasks}
-        renderItem={renderCourseItem}
+        renderItem={renderTaskItem}
         keyExtractor={item => item.id}
-        refreshing={isFetching}
-        ListHeaderComponent={showHeader && listHeader}
+        refreshing={isRefresing}
+        ListHeaderComponent={listHeader}
         stickyHeaderIndices={[0]}
         stickyHeaderHiddenOnScroll={true}
         ListFooterComponent={loadingItemsIndicator}
+        ListFooterComponentStyle={styles.indicator}
         ListEmptyComponent={emptyTasks}
         progressViewOffset={refreshOffset}
         onRefresh={!data && refreshPage}
         onEndReached={!data && fetchNextPage}
         onEndReachedThreshold={0.7}
+        style={[styles.container]}
+        contentContainerStyle={[{ flexGrow: 1 }, style]}
       />
       <TaskFilterPopup
         show={isTaskFiltersShow}
@@ -329,7 +385,7 @@ function TaskList(
         onAddTaskType={addTaskType}
         isNeedRefesh={needOpenPopupAfterMount.current}
       />
-    </View>
+    </>
   );
 }
 
@@ -340,10 +396,17 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
+    paddingHorizontal: 10,
   },
   emptyTasks: {
-    paddingTop: 10,
+    paddingTop: 60,
     textAlign: 'center',
+    color: Color.silver,
+  },
+  indicator: {
+    flexGrow: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   searchBar: {
     marginBottom: 0,
@@ -402,7 +465,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    height: 52,
+    height: 50,
     backgroundColor: Color.white,
   },
   actionRow: {

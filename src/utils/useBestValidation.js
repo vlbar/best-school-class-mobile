@@ -213,7 +213,7 @@ export default function useBestValidation(validationSchema, onChangeValidCallbac
   }
 
   function requiredCheck(value, fieldSchema) {
-    if (fieldSchema.required && fieldSchema.required[0] !== false && (value === undefined || value.length === 0)) {
+    if (fieldSchema.required && fieldSchema.required[0] !== false && (value == undefined || value.length === 0)) {
       return false;
     }
     return true;

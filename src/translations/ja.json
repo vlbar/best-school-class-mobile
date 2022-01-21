@@ -1,12 +1,475 @@
 {
-  "start": {
-    "comeback": "おかえりなさい！",
-    "username": "ユーザー名",
-    "password": "パスワード"
+  "tasks": {
+    "noDescription": "説明なし",
+    "empty": "タスクリストが空です",
+    "edit": {
+      "validation": {
+        "name": {
+          "max": "タスク名が長すぎます",
+          "required": "タスク名が入力されていません",
+          "min": "タスク名には少なくとも{{min}}文字が含まれている必要があります"
+        },
+        "maxScore": {
+          "max": "スコアの数が多すぎます",
+          "positive": "最大スコアは正の数でなければなりません",
+          "required": "最大スコアが入力されていません"
+        },
+        "description": {
+          "max": "タスクの説明が長すぎます"
+        },
+        "duration": {
+          "max": "期間が多すぎます",
+          "required": "期間が入力されていません",
+          "positive": "期間は正の数である必要があります"
+        }
+      },
+      "title": "タスクの編集",
+      "loading": "タスクを読み込んでいます...",
+      "maxScore": "最大スコア",
+      "name": "タスク名",
+      "description": "タスクの説明",
+      "taskType": "タスクタイプ",
+      "duration": "間隔",
+      "noTaskType": "選択されていない",
+      "maxScoreSubtitle": "学生が受け取ったポイント数は、この数に変換されます。"
+    },
+    "add": {
+      "submit": "追加",
+      "title": "タスクを追加",
+      "name": "タスク名"
+    },
+    "title": "タスク",
+    "question": {
+      "variant": {
+        "testQuestion": {
+          "validation": {
+            "minCount": "回答の数は{{min}}以上である必要があります",
+            "empty": "質問に対する答えはありません",
+            "answer": {
+              "required": "回答が入力されていません",
+              "maxLenght": "答えが長すぎる"
+            },
+            "noRight": "正解はありません"
+          },
+          "title": "リストの1つ",
+          "addAnswer": "回答を追加"
+        },
+        "textQuestion": {
+          "validation": {
+            "numberOfSymbolsMax": "シンボルの数が多すぎます",
+            "numberOfSymbolsMin": "シンボルの数は{{min}}以上である必要があります"
+          },
+          "numberOfSymbols": "シンボルの数",
+          "title": "文章"
+        },
+        "addLink": "リンクをペーストする",
+        "type": "質問の種類",
+        "testMultiQuestion": {
+          "title": "リストからいくつか"
+        },
+        "validation": {
+          "formulationMin": "製剤名には少なくとも{{min}}文字が含まれている必要があります",
+          "formulationRequired": "処方が入力されていません",
+          "formulationMax": "処方が長すぎる"
+        },
+        "formulation": "処方",
+        "empty-formulation": "製剤は空です",
+        "delete-confirmation": "バリアントを削除してもよろしいですか？",
+        "delete": "バリアントを削除",
+        "delete-last": "最後のバリアントは削除できません！"
+      },
+      "deleteConfirmation": "選択した質問を削除してもよろしいですか？",
+      "addAfter": "後に質問を追加",
+      "moveMode": "質問を移動",
+      "maxScore": "スコア",
+      "validation": {
+        "maxScoreMin": "スコアは{{min}}以上である必要があります",
+        "maxScoreMax": "スコアが多すぎます"
+      },
+      "delete": "質問を削除する",
+      "closeNotValid": "質問変更パネルを閉じてもよろしいですか？質問に無効なバリアントがあります。注：無効な質問は保存されません！",
+      "title": "質問",
+      "add": "質問を追加"
+    },
+    "search": "検索タスク",
+    "sortBy": {
+      "completed": "完了",
+      "newest": "最新",
+      "name": "名前で",
+      "oldest": "最古",
+      "title": "並び替え"
+    },
+    "course-not-selected": "タスクを表示するコースを選択します",
+    "filters": {
+      "task-types": {
+        "add": "新しく追加する",
+        "title": "タスクの種類"
+      }
+    },
+    "task": "仕事",
+    "action": {
+      "delete-confirmation": "選択したタスクを削除してもよろしいですか？"
+    }
+  },
+  "course": {
+    "sub-courses": "サブコース",
+    "modify": {
+      "name": "コース名",
+      "add-submit": "追加",
+      "edit-submit": "編集",
+      "add-title": "コースを追加",
+      "edit-title": "コースの編集"
+    },
+    "title": "コース",
+    "root": "コース",
+    "search": "検索コース",
+    "delete-course-confirmation": "選択したコースを削除してもよろしいですか？",
+    "emptySearch": "この名前のコースは見つかりませんでした。",
+    "empty": "残念ながら、コースはまだ追加されていません。使いやすいカリキュラムと知識ベースの世界に入るには、最初に**コースを追加**する必要があります",
+    "emptySub": "サブコースはまだ追加されていません。"
+  },
+  "groups": {
+    "emptySearchAdvice": "検索用語を確認してください。役割を変更する必要があるかもしれません。",
+    "groupJoin": {
+      "invite": "グループにあなたを招待します",
+      "alreadyMember": "あなたはすでにこのグループのメンバーです",
+      "somethingWentWrong": "何かがうまくいかなかった：/",
+      "members": "メンバー：",
+      "role": "招待の役割：",
+      "notFound": "このコードの招待状は見つかりませんでした:(",
+      "title": "グループに参加する",
+      "limitExceeded": "メンバー制限に達したため、グループに参加できません",
+      "accept": "承認"
+    },
+    "groupDetails": {
+      "leaveConfirmation": "グループを離れてもよろしいですか？",
+      "apply": "申し込み",
+      "students": "学生",
+      "groupClosed": "グループ閉鎖",
+      "emptySearchMembers": "ここにそのような名前の人は誰もいません：/",
+      "groupOpened": "グループオープン",
+      "createInvite": "招待状を作成する",
+      "kick": "キック",
+      "schedule": "スケジュール",
+      "accessSettings": "アクセス設定",
+      "kickConfirmation": "メンバーを蹴ってよろしいですか？",
+      "emptyNews": "新しいものはありません:(",
+      "teachers": "教師",
+      "noInvite": "この役割への招待はまだありません！",
+      "tasks": "タスク",
+      "nearestLesson": "最寄りのレッスン",
+      "studentsLimit": "メンバー数の制限",
+      "studentsSearchPlaceholder": "学生名を入力してください...",
+      "createNew": "新しく作る",
+      "memberSettings": "メンバー設定",
+      "leave": "離れる",
+      "actions": "行動",
+      "emptyMembers": "ここにはまだ誰もいないようです:(",
+      "copied": "クリップボードにコピーしました！",
+      "members": "メンバー",
+      "teachersSearchPlaceholder": "先生の名前を入力してください..."
+    },
+    "group": "グループ",
+    "groupCreate": {
+      "validation": {
+        "nameTooLarge": "グループ名が長すぎます",
+        "nameRequired": "グループ名が必要です",
+        "subjectTooSmall": "件名が短すぎます",
+        "nameTooSmall": "グループ名が短すぎます",
+        "subjectTooLarge": "件名が大きすぎます"
+      },
+      "subject": "主題",
+      "update": "アップデート",
+      "updateGroup": "グループを更新",
+      "createGroup": "グループを作成する",
+      "create": "作成",
+      "name": "名前",
+      "color": "色"
+    },
+    "emptyJoinAdviceContinue": "彼のグループ",
+    "select": "グループを選択",
+    "createNew": "新しいを作成します",
+    "emptyJoinAdvice": "別の教師からの招待コードがある場合は、",
+    "join": "加入",
+    "empty": "ロールのグループがここに表示されます：",
+    "groupCreation": "グループの追加",
+    "emptyCreateAdviceContinue": "あなた自身のグループ",
+    "invitePlaceholder": "招待コードを入力してください...",
+    "create": "作成",
+    "emptySearch": "この名前のグループは見つかりませんでした。",
+    "inviteQuestion": "招待状はありますか？",
+    "or": "また",
+    "searchPlaceholder": "グループの名前を入力してください...",
+    "title": "グループ"
+  },
+  "user": {
+    "self": "君"
   },
   "common": {
+    "applyChanges": "変更を適用しますか？",
     "search": "検索",
-    "input-placeholder-prefix": "",
-    "input-placeholder-postfix": "を入力してください"
+    "input-placeholder-prefix": "入力",
+    "cancel": "キャンセル",
+    "applyChangesText": "変更を適用してもよろしいですか？",
+    "filters": {
+      "empty-filtered": "指定されたパラメーターに何も見つかりません",
+      "title": "フィルタ",
+      "apply": "申し込み",
+      "cancel-all": "すべてキャンセル",
+      "sortBy": "並び替え"
+    },
+    "confirmation": "確認",
+    "apply": "申し込み",
+    "discard": "破棄",
+    "ok": "Ok",
+    "actions": "行動"
+  },
+  "password-change": {
+    "info": "新しいアカウントのパスワードを入力します。古いものは破棄されます。",
+    "password-confirm": "パスワードリピート",
+    "restore": "リセット",
+    "title": "パスワードのリセット",
+    "password": "パスワード",
+    "password-confirm-placeholder": "パスワードを再度入力してください..."
+  },
+  "homeworks": {
+    "details": {
+      "info": {
+        "appointed": "任命",
+        "group": "グループ",
+        "deadline": "締め切り",
+        "title": "情報"
+      },
+      "title": "宿題",
+      "members": {
+        "empty": "まだ誰もいないようです。これは、グループに生徒がいない場合に可能です。まず、学生をグループに招待する必要があります。",
+        "emptySearch": "指定された検索条件で誰も見つかりませんでした:(",
+        "title": "メンバー"
+      }
+    },
+    "previous": "前",
+    "try": {
+      "questions": "質問",
+      "finished": "終了した",
+      "continue": "継続する",
+      "answered": "答えた",
+      "confirmationPerform": "このタスクを完了して、レビューのために送信してもよろしいですか？確認すると、回答を変更することはできなくなります。",
+      "completion": "完了",
+      "started": "開始",
+      "saved": "あなたの答えは保存されました",
+      "statusOutside": "回答ステータスが外部で変更されました",
+      "score": "スコア",
+      "runtime": "ランタイム",
+      "unloaded": "降ろす",
+      "start": "始める",
+      "yourAnswer": "あなたの答え",
+      "appreciated": "感謝",
+      "saveError": "エラーが発生しました",
+      "questionCount": "質問{{番号}}",
+      "infinity": "インフィニティ",
+      "timeLeft": "残り時間",
+      "goBack": "出口",
+      "selected": "選択",
+      "interrupt": "割り込み",
+      "loaded": "ロード済み",
+      "questionSaving": "質問の保存",
+      "interruptConfirmation": "タスクの実行を中止してもよろしいですか？生徒は回答を変更できなくなります。",
+      "retrySave": "リトライ",
+      "returned": "戻ってきた",
+      "notAppreciated": "感謝されない"
+    },
+    "modify": {
+      "start": "始める",
+      "validation": {
+        "tasksRequired": "追加されていないタスク",
+        "dateRequired": "日付が必要です",
+        "closeBeforeOpen": "終了日は開始日より前である必要があります",
+        "groupRequired": "グループが必要です",
+        "endDateBeforeNow": "締切日は今より早くする必要があります",
+        "openAfterClose": "開始日は終了日より前である必要があります"
+      },
+      "endingDate": "締切日",
+      "ask": "宿題をする",
+      "askConfirmation": "この宿題を聞いてよろしいですか？",
+      "or": "また",
+      "openingDate": "開始日",
+      "noGroup": "選択されていない",
+      "tasks": "タスク",
+      "howAddTasks": "タスクを追加するには、コースのリストから長押ししてタスクを選択し、アクションメニューで[宿題に追加]ボタンを押します。",
+      "startNew": "新規開始",
+      "group": "グループ",
+      "select": "既存のものを選択",
+      "noDate": "選択されていない"
+    },
+    "sortBy": {
+      "newest": "アーリーファースト",
+      "oldest": "最初に遅く"
+    },
+    "interview": {
+      "closed": "面接は締め切らせていただきました。メッセージを書くことはできなくなりました。",
+      "noMessages": "まだ誰もここに投稿していないようです。最初に始めましょう！",
+      "actions": {
+        "reply": "返事",
+        "title": "行動",
+        "edit": "編集",
+        "delete": "消去"
+      },
+      "messages": "メッセージ",
+      "tasks": "タスク",
+      "messageDeleted": "メッセージが削除されました",
+      "taskMessage": "タスクの回答",
+      "markAction": "評価",
+      "total": "合計",
+      "remarkAction": "再評価する",
+      "messagePlaceholder": "メッセージを入力してください...",
+      "result": "評価済み",
+      "mark": {
+        "title": "仕事の評価",
+        "closeAction": "面接を閉じる",
+        "result": "最終スコア"
+      },
+      "taskNoDesctiption": "説明はありません。",
+      "messageEdit": "投稿の編集",
+      "deleteConfirmation": "メッセージを削除してもよろしいですか？このアクションは元に戻せません..."
+    },
+    "homework": "宿題",
+    "current": "電流",
+    "info": "詳細",
+    "taskCount_interval": "（1）[{{count}}タスク];（2-inf）[{{count}}タスク]",
+    "until": "{{date}}まで",
+    "empty": "まだ宿題がないようです:(",
+    "from": "{{date}}から",
+    "title": "タスク",
+    "filter": {
+      "group": "グループ"
+    }
+  },
+  "task-types": {
+    "modify": {
+      "add-title": "新しいタスクタイプを追加する",
+      "edit-submit": "アップデート",
+      "delete-confirmation": "このタスクタイプを削除してもよろしいですか？",
+      "add-submit": "追加",
+      "delete": "消去",
+      "modifyDefaultNotAllowed": "デフォルトのタスクタイプの変更は許可されていません",
+      "name": "タスクタイプ名",
+      "edit-title": "タスクタイプの編集"
+    },
+    "longPressToModify": "タスクタイプのバッジを長押しして変更します",
+    "name": {
+      "Проверочная": "チェック",
+      "На закрепление": "統合",
+      "Контрольная": "証拠",
+      "Самостоятельная": "独立"
+    },
+    "search": "検索タスクタイプ",
+    "select": "タスクタイプを選択"
+  },
+  "profile": {
+    "help": {
+      "privacy": "プライバシーポリシー",
+      "send-issue": "問題を報告します",
+      "website": "ブラウザバージョン",
+      "title": "ヘルプ",
+      "help-center": "ヘルプセンター"
+    },
+    "settings": {
+      "title": "設定",
+      "change-language": {
+        "title": "言語を変えてください"
+      }
+    }
+  },
+  "sidebar": {
+    "logout": "ログアウト",
+    "help": "ヘルプ",
+    "notifications": "通知",
+    "settings": "設定",
+    "calendar": "カレンダー"
+  },
+  "register": {
+    "validation": {
+      "middle-name-max": "ミドルネームには50文字を超える文字を含めることはできません",
+      "password-required": "パスワードを入力していません！",
+      "password-min": "パスワードは8文字以上である必要があります。",
+      "first-name-max": "名は30文字を超えることはできません",
+      "middle-name-min": "ミドルネームには少なくとも3文字が含まれている必要があります",
+      "first-name-required": "名を入力していません！",
+      "email-required": "メールアドレスを入力していません。",
+      "second-name-max": "2番目の名前は50文字を超えることはできません。",
+      "second-name-min": "2番目の名前には少なくとも3文字が含まれている必要があります",
+      "second-name-required": "ミドルネームを入力していません！",
+      "password-max": "パスワードは20文字を超えることはできません！",
+      "email-incorrect": "無効なメール",
+      "first-name-min": "名には少なくとも2文字が含まれている必要があります"
+    },
+    "email-already-in-use": "このメールにはすでにアカウントが登録されています！",
+    "login-button": "ログイン",
+    "сontinue": "Сontinue",
+    "password": "パスワード",
+    "second-name": "ミドルネーム",
+    "middle-name": "ミドルネーム",
+    "title": "登録",
+    "first-name": "ファーストネーム",
+    "email": "Eメール",
+    "login-question": "すでにアカウントをお持ちですか？"
+  },
+  "start": {
+    "register-button": "今すぐ登録",
+    "comeback": "お帰りなさい！",
+    "bad-credentials": "入力されたユーザー名またはパスワードは正しくありません",
+    "password": "パスワード",
+    "signin": "ログイン",
+    "username": "ユーザー名",
+    "forgot-button": "パスワードを復元",
+    "register-question": "アカウントをお持ちではありませんか？",
+    "forgot-question": "パスワードをお忘れですか？"
+  },
+  "confirmation": {
+    "next": "継続する",
+    "title": "確認",
+    "resend": "コードを再送する",
+    "account-not-found": "そのようなユーザー名または電子メールを持つユーザーはシステムに登録されていません",
+    "not-found": "確認コードの有効期限が切れています。コードをもう一度リクエストする",
+    "wrong-code": "間違ったコード",
+    "info": "続行するには、メールアドレス{{email}}に送信する確認コードを入力してください。"
+  },
+  "workspace": {
+    "timetable-today": {
+      "no-lessons": "今日のレッスンはありません",
+      "title": "今日のスケジュール"
+    },
+    "title": "ワークスペース",
+    "planned-lesson": {
+      "nearest-from": "で最も近いレッスン",
+      "not-started": "レッスンはまだ始まっていないようです：/"
+    }
+  },
+  "date": {
+    "error": "エラーが発生しました",
+    "yesterday": "昨日",
+    "cancel": "キャンセル",
+    "today": "今日",
+    "tomorrow": "明日",
+    "refresh": "更新"
+  },
+  "password-recovery": {
+    "email": "Eメール",
+    "title": "パスワードの復元",
+    "continue": "継続する",
+    "info": "アカウントに関連付けられているユーザー名またはメールアドレスを入力してください。パスワードリセットコードが送信されます。",
+    "email-placeholder": "メールアドレスを入力...",
+    "account-not-found": "そのようなユーザー名または電子メールを持つユーザーはシステムに登録されていません"
+  },
+  "navigation": {
+    "workspace": "ワークスペース",
+    "course": "コース",
+    "homeworks": "宿題",
+    "groups": "グループ"
+  },
+  "state": {
+    "assistant": "アシスタント",
+    "student": "学生",
+    "teacher": "教師"
   }
 }

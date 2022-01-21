@@ -1,0 +1,475 @@
+{
+    "tasks": {
+      "noDescription": "설명 없음",
+      "empty": "작업 목록이 비어 있습니다.",
+      "edit": {
+        "validation": {
+          "name": {
+            "max": "작업 이름이 너무 깁니다.",
+            "required": "작업 이름이 입력되지 않았습니다",
+            "min": "작업 이름은 {{min}}자 이상이어야 합니다."
+          },
+          "maxScore": {
+            "max": "너무 많은 점수",
+            "positive": "최대 점수는 양수여야 합니다.",
+            "required": "최대 점수가 입력되지 않았습니다."
+          },
+          "description": {
+            "max": "작업 설명이 너무 깁니다."
+          },
+          "duration": {
+            "max": "기간이 너무 많습니다.",
+            "required": "기간이 입력되지 않았습니다",
+            "positive": "기간은 양수여야 합니다."
+          }
+        },
+        "title": "작업 수정",
+        "loading": "작업 로드 중...",
+        "maxScore": "최대 점수",
+        "name": "작업 이름",
+        "description": "과업 설명",
+        "taskType": "작업 유형",
+        "duration": "지속",
+        "noTaskType": "선택되지 않은",
+        "maxScoreSubtitle": "학생이 받은 점수는 이 숫자로 변환됩니다."
+      },
+      "add": {
+        "submit": "추가하다",
+        "title": "작업 추가",
+        "name": "작업 이름"
+      },
+      "title": "작업",
+      "question": {
+        "variant": {
+          "testQuestion": {
+            "validation": {
+              "minCount": "답변의 수는 {{min}} 이상이어야 합니다.",
+              "empty": "질문에 대한 답변이 없습니다",
+              "answer": {
+                "required": "답변이 입력되지 않았습니다",
+                "maxLenght": "답변이 너무 깁니다."
+              },
+              "noRight": "정답은 없다"
+            },
+            "title": "목록 중 하나",
+            "addAnswer": "답변 추가"
+          },
+          "textQuestion": {
+            "validation": {
+              "numberOfSymbolsMax": "너무 많은 수의 기호",
+              "numberOfSymbolsMin": "기호 수는 {{min}} 이상이어야 합니다."
+            },
+            "numberOfSymbols": "기호 수",
+            "title": "텍스트"
+          },
+          "addLink": "링크 붙여넣기",
+          "type": "질문 유형",
+          "testMultiQuestion": {
+            "title": "목록에서 여러"
+          },
+          "validation": {
+            "formulationMin": "공식 이름은 {{min}}자 이상이어야 합니다.",
+            "formulationRequired": "공식이 입력되지 않았습니다",
+            "formulationMax": "제형이 너무 깁니다."
+          },
+          "formulation": "공식화",
+          "empty-formulation": "공식이 비어 있습니다.",
+          "delete-confirmation": "변형을 삭제하시겠습니까?",
+          "delete": "변형 삭제",
+          "delete-last": "마지막 변형은 삭제할 수 없습니다!"
+        },
+        "deleteConfirmation": "선택한 질문을 삭제하시겠습니까?",
+        "addAfter": "다음에 질문 추가",
+        "moveMode": "질문 이동",
+        "maxScore": "점수",
+        "validation": {
+          "maxScoreMin": "점수는 {{min}} 이상이어야 합니다.",
+          "maxScoreMax": "너무 많은 점수"
+        },
+        "delete": "질문 삭제",
+        "closeNotValid": "질문 변경 패널을 닫으시겠습니까? 질문에 잘못된 변형이 있습니다. 참고: 잘못된 질문은 저장되지 않습니다!",
+        "title": "의문",
+        "add": "질문 추가"
+      },
+      "search": "작업 검색",
+      "sortBy": {
+        "completed": "완전한",
+        "newest": "최신",
+        "name": "이름으로",
+        "oldest": "가장 오래된",
+        "title": "정렬 기준"
+      },
+      "course-not-selected": "작업을 표시할 코스를 선택하세요.",
+      "filters": {
+        "task-types": {
+          "add": "새로운 걸 더하다",
+          "title": "작업 유형"
+        }
+      },
+      "task": "일",
+      "action": {
+        "delete-confirmation": "선택한 작업을 삭제하시겠습니까?"
+      }
+    },
+    "course": {
+      "sub-courses": "하위 코스",
+      "modify": {
+        "name": "코스명",
+        "add-submit": "추가하다",
+        "edit-submit": "편집하다",
+        "add-title": "코스 추가",
+        "edit-title": "코스 수정"
+      },
+      "title": "강좌",
+      "root": "과정",
+      "search": "코스 검색",
+      "delete-course-confirmation": "선택한 과정을 삭제하시겠습니까?",
+      "emptySearch": "이 이름을 가진 코스를 찾을 수 없습니다.",
+      "empty": "아아, 코스는 아직 추가되지 않았습니다. 사용하기 쉬운 커리큘럼과 지식 기반의 세계로 들어가려면 먼저 **과정을 추가**해야 합니다.",
+      "emptySub": "하위 코스는 아직 추가되지 않았습니다."
+    },
+    "groups": {
+      "emptySearchAdvice": "검색어를 확인하세요. 역할을 변경해야 할 수도 있습니다.",
+      "groupJoin": {
+        "invite": "당신을 그룹에 초대합니다",
+        "alreadyMember": "당신은 이미 이 그룹의 회원입니다",
+        "somethingWentWrong": "문제가 발생했습니다 :/",
+        "members": "회원:",
+        "role": "초대 역할:",
+        "notFound": "이 코드에 대한 초대장이 없습니다 :(",
+        "title": "그룹에 가입",
+        "limitExceeded": "회원 한도에 도달했기 때문에 그룹에 가입할 수 없습니다.",
+        "accept": "수용하다"
+      },
+      "groupDetails": {
+        "leaveConfirmation": "그룹에서 나가시겠습니까?",
+        "apply": "적용하다",
+        "students": "재학생",
+        "groupClosed": "그룹 폐쇄",
+        "emptySearchMembers": "여기에 그런 이름을 가진 사람이 없습니다 :/",
+        "groupOpened": "그룹 오픈",
+        "createInvite": "초대장 만들기",
+        "kick": "발 차기",
+        "schedule": "일정",
+        "accessSettings": "액세스 설정",
+        "kickConfirmation": "회원을 추방하시겠습니까?",
+        "emptyNews": "새로운 것은 없다 :(",
+        "teachers": "교사",
+        "noInvite": "아직 이 역할에 대한 초대가 없습니다!",
+        "tasks": "작업",
+        "nearestLesson": "가장 가까운 수업",
+        "studentsLimit": "회원 수 제한",
+        "studentsSearchPlaceholder": "학생 이름을 입력하세요...",
+        "createNew": "새로 만들기",
+        "memberSettings": "회원 설정",
+        "leave": "떠나다",
+        "actions": "행위",
+        "emptyMembers": "아직 사람이 없는 것 같습니다 :(",
+        "copied": "클립보드에 복사되었습니다!",
+        "members": "회원",
+        "teachersSearchPlaceholder": "선생님 이름을 입력하세요..."
+      },
+      "group": "그룹",
+      "groupCreate": {
+        "validation": {
+          "nameTooLarge": "그룹 이름이 너무 깁니다.",
+          "nameRequired": "그룹 이름은 필수 항목입니다.",
+          "subjectTooSmall": "주제 이름이 너무 짧습니다.",
+          "nameTooSmall": "그룹 이름이 너무 짧습니다.",
+          "subjectTooLarge": "주제 이름이 너무 큽니다."
+        },
+        "subject": "주제",
+        "update": "업데이트",
+        "updateGroup": "그룹 업데이트",
+        "createGroup": "그룹 만들기",
+        "create": "만들다",
+        "name": "이름",
+        "color": "색상"
+      },
+      "emptyJoinAdviceContinue": "그의 그룹",
+      "select": "그룹 선택",
+      "createNew": "새로 만들기",
+      "emptyJoinAdvice": "다른 선생님의 초대 코드가 있는 경우 다음을 수행할 수 있습니다.",
+      "join": "가입하다",
+      "empty": "역할에 대한 그룹이 여기에 표시됩니다.",
+      "groupCreation": "그룹 추가",
+      "emptyCreateAdviceContinue": "나만의 그룹",
+      "invitePlaceholder": "초대 코드를 입력하세요...",
+      "create": "만들다",
+      "emptySearch": "이 이름을 가진 그룹을 찾을 수 없습니다.",
+      "inviteQuestion": "초대장이 있습니까?",
+      "or": "또는",
+      "searchPlaceholder": "그룹 이름을 입력하세요...",
+      "title": "여러 떼"
+    },
+    "user": {
+      "self": "너"
+    },
+    "common": {
+      "applyChanges": "변경 승인?",
+      "search": "찾다",
+      "input-placeholder-prefix": "입력하다",
+      "cancel": "취소",
+      "applyChangesText": "변경 사항을 적용하시겠습니까?",
+      "filters": {
+        "empty-filtered": "지정된 매개변수에 대해 아무것도 찾을 수 없습니다.",
+        "title": "필터",
+        "apply": "적용하다",
+        "cancel-all": "모두 취소",
+        "sortBy": "정렬 기준"
+      },
+      "confirmation": "확인",
+      "apply": "적용하다",
+      "discard": "버리다",
+      "ok": "확인",
+      "actions": "행위"
+    },
+    "password-change": {
+      "info": "새 계정 비밀번호를 입력하세요. 오래된 것은 폐기됩니다.",
+      "password-confirm": "비밀번호 반복",
+      "restore": "초기화",
+      "title": "비밀번호 초기화",
+      "password": "비밀번호",
+      "password-confirm-placeholder": "비밀번호 반복..."
+    },
+    "homeworks": {
+      "details": {
+        "info": {
+          "appointed": "정해진",
+          "group": "그룹",
+          "deadline": "마감 시간",
+          "title": "정보"
+        },
+        "title": "숙제",
+        "members": {
+          "empty": "아직 아무도 없는 것 같습니다. 그룹에 학생이 없는 경우 가능합니다. 먼저 그룹에 학생을 초대해야 합니다!",
+          "emptySearch": "지정된 검색 기준에 대해 아무도 찾지 못했습니다 :(",
+          "title": "회원"
+        }
+      },
+      "previous": "이전의",
+      "try": {
+        "questions": "질문",
+        "finished": "완성 된",
+        "continue": "계속하다",
+        "answered": "대답했다",
+        "confirmationPerform": "이 작업을 완료하고 검토를 위해 제출하시겠습니까? 일단 확인되면 더 이상 답변을 변경할 수 없습니다.",
+        "completion": "완성",
+        "started": "시작됨",
+        "saved": "귀하의 답변이 저장되었습니다",
+        "statusOutside": "응답 상태가 외부에서 변경됨",
+        "score": "점수",
+        "runtime": "실행 시간",
+        "unloaded": "언로드",
+        "start": "시작",
+        "yourAnswer": "너의 답",
+        "appreciated": "감사합니다",
+        "saveError": "오류가 발생했습니다",
+        "questionCount": "질문 {{숫자}}",
+        "infinity": "무한대",
+        "timeLeft": "남은 시간",
+        "goBack": "출구",
+        "selected": "선택된",
+        "interrupt": "방해하다",
+        "loaded": "짐을 실은",
+        "questionSaving": "질문 저장",
+        "interruptConfirmation": "작업 실행을 중단하시겠습니까? 학생은 더 이상 답변을 변경할 수 없습니다.",
+        "retrySave": "다시 해 보다",
+        "returned": "반환",
+        "notAppreciated": "감사하지 않음"
+      },
+      "modify": {
+        "start": "시작",
+        "validation": {
+          "tasksRequired": "추가되지 않은 작업",
+          "dateRequired": "날짜는 필수 항목입니다.",
+          "closeBeforeOpen": "종료 날짜는 시작 날짜보다 이전이어야 합니다.",
+          "groupRequired": "그룹은 필수 항목입니다.",
+          "endDateBeforeNow": "마감 날짜는 지금보다 이전이어야 합니다.",
+          "openAfterClose": "시작 날짜는 종료 날짜보다 이전이어야 합니다."
+        },
+        "endingDate": "마감일",
+        "ask": "숙제를 물어봐",
+        "askConfirmation": "이 숙제를 하시겠습니까?",
+        "or": "또는",
+        "openingDate": "시작일",
+        "noGroup": "선택되지 않은",
+        "tasks": "작업",
+        "howAddTasks": "작업을 추가하려면 코스의 목록에서 길게 눌러 선택하고 작업 메뉴에서 '숙제에 추가' 버튼을 누릅니다.",
+        "startNew": "새로 시작",
+        "group": "그룹",
+        "select": "기존 선택",
+        "noDate": "선택되지 않은"
+      },
+      "sortBy": {
+        "newest": "일찍 먼저",
+        "oldest": "늦게 먼저"
+      },
+      "interview": {
+        "closed": "인터뷰가 마감되었습니다. 더 이상 메시지를 작성할 수 없습니다.",
+        "noMessages": "아직 여기에 게시한 사람이 없는 것 같습니다. 가장 먼저 시작하세요!",
+        "actions": {
+          "reply": "회신하다",
+          "title": "행위",
+          "edit": "편집하다",
+          "delete": "삭제"
+        },
+        "messages": "메시지",
+        "tasks": "작업",
+        "messageDeleted": "메시지 삭제됨",
+        "taskMessage": "작업 답변",
+        "markAction": "평가하다",
+        "total": "총",
+        "remarkAction": "재평가하다",
+        "messagePlaceholder": "메시지를 입력하세요...",
+        "result": "평가됨",
+        "mark": {
+          "title": "업무 평가",
+          "closeAction": "인터뷰 닫기",
+          "result": "최종 점수"
+        },
+        "taskNoDesctiption": "설명이 없습니다.",
+        "messageEdit": "게시물 수정",
+        "deleteConfirmation": "메시지를 삭제하시겠습니까? 이 작업은 취소할 수 없습니다..."
+      },
+      "homework": "숙제",
+      "current": "현재의",
+      "info": "세부",
+      "taskCount_interval": "(0-inf)[{{count}} 작업];",
+      "until": "{{날짜}}까지",
+      "empty": "아직 숙제가 없는 것 같습니다 :(",
+      "from": "{{날짜}}부터",
+      "title": "작업",
+      "filter": {
+        "group": "그룹"
+      }
+    },
+    "task-types": {
+      "modify": {
+        "add-title": "새 작업 유형 추가",
+        "edit-submit": "업데이트",
+        "delete-confirmation": "이 작업 유형을 삭제하시겠습니까?",
+        "add-submit": "추가하다",
+        "delete": "삭제",
+        "modifyDefaultNotAllowed": "기본 작업 유형 수정은 허용되지 않습니다.",
+        "name": "작업 유형 이름",
+        "edit-title": "작업 유형 수정"
+      },
+      "longPressToModify": "수정하려면 작업 유형 배지를 길게 누르세요.",
+      "name": {
+        "Проверочная": "확인하다",
+        "На закрепление": "강화",
+        "Контрольная": "증거",
+        "Самостоятельная": "독립적 인"
+      },
+      "search": "작업 유형 검색",
+      "select": "작업 유형 선택"
+    },
+    "profile": {
+      "help": {
+        "privacy": "개인 정보 정책",
+        "send-issue": "문제 보고",
+        "website": "브라우저 버전",
+        "title": "돕다",
+        "help-center": "지원 센터"
+      },
+      "settings": {
+        "title": "설정",
+        "change-language": {
+          "title": "언어 변경"
+        }
+      }
+    },
+    "sidebar": {
+      "logout": "로그 아웃",
+      "help": "돕다",
+      "notifications": "알림",
+      "settings": "설정",
+      "calendar": "달력"
+    },
+    "register": {
+      "validation": {
+        "middle-name-max": "중간 이름은 50자를 초과할 수 없습니다.",
+        "password-required": "비밀번호를 입력하지 않았습니다!",
+        "password-min": "비밀번호는 8자 이상이어야 합니다!",
+        "first-name-max": "이름은 30자를 초과할 수 없습니다.",
+        "middle-name-min": "중간 이름은 3자 이상이어야 합니다.",
+        "first-name-required": "이름을 입력하지 않았습니다!",
+        "email-required": "이메일을 입력하지 않았습니다!",
+        "second-name-max": "두 번째 이름은 50자를 초과할 수 없습니다.",
+        "second-name-min": "두 번째 이름은 3자 이상이어야 합니다.",
+        "second-name-required": "두 번째 이름을 입력하지 않았습니다!",
+        "password-max": "비밀번호는 20자를 초과할 수 없습니다!",
+        "email-incorrect": "잘못된 이메일",
+        "first-name-min": "이름은 최소 2자 이상이어야 합니다."
+      },
+      "email-already-in-use": "이 이메일에는 이미 계정이 등록되어 있습니다!",
+      "login-button": "로그인",
+      "сontinue": "계속",
+      "password": "비밀번호",
+      "second-name": "두 번째 이름",
+      "middle-name": "중간 이름",
+      "title": "등록",
+      "first-name": "이름",
+      "email": "이메일",
+      "login-question": "이미 계정이 있습니까?"
+    },
+    "start": {
+      "register-button": "지금 등록하세요",
+      "comeback": "다시 오신 것을 환영합니다!",
+      "bad-credentials": "입력한 사용자 이름 또는 비밀번호가 올바르지 않습니다.",
+      "password": "비밀번호",
+      "signin": "로그인",
+      "username": "사용자 이름",
+      "forgot-button": "비밀번호 복원",
+      "register-question": "계정이 없으신가요?",
+      "forgot-question": "비밀번호를 잊어 버렸습니까?"
+    },
+    "confirmation": {
+      "next": "계속하다",
+      "title": "확인",
+      "resend": "코드 재전송",
+      "account-not-found": "이러한 사용자 이름 또는 이메일을 가진 사용자는 시스템에 등록되어 있지 않습니다.",
+      "not-found": "확인 코드가 만료되었습니다. 코드 다시 요청",
+      "wrong-code": "틀린 코드",
+      "info": "계속하려면 귀하의 이메일 주소({{email}})로 보내드린 확인 코드를 입력하십시오."
+    },
+    "workspace": {
+      "timetable-today": {
+        "no-lessons": "오늘 수업이 없습니다",
+        "title": "오늘의 일정"
+      },
+      "title": "작업 공간",
+      "planned-lesson": {
+        "nearest-from": "가장 가까운 강의",
+        "not-started": "아직 수업이 시작되지 않은 것 같습니다 :/"
+      }
+    },
+    "date": {
+      "error": "오류가 발생했습니다",
+      "yesterday": "어제",
+      "cancel": "취소",
+      "today": "오늘",
+      "tomorrow": "내일",
+      "refresh": "새로 고치다"
+    },
+    "password-recovery": {
+      "email": "이메일",
+      "title": "비밀번호 복구",
+      "continue": "계속하다",
+      "info": "계정과 연결된 사용자 이름 또는 이메일을 입력하면 비밀번호 재설정 코드를 보내드립니다.",
+      "email-placeholder": "이메일을 입력하세요...",
+      "account-not-found": "이러한 사용자 이름 또는 이메일을 가진 사용자는 시스템에 등록되어 있지 않습니다."
+    },
+    "navigation": {
+      "workspace": "작업 공간",
+      "course": "강좌",
+      "homeworks": "숙제",
+      "groups": "여러 떼"
+    },
+    "state": {
+      "assistant": "어시스턴트",
+      "student": "학생",
+      "teacher": "선생님"
+    }
+  }

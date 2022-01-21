@@ -1,12 +1,475 @@
 {
-  "start": {
-    "comeback": "Bienvenue!",
-    "username": "Nom d'utilisateur",
-    "password": "Mot de passe"
+  "tasks": {
+    "noDescription": "Pas de description",
+    "empty": "La liste des tâches est vide",
+    "edit": {
+      "validation": {
+        "name": {
+          "max": "Nom de tâche trop long",
+          "required": "Le nom de la tâche n'a pas été entré",
+          "min": "Le nom de la tâche doit contenir au moins {{min}} lettres"
+        },
+        "maxScore": {
+          "max": "Trop de nombre de points",
+          "positive": "Le score maximum doit être un nombre positif",
+          "required": "Le score maximum n'a pas été entré"
+        },
+        "description": {
+          "max": "Description de la tâche trop longue"
+        },
+        "duration": {
+          "max": "Trop de nombre de durée",
+          "required": "La durée n'a pas été saisie",
+          "positive": "La durée doit être un nombre positif"
+        }
+      },
+      "title": "Modifier la tâche",
+      "loading": "Chargement de la tâche...",
+      "maxScore": "Note maximale",
+      "name": "Nom de la tâche",
+      "description": "Description de la tâche",
+      "taskType": "Type de tâche",
+      "duration": "Durée",
+      "noTaskType": "Non séléctionné",
+      "maxScoreSubtitle": "Le nombre de points reçus par l'étudiant sera traduit en ce nombre."
+    },
+    "add": {
+      "submit": "Ajouter",
+      "title": "Ajouter une tâche",
+      "name": "Nom de la tâche"
+    },
+    "title": "Tâches",
+    "question": {
+      "variant": {
+        "testQuestion": {
+          "validation": {
+            "minCount": "Le nombre de réponses doit être supérieur ou égal à {{min}}",
+            "empty": "Il n'y a pas de réponses à la question",
+            "answer": {
+              "required": "La réponse n'a pas été saisie",
+              "maxLenght": "La réponse est trop longue"
+            },
+            "noRight": "Il n'y a pas de bonne réponse"
+          },
+          "title": "Un de la liste",
+          "addAnswer": "Ajouter une réponse"
+        },
+        "textQuestion": {
+          "validation": {
+            "numberOfSymbolsMax": "Trop de symboles",
+            "numberOfSymbolsMin": "Le nombre de symboles doit être supérieur ou égal à {{min}}"
+          },
+          "numberOfSymbols": "Nombre de symboles",
+          "title": "Texte"
+        },
+        "addLink": "Coller le lien",
+        "type": "Type de question",
+        "testMultiQuestion": {
+          "title": "Plusieurs de la liste"
+        },
+        "validation": {
+          "formulationMin": "Le nom de la formulation doit contenir au moins {{min}} lettres",
+          "formulationRequired": "La formulation n'a pas été saisie",
+          "formulationMax": "La formule est trop longue"
+        },
+        "formulation": "Formulation",
+        "empty-formulation": "La formulation est vide",
+        "delete-confirmation": "Voulez-vous vraiment supprimer la variante ?",
+        "delete": "Supprimer la variante",
+        "delete-last": "La dernière variante ne peut pas être supprimée !"
+      },
+      "deleteConfirmation": "Voulez-vous vraiment supprimer la question sélectionnée ?",
+      "addAfter": "Ajouter une question après",
+      "moveMode": "Déplacer la question",
+      "maxScore": "But",
+      "validation": {
+        "maxScoreMin": "Le score doit être supérieur ou égal à {{min}}",
+        "maxScoreMax": "Trop de points"
+      },
+      "delete": "Supprimer la question",
+      "closeNotValid": "Voulez-vous vraiment fermer le panneau de changement de question ? Il y a des variantes invalides dans la question. Remarque : Les questions non valides ne seront pas enregistrées !",
+      "title": "Question",
+      "add": "Ajouter une question"
+    },
+    "search": "Tâche de recherche",
+    "sortBy": {
+      "completed": "Complété",
+      "newest": "Le plus récent",
+      "name": "De nom",
+      "oldest": "Le plus ancien",
+      "title": "Trier par"
+    },
+    "course-not-selected": "Sélectionnez un cours pour afficher ses tâches",
+    "filters": {
+      "task-types": {
+        "add": "Ajouter nouveau",
+        "title": "Types de tâches"
+      }
+    },
+    "task": "Tâche",
+    "action": {
+      "delete-confirmation": "Voulez-vous vraiment supprimer les tâches sélectionnées ?"
+    }
+  },
+  "course": {
+    "sub-courses": "Sous-cours",
+    "modify": {
+      "name": "Nom du cours",
+      "add-submit": "Ajouter",
+      "edit-submit": "Éditer",
+      "add-title": "Ajouter un cours",
+      "edit-title": "Modifier le cours"
+    },
+    "title": "Cours",
+    "root": "Cours",
+    "search": "Rechercher un cours",
+    "delete-course-confirmation": "Voulez-vous vraiment supprimer les cours sélectionnés ?",
+    "emptySearch": "Aucun cours portant ce nom n'a été trouvé.",
+    "empty": "Hélas, les cours n'ont pas encore été ajoutés. Pour entrer dans un monde de programmes et de bases de connaissances faciles à utiliser, vous devez d'abord **ajouter un cours**",
+    "emptySub": "Les sous-cours n'ont pas encore été ajoutés."
+  },
+  "groups": {
+    "emptySearchAdvice": "Vérifiez vos termes de recherche, vous devrez peut-être modifier votre rôle.",
+    "groupJoin": {
+      "invite": "vous invite au groupe",
+      "alreadyMember": "Vous êtes déjà membre de ce groupe",
+      "somethingWentWrong": "Quelque chose s'est mal passé :/",
+      "members": "Membres:",
+      "role": "Rôle d'invitation :",
+      "notFound": "Aucune invitation trouvée pour ce code :(",
+      "title": "Rejoins le groupe",
+      "limitExceeded": "Vous ne pouvez pas rejoindre le groupe car il a atteint la limite de membres",
+      "accept": "J'accepte"
+    },
+    "groupDetails": {
+      "leaveConfirmation": "Êtes-vous sûr de vouloir quitter le groupe ?",
+      "apply": "Appliquer",
+      "students": "Étudiants",
+      "groupClosed": "Groupe fermé",
+      "emptySearchMembers": "Il n'y a personne avec ce nom ici :/",
+      "groupOpened": "Groupe ouvert",
+      "createInvite": "Créer une invitation",
+      "kick": "Donner un coup",
+      "schedule": "Programme",
+      "accessSettings": "Paramètres d'accès",
+      "kickConfirmation": "Êtes-vous sûr de vouloir expulser le membre ?",
+      "emptyNews": "Rien de nouveau :(",
+      "teachers": "Enseignants",
+      "noInvite": "Il n'y a pas encore d'invitation pour ce rôle !",
+      "tasks": "Tâches",
+      "nearestLesson": "Leçon la plus proche",
+      "studentsLimit": "Limitation du nombre de membres",
+      "studentsSearchPlaceholder": "Entrez le nom de l'élève...",
+      "createNew": "Créer un nouveau",
+      "memberSettings": "Paramètres des membres",
+      "leave": "Laisser",
+      "actions": "Actions",
+      "emptyMembers": "Il semble qu'il n'y ait encore personne ici :(",
+      "copied": "Copié dans le presse-papier !",
+      "members": "Membres",
+      "teachersSearchPlaceholder": "Saisissez le nom de l'enseignant..."
+    },
+    "group": "Grouper",
+    "groupCreate": {
+      "validation": {
+        "nameTooLarge": "Le nom du groupe est trop long",
+        "nameRequired": "Le nom du groupe est requis",
+        "subjectTooSmall": "Le nom du sujet est trop court",
+        "nameTooSmall": "Le nom du groupe est trop court",
+        "subjectTooLarge": "Le nom du sujet est trop grand"
+      },
+      "subject": "Sujet",
+      "update": "Mettre à jour",
+      "updateGroup": "Mettre à jour le groupe",
+      "createGroup": "Créer un groupe",
+      "create": "Créer",
+      "name": "Nom",
+      "color": "Couleur"
+    },
+    "emptyJoinAdviceContinue": "son groupe",
+    "select": "Sélectionnez le groupe",
+    "createNew": "Créer un nouveau",
+    "emptyJoinAdvice": "Si vous avez un code d'invitation d'un autre enseignant, vous pouvez",
+    "join": "Rejoindre",
+    "empty": "Les groupes pour le rôle seront affichés ici :",
+    "groupCreation": "Ajouter un groupe",
+    "emptyCreateAdviceContinue": "votre propre groupe",
+    "invitePlaceholder": "Entrez votre code d'invitation...",
+    "create": "Créer",
+    "emptySearch": "Aucun groupe portant ce nom n'a été trouvé.",
+    "inviteQuestion": "Avez-vous une invitation?",
+    "or": "ou",
+    "searchPlaceholder": "Entrez le nom du groupe...",
+    "title": "Groupes"
+  },
+  "user": {
+    "self": "Vous"
   },
   "common": {
+    "applyChanges": "Appliquer les modifications?",
     "search": "Chercher",
-    "input-placeholder-prefix": "Entrer le",
-    "input-placeholder-postfix": ""
+    "input-placeholder-prefix": "Entrer",
+    "cancel": "Annuler",
+    "applyChangesText": "Voulez-vous vraiment appliquer les modifications ?",
+    "filters": {
+      "empty-filtered": "Rien trouvé pour les paramètres spécifiés",
+      "title": "Filtres",
+      "apply": "Appliquer",
+      "cancel-all": "Tout annuler",
+      "sortBy": "Trier par"
+    },
+    "confirmation": "Confirmation",
+    "apply": "Appliquer",
+    "discard": "Jeter",
+    "ok": "D'accord",
+    "actions": "Actions"
+  },
+  "password-change": {
+    "info": "Entrez votre nouveau mot de passe de compte. L'ancien sera jeté.",
+    "password-confirm": "Répéter le mot de passe",
+    "restore": "Réinitialiser",
+    "title": "Réinitialisation du mot de passe",
+    "password": "Mot de passe",
+    "password-confirm-placeholder": "Répéter le mot de passe..."
+  },
+  "homeworks": {
+    "details": {
+      "info": {
+        "appointed": "Nommé",
+        "group": "Grouper",
+        "deadline": "Date limite",
+        "title": "Information"
+      },
+      "title": "Devoirs",
+      "members": {
+        "empty": "On dirait que personne n'est encore là. Ceci est possible s'il n'y a pas d'élèves dans le groupe. Vous devez d'abord inviter des étudiants dans le groupe !",
+        "emptySearch": "Personne n'a été trouvé pour les critères de recherche spécifiés :(",
+        "title": "Membres"
+      }
+    },
+    "previous": "Précédent",
+    "try": {
+      "questions": "Des questions",
+      "finished": "Fini",
+      "continue": "Continuez",
+      "answered": "a répondu",
+      "confirmationPerform": "Voulez-vous vraiment terminer cette tâche et la soumettre pour révision ? Une fois confirmé, vous ne pourrez plus modifier votre réponse.",
+      "completion": "Achèvement",
+      "started": "A débuté",
+      "saved": "Vos réponses ont été enregistrées",
+      "statusOutside": "L'état de la réponse a changé à l'extérieur",
+      "score": "But",
+      "runtime": "Durée",
+      "unloaded": "déchargé",
+      "start": "Démarrer",
+      "yourAnswer": "Votre Réponse",
+      "appreciated": "Apprécié",
+      "saveError": "Une erreur est survenue",
+      "questionCount": "Question {{nombre}}",
+      "infinity": "Infini",
+      "timeLeft": "Temps restant",
+      "goBack": "Sortir",
+      "selected": "choisi",
+      "interrupt": "Interrompre",
+      "loaded": "chargé",
+      "questionSaving": "Sauvegarde des questions",
+      "interruptConfirmation": "Voulez-vous vraiment interrompre l'exécution de la tâche ? L'élève ne pourra plus changer de réponse.",
+      "retrySave": "Retenter",
+      "returned": "Revenu",
+      "notAppreciated": "Pas apprécié"
+    },
+    "modify": {
+      "start": "Démarrer",
+      "validation": {
+        "tasksRequired": "Tâches non ajoutées",
+        "dateRequired": "La date est requise",
+        "closeBeforeOpen": "La date de clôture doit être antérieure à la date de début",
+        "groupRequired": "Le groupe est requis",
+        "endDateBeforeNow": "La date de clôture doit être antérieure à maintenant",
+        "openAfterClose": "La date de début doit être antérieure à la date de fin"
+      },
+      "endingDate": "Date de clôture",
+      "ask": "Demander des devoirs",
+      "askConfirmation": "Êtes-vous sûr de vouloir demander ce devoir ?",
+      "or": "ou",
+      "openingDate": "Date de début",
+      "noGroup": "non séléctionné",
+      "tasks": "Tâches",
+      "howAddTasks": "Pour ajouter des tâches, sélectionnez-la dans votre liste dans le cours avec un appui long et dans le menu d'action, appuyez sur le bouton \"Ajouter aux devoirs\"",
+      "startNew": "Recommencer",
+      "group": "Grouper",
+      "select": "Sélectionnez existant",
+      "noDate": "non séléctionné"
+    },
+    "sortBy": {
+      "newest": "Tôt d'abord",
+      "oldest": "En retard d'abord"
+    },
+    "interview": {
+      "closed": "L'entretien est clos. Il n'est plus possible d'écrire des messages.",
+      "noMessages": "On dirait que personne n'a encore posté ici. Soyez le premier à commencer!",
+      "actions": {
+        "reply": "Répondre",
+        "title": "Actions",
+        "edit": "Éditer",
+        "delete": "Supprimer"
+      },
+      "messages": "messages",
+      "tasks": "Tâches",
+      "messageDeleted": "Message supprimé",
+      "taskMessage": "Réponse à la tâche",
+      "markAction": "Évaluer",
+      "total": "Le total",
+      "remarkAction": "Réévaluer",
+      "messagePlaceholder": "Entrez votre message...",
+      "result": "Évalué",
+      "mark": {
+        "title": "Évaluation du travail",
+        "closeAction": "Fermer l'entretien",
+        "result": "Score final"
+      },
+      "taskNoDesctiption": "Pas de description.",
+      "messageEdit": "Modification d'un message",
+      "deleteConfirmation": "Voulez-vous vraiment supprimer le message ? Cette action ne peut pas être annulée..."
+    },
+    "homework": "Devoirs",
+    "current": "Courant",
+    "info": "Des détails",
+    "taskCount_interval": "(1)[{{count}} tâche] ; (2-inf)[{{count}} tâches]",
+    "until": "jusqu'au {{date}}",
+    "empty": "On dirait qu'il n'y a pas encore de devoirs :(",
+    "from": "partir de la date}}",
+    "title": "Tâches",
+    "filter": {
+      "group": "Grouper"
+    }
+  },
+  "task-types": {
+    "modify": {
+      "add-title": "Ajouter un nouveau type de tâche",
+      "edit-submit": "Mettre à jour",
+      "delete-confirmation": "Voulez-vous vraiment supprimer ce type de tâche ?",
+      "add-submit": "Ajouter",
+      "delete": "Supprimer",
+      "modifyDefaultNotAllowed": "Modifier le type de tâche par défaut n'est pas autorisé",
+      "name": "Nom du type de tâche",
+      "edit-title": "Modifier le type de tâche"
+    },
+    "longPressToModify": "Appui long sur un badge de type tâche pour le modifier",
+    "name": {
+      "Проверочная": "Vérifier",
+      "На закрепление": "Consolidation",
+      "Контрольная": "Preuve",
+      "Самостоятельная": "Indépendant"
+    },
+    "search": "Type de tâche de recherche",
+    "select": "Sélectionnez le type de tâche"
+  },
+  "profile": {
+    "help": {
+      "privacy": "Politique de confidentialité",
+      "send-issue": "Signaler un problème",
+      "website": "Version du navigateur",
+      "title": "Aider",
+      "help-center": "Centre d'aide"
+    },
+    "settings": {
+      "title": "Réglages",
+      "change-language": {
+        "title": "Changer de langue"
+      }
+    }
+  },
+  "sidebar": {
+    "logout": "Se déconnecter",
+    "help": "Aider",
+    "notifications": "Avis",
+    "settings": "Réglages",
+    "calendar": "Calendrier"
+  },
+  "register": {
+    "validation": {
+      "middle-name-max": "Le deuxième prénom ne peut pas contenir plus de 50 caractères",
+      "password-required": "Vous n'avez pas saisi votre mot de passe !",
+      "password-min": "Le mot de passe doit comporter au moins 8 caractères !",
+      "first-name-max": "Le prénom ne peut pas dépasser 30 caractères",
+      "middle-name-min": "Le deuxième prénom doit contenir au moins 3 lettres",
+      "first-name-required": "Vous n'avez pas saisi de prénom !",
+      "email-required": "Vous n'avez pas entré votre email !",
+      "second-name-max": "Le deuxième nom ne peut pas comporter plus de 50 caractères.",
+      "second-name-min": "Le deuxième nom doit contenir au moins 3 lettres",
+      "second-name-required": "Vous n'avez pas entré votre deuxième nom !",
+      "password-max": "Le mot de passe ne peut pas dépasser 20 caractères !",
+      "email-incorrect": "Email invalide",
+      "first-name-min": "Le prénom doit contenir au moins 2 lettres"
+    },
+    "email-already-in-use": "Un compte a déjà été enregistré pour cet e-mail !",
+    "login-button": "S'identifier",
+    "сontinue": "Continuer",
+    "password": "Mot de passe",
+    "second-name": "Nom de famille",
+    "middle-name": "Deuxième nom",
+    "title": "Inscription",
+    "first-name": "Prénom",
+    "email": "E-mail",
+    "login-question": "Vous avez déjà un compte?"
+  },
+  "start": {
+    "register-button": "S'inscrire maintenant",
+    "comeback": "Content de te revoir!",
+    "bad-credentials": "Le nom d'utilisateur ou le mot de passe que vous avez tapé est incorrect",
+    "password": "Mot de passe",
+    "signin": "S'identifier",
+    "username": "Nom d'utilisateur",
+    "forgot-button": "Restaurer le mot de passe",
+    "register-question": "Vous n'avez pas de compte ?",
+    "forgot-question": "Mot de passe oublié?"
+  },
+  "confirmation": {
+    "next": "Continuez",
+    "title": "Confirmation",
+    "resend": "Renvoyer le code",
+    "account-not-found": "L'utilisateur avec un tel nom d'utilisateur ou e-mail n'est pas enregistré dans le système",
+    "not-found": "Le code de confirmation a expiré. Demander à nouveau le code",
+    "wrong-code": "code incorrect",
+    "info": "Pour continuer, veuillez saisir le code de confirmation que nous vous envoyons à votre adresse e-mail : {{email}}."
+  },
+  "workspace": {
+    "timetable-today": {
+      "no-lessons": "Il n'y a pas de cours pour aujourd'hui",
+      "title": "Horaire d'aujourd'hui"
+    },
+    "title": "Espace de travail",
+    "planned-lesson": {
+      "nearest-from": "Leçon la plus proche à",
+      "not-started": "Apparemment le cours n'a pas encore commencé :/"
+    }
+  },
+  "date": {
+    "error": "Une erreur est survenue",
+    "yesterday": "Hier",
+    "cancel": "Annuler",
+    "today": "Aujourd'hui",
+    "tomorrow": "Demain",
+    "refresh": "Rafraîchir"
+  },
+  "password-recovery": {
+    "email": "E-mail",
+    "title": "Récupération de mot de passe",
+    "continue": "Continuez",
+    "info": "Veuillez saisir votre nom d'utilisateur ou votre adresse e-mail associée à votre compte et nous vous enverrons un code de réinitialisation de mot de passe.",
+    "email-placeholder": "Entrer votre Email...",
+    "account-not-found": "L'utilisateur avec un tel nom d'utilisateur ou e-mail n'est pas enregistré dans le système"
+  },
+  "navigation": {
+    "workspace": "Espace de travail",
+    "course": "Cours",
+    "homeworks": "devoirs",
+    "groups": "Groupes"
+  },
+  "state": {
+    "assistant": "Assistant",
+    "student": "Élève",
+    "teacher": "Prof"
   }
 }

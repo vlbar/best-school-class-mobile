@@ -33,6 +33,7 @@ function TaskQuestions({ navigation, route }) {
       .fetch()
       .then(res => {
         setTask(res);
+        setContextTask(res);
       })
       .catch(err => console.error(err));
   };
@@ -64,7 +65,7 @@ function TaskQuestions({ navigation, route }) {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <Header title={task ? task.name : translate('task.loading-title')} headerRight={headerContent} onBack={onBack} />
+      <Header title={task ? task.name : translate('tasks.edit.loading')} headerRight={headerContent} onBack={onBack} />
       <QuestionList taskId={id} setIsSaving={setIsSaving} />
     </SafeAreaView>
   );

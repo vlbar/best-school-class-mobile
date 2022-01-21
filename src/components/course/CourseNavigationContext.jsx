@@ -6,10 +6,28 @@ export const CourseNavigationContext = createContext();
 function CourseNavigationContextProvider({ children }) {
   const [contextTask, setContextTask] = useState();
   const [contextTaskType, setContextTaskType] = useState();
-  const [contextTaskTypes, setContextTaskTypes] = useState()
+  const [contextTaskTypes, setContextTaskTypes] = useState();
+  const [contextHomework, setContextHomework] = useState();
+  const [contextGroup, setContextGroup] = useState();
+  const [contextGroups, setContextGroups] = useState();
 
   return (
-    <CourseNavigationContext.Provider value={{ contextTask, setContextTask, contextTaskType, setContextTaskType, contextTaskTypes, setContextTaskTypes }}>
+    <CourseNavigationContext.Provider
+      value={{
+        contextTask,
+        setContextTask,
+        contextTaskType,
+        setContextTaskType,
+        contextTaskTypes,
+        setContextTaskTypes,
+        contextHomework,
+        setContextHomework,
+        contextGroup,
+        setContextGroup,
+        contextGroups,
+        setContextGroups,
+      }}
+    >
       {children}
     </CourseNavigationContext.Provider>
   );
