@@ -402,6 +402,7 @@ const styles = StyleSheet.create({
     paddingTop: 60,
     textAlign: 'center',
     color: Color.silver,
+    paddingHorizontal: 20,
   },
   indicator: {
     flexGrow: 1,

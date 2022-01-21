@@ -122,7 +122,7 @@ function LinkedText({ text, textStyle, style }) {
           }),
         )}
       </Text>
-      <MediaRow links={linksCache} onPress={onLinkClickHandler} />
+      <MediaRow links={linksCache} onPress={onLinkClickHandler} style={{ marginTop: 10 }} />
       <ImageView
         images={images}
         imageIndex={displayImageIndex}

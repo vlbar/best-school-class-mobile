@@ -106,14 +106,14 @@ function ModifyHomework({ navigation }) {
         setDatePickerProps({
           type,
           date: homework.openingDate ? new Date(homework.openingDate) : new Date(),
-          title: translate('homework.openingDate'),
+          title: translate('homework.modify.openingDate'),
         });
         break;
       case CLOSE_DATE:
         setDatePickerProps({
           type,
           date: homework.endingDate ? new Date(homework.endingDate) : new Date(),
-          title: translate('homework.endingDate'),
+          title: translate('homework.modify.endingDate'),
         });
         break;
     }
