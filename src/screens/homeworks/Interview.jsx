@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useMemo, useState } from 'react';
-import { FlatList, TouchableNativeFeedback, Modal, StyleSheet, View } from 'react-native';
+import { FlatList, TouchableNativeFeedback, Modal, StyleSheet, View, ActivityIndicator } from 'react-native';
 import Bandage from '../../components/common/Bandage';
 import BottomPopup from '../../components/common/BottomPopup';
 import Container from '../../components/common/Container';
@@ -53,7 +53,7 @@ export default function Interview({ navigation, route }) {
     return tasks.map(task => task.maxScore).reduce((a, b) => a + b, 0);
   }, [tasks]);
   const totalScore = useMemo(() => {
-    return answers.map(answer => answer.score).reduce((a, b) => a + b, 0);
+    return answers?.map(answer => answer.score).reduce((a, b) => a + b, 0);
   }, [answers]);
 
   const interviewId = route.params.interviewId;
@@ -69,6 +69,7 @@ export default function Interview({ navigation, route }) {
         tasks={tasks}
         onAnswer={handleAnswer}
         onAnswerPress={goToAnswer}
+        onInterviewClosed={handleClosedInterivew}
         closed={interview?.closed ?? null}
         onMessageCreate={handleMessage}
       />
@@ -82,13 +83,13 @@ export default function Interview({ navigation, route }) {
         setTasks([]);
         setHomework(null);
       }
-      setAnswers([]);
+      setAnswers(null);
     };
   }, []);
 
   useEffect(() => {
     if (state === types.STUDENT) {
-      if (interview) return;
+      if (interview) setInterview(interviews.find(i => i.interviewer.id === interview.interviewer.id));
 
       const homeworkId = route.params.homeworkId;
       fetchLink.withPathTale(homeworkId).fetch().then(setHomework);
@@ -100,7 +101,7 @@ export default function Interview({ navigation, route }) {
         homework
           .link('interviews')
           .withPathTale(interviewId)
-          .fetch(setLoading)
+          .fetch()
           .then(interview => {
             let newInterviews = [...interviews];
             const savedIndex = interviews.findIndex(i => i.interviewer.id === interviewId);
@@ -121,11 +122,12 @@ export default function Interview({ navigation, route }) {
         .fetch()
         .then(interview => setInterview({ ...interview, full: true }))
         .catch(() => {
-          onAnswer();
+          const interviewLink = homework.link('interviews').withPathTale(user.id);
           setInterview(
             Resource.basedList(
               {
-                interviewMessages: homework.link('interviews').withPathTale(user.id).withPathTale('messages'),
+                undefined: interviewLink,
+                interviewMessages: interviewLink.withPathTale('messages'),
               },
               { id: user.id },
             ),
@@ -137,7 +139,7 @@ export default function Interview({ navigation, route }) {
   }, [homework]);
 
   useEffect(() => {
-    if (interview?.full && answers.length == 0) {
+    if (interview?.full && answers == null) {
       interview
         .link('interviewMessages')
         ?.fill('type', 'ANSWER')
@@ -149,27 +151,33 @@ export default function Interview({ navigation, route }) {
   function handleMessage(message) {
     if (!message) return;
 
-    let fetchLink;
-    if (interview == null) {
-      if (state == types.STUDENT) fetchLink = homework.link('myInterview');
-    } else if (interview.inactive) {
-      fetchLink = interview.link();
-    }
-
-    fetchLink?.fetch().then(interview => setInterview({ ...interview, full: true }));
+    interview
+      .link()
+      ?.fetch()
+      .then(interview => setInterview({ ...interview, full: true }));
   }
 
   function handleMark(mark) {
-    let newInterviews = [...interviews];
-    const savedIndex = interviews.findIndex(i => i == interview);
-    newInterviews[savedIndex] = { ...interview, ...mark, evaluator: user };
-    setInterviews(newInterviews);
+    updateInterview({ ...interview, ...mark, evaluator: user });
+
     setShowMarkPopup(false);
   }
 
   function handleAnswer(answer) {
-    setAnswers([...(answers.filter(a => a.taskId !== answer.taskId) ?? []), answer]);
+    if (answers != null) setAnswers([...(answers.filter(a => a.taskId !== answer.taskId) ?? []), answer]);
+    else setAnswers([answer]);
     console.log(answers.filter(a => a.taskId !== answer.taskId));
+  }
+
+  function handleClosedInterivew() {
+    updateInterview({ ...interview, closed: true });
+  }
+
+  function updateInterview(newInterview) {
+    let newInterviews = [...interviews];
+    const savedIndex = interviews.findIndex(i => i.id == newInterview.id);
+    newInterviews[savedIndex] = newInterview;
+    setInterviews(newInterviews);
   }
 
   function goToAnswer({ interviewId, taskId }) {
@@ -196,79 +204,84 @@ export default function Interview({ navigation, route }) {
           </>
         )}
       </Header>
-      <Container>
-        <HorizontalMenu>
-          <HorizontalMenu.Item title={translate('homeworks.interview.tasks')}>
-            <FlatList
-              fadingEdgeLength={30}
-              data={tasks}
-              renderItem={({ item: task }) => {
-                const answer = answers.find(a => a.taskId == task.id);
-                return (
-                  <TouchableNativeFeedback
-                    disabled={!answer && state != types.STUDENT}
-                    onPress={() => goToAnswer({ interviewId: interview.id, taskId: task.id })}
-                  >
-                    <View style={{ paddingVertical: 10 }}>
-                      <View style={styles.titleRow}>
-                        <View style={{ flexDirection: 'row' }}>
-                          {answer && (
-                            <View style={{ marginRight: 5 }}>
-                              <StatusBadge status={answer.answerStatus} size={25} />
+      <HorizontalMenu style={{ marginHorizontal: 20 }}>
+        <HorizontalMenu.Item title={translate('homeworks.interview.tasks')}>
+          {!loading && (
+            <Container>
+              <FlatList
+                fadingEdgeLength={30}
+                data={tasks}
+                renderItem={({ item: task }) => {
+                  const answer = answers?.find(a => a.taskId == task.id);
+                  return (
+                    <TouchableNativeFeedback
+                      disabled={!answer && state != types.STUDENT}
+                      onPress={() => goToAnswer({ interviewId: interview.id, taskId: task.id })}
+                    >
+                      <View style={{ paddingVertical: 10 }}>
+                        <View style={styles.titleRow}>
+                          <View style={{ flexDirection: 'row' }}>
+                            {answer && (
+                              <View style={{ marginRight: 5 }}>
+                                <StatusBadge status={answer.answerStatus} size={25} />
+                              </View>
+                            )}
+                            <Text weight="medium" style={styles.title} numberOfLines={1}>
+                              <Text>{task?.name}</Text>
+                            </Text>
+                          </View>
+                          {task?.taskType && (
+                            <View style={styles.badge}>
+                              <Bandage color={getTaskTypeColor(task?.taskType.id)} title={task?.taskType.name} />
                             </View>
                           )}
-                          <Text weight="medium" style={styles.title} numberOfLines={1}>
-                            <Text>{task?.name}</Text>
-                          </Text>
                         </View>
-                        {task?.taskType && (
-                          <View style={styles.badge}>
-                            <Bandage color={getTaskTypeColor(task?.taskType.id)} title={task?.taskType.name} />
-                          </View>
-                        )}
+
+                        <Text style={styles.description} numberOfLines={1}>
+                          {task?.description?.length
+                            ? task?.description
+                            : translate('homeworks.interview.taskNoDesctiption')}
+                        </Text>
                       </View>
-
-                      <Text style={styles.description} numberOfLines={1}>
-                        {task?.description?.length
-                          ? task?.description
-                          : translate('homeworks.interview.taskNoDesctiption')}
-                      </Text>
-                    </View>
-                  </TouchableNativeFeedback>
-                );
-              }}
-            />
-
-            <View style={styles.markContainer}>
-              <MarkPanel
-                result={interview?.result}
-                evaluator={interview?.evaluator}
-                total={totalScore}
-                max={maxWorkScore}
-                loading={loading}
-                withActions={state != types.STUDENT}
-                onMarkPress={() => setShowMarkPopup(true)}
+                    </TouchableNativeFeedback>
+                  );
+                }}
               />
+              <View style={styles.markContainer}>
+                <MarkPanel
+                  result={interview?.result}
+                  evaluator={interview?.evaluator}
+                  total={totalScore}
+                  max={maxWorkScore}
+                  withActions={state != types.STUDENT}
+                  onMarkPress={() => setShowMarkPopup(true)}
+                />
+              </View>
+            </Container>
+          )}
+          {loading && (
+            <View style={{ flexGrow: 1, flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+              <ActivityIndicator size={50} color={Color.primary} />
             </View>
-          </HorizontalMenu.Item>
-          <HorizontalMenu.Item title={translate('homeworks.interview.messages')}>
-            {interview?.full && memoComp}
-            {!interview?.full && (
-              <MessageList
-                messageCreateHref={
-                  homework
-                    ?.link('interviews')
-                    .withPathTale(interviewId ?? user.id)
-                    .withPathTale('messages').href
-                }
-                currentUser={user}
-                tasks={tasks}
-                onMessageCreate={handleMessage}
-              />
-            )}
-          </HorizontalMenu.Item>
-        </HorizontalMenu>
-      </Container>
+          )}
+        </HorizontalMenu.Item>
+        <HorizontalMenu.Item title={translate('homeworks.interview.messages')}>
+          {interview?.full && memoComp}
+          {!interview?.full && (
+            <MessageList
+              messageCreateHref={
+                homework
+                  ?.link('interviews')
+                  .withPathTale(interviewId ?? user.id)
+                  .withPathTale('messages').href
+              }
+              currentUser={user}
+              tasks={tasks}
+              onMessageCreate={handleMessage}
+            />
+          )}
+        </HorizontalMenu.Item>
+      </HorizontalMenu>
       {showMarkPopup && (
         <BottomPopup onClose={() => setShowMarkPopup(false)} title={translate('homeworks.interview.mark.title')}>
           <MarkForm

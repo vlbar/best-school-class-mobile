@@ -9,7 +9,13 @@ import { getName } from '../user/UserName';
 import { MessageContext } from './MessageList';
 import ReplyMessage from './ReplyMessage';
 
-export default function MessageInput({ onSubmit, messageCreateHref, extraInputProps, messageBuilder }) {
+export default function MessageInput({
+  onSubmit,
+  messageCreateHref,
+  onInterviewClosed,
+  extraInputProps,
+  messageBuilder,
+}) {
   const { translate } = useTranslation();
   const [message, setMessage] = useState('');
   const { replyMessage, setReply, ping, setPing, editingMessage, setEdit } = useContext(MessageContext);
@@ -55,9 +61,11 @@ export default function MessageInput({ onSubmit, messageCreateHref, extraInputPr
     if (editingMessage) request = editingMessage.link().put(msg);
     else request = new Link(messageCreateHref).post(msg).then(onSubmit);
 
-    request.then(() => {
-      reset(!!editingMessage);
-    });
+    request
+      .then(() => {
+        reset(!!editingMessage);
+      })
+      .catch(() => onInterviewClosed?.());
   }
 
   return (

@@ -65,8 +65,7 @@ function TaskAnswer({ navigation, route }) {
 
   const fetchAnswerTry = () => {
     let link;
-    if (selectedAnswerTry) link = selectedAnswerTry.link();
-    else if (interview.link('answers')) {
+    if (interview.link('answers')) {
       link = interview.link('answers').fill('taskId', task.id).fill('size', 1).fill('role', state.name);
     } else {
       setIsСompleted(false);
@@ -111,7 +110,6 @@ function TaskAnswer({ navigation, route }) {
       taskId: task.id,
     };
 
-    console.log(interview);
     interview
       .link('interviewMessages')
       .post(taskAnswer, setTryActionPerforming)

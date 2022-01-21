@@ -65,8 +65,6 @@ function MessageGroupContainer(
     else if (!timeout.current && page.current) reloadChanges(page.current.link('changedAfter'));
   }, [disabled]);
 
-  console.log('GROUP RERENDER');
-
   function resetTimeout() {
     clearTimeout(timeout.current);
     timeout.current = null;

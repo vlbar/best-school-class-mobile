@@ -14,7 +14,7 @@ const HomeworksNavigation = () => {
   const [homework, setHomework] = useState(null);
   const [interviews, setInterviews] = useState([]);
   const [tasks, setTasks] = useState([]);
-  const [answers, setAnswers] = useState([]);
+  const [answers, setAnswers] = useState(null);
   const [answerTry, setAnswerTry] = useState([]);
   const [onAnswer, setOnAnswer] = useState(null);
   return (

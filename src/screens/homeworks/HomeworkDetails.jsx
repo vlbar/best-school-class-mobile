@@ -76,31 +76,30 @@ export default function HomeworkDetails({ route, navigation }) {
         </View>
       )}
       {!loading && homework && (
-        <Container>
-          <InterviewList
-            fetchLink={homework.link('interviews')}
-            interviews={interviews}
-            setInterviews={setInterviews}
-            onSelect={onDetailsPress}
-            withInactive={new Link(homework.group._links.groupMembers.href)}
-            ListHeaderComponent={
-              <>
-                <TouchableOpacity onPress={toggleInfo}>
-                  <View style={styles.row}>
-                    <Text style={styles.headerText}>{translate('homeworks.details.info.title')}</Text>
-                    <IconButton size={20} name={`caret-${isInfoShow ? 'down' : 'back'}-outline`} disabled />
-                  </View>
-                </TouchableOpacity>
-                <Collapsible collapsed={!isInfoShow}>
-                  <HomeworkInfo homework={homework} />
-                </Collapsible>
+        <InterviewList
+          fetchLink={homework.link('interviews')}
+          interviews={interviews}
+          setInterviews={setInterviews}
+          onSelect={onDetailsPress}
+          withInactive={new Link(homework.group._links.groupMembers.href)}
+          ListHeaderComponent={
+            <>
+              <TouchableOpacity onPress={toggleInfo}>
                 <View style={styles.row}>
-                  <Text style={styles.headerText}>{translate('homeworks.details.members.title')}</Text>
+                  <Text style={styles.headerText}>{translate('homeworks.details.info.title')}</Text>
+                  <IconButton size={20} name={`caret-${isInfoShow ? 'down' : 'back'}-outline`} disabled />
                 </View>
-              </>
-            }
-          />
-        </Container>
+              </TouchableOpacity>
+              <Collapsible collapsed={!isInfoShow}>
+                <HomeworkInfo homework={homework} />
+              </Collapsible>
+              <View style={styles.row}>
+                <Text style={styles.headerText}>{translate('homeworks.details.members.title')}</Text>
+              </View>
+            </>
+          }
+          containerStyle={styles.interviewContainer}
+        />
       )}
     </>
   );
@@ -120,5 +119,8 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  interviewContainer: {
+    paddingHorizontal: 20,
   },
 });
