@@ -41,6 +41,7 @@ function TestQuestion({ variant, setVariant, variantValidation }) {
   };
 
   const removeAnswer = answer => {
+    console.log(answer);
     setAnswers(variant.testAnswerVariants.filter(x => x.key !== answer.key));
   };
 
@@ -50,7 +51,7 @@ function TestQuestion({ variant, setVariant, variantValidation }) {
         <BestValidation.ErrorMessage name="testAnswerVariants" />
         <Check.Group onChange={answer => onAnswerChange(answer.name, x => (x.isRight = answer.value))}>
           {variant?.testAnswerVariants?.map((item, index) => {
-            const key = item.id ?? item.key;
+            const key = item.key;
             return (
               <View key={key} style={styles.answer}>
                 <Check
@@ -114,9 +115,13 @@ const getInnerType = variant => {
 const init = (variant, type) => {
   variant.type = SOURCE_TYPE;
   variant.isMultipleAnswer = type === TEST_MULTI_QUESTION;
+  let answers = variant?.testAnswerVariants ?? [];
+  console.log(answers);
+  answers.forEach(x => {
+    x.key = x.id;
+  });
 
   if (!variant.isMultipleAnswer) {
-    let answers = variant?.testAnswerVariants ?? [];
     let forceRight = true;
     answers.forEach(answer => {
       if (answer.isRight) {

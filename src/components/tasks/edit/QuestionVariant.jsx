@@ -83,6 +83,7 @@ function QuestionVariant({ show = true, questionVariant, setQuestionVariant, sho
         ...questionInputRef.current.getValidationSchema(translate),
       };
 
+      questionInputRef.current.init(questionVariant, questionInputRef.current.getInnerType(questionVariant));
       setQuestionType(questionInputRef.current.getInnerType(questionVariant));
     }
   }, []);
