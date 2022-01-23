@@ -1,10 +1,11 @@
 import React, { useContext, useEffect, useMemo, useState } from 'react';
-import { FlatList, TouchableNativeFeedback, Modal, StyleSheet, View, ActivityIndicator } from 'react-native';
+import { FlatList, TouchableNativeFeedback, StyleSheet, View, ActivityIndicator } from 'react-native';
 import Bandage from '../../components/common/Bandage';
 import BottomPopup from '../../components/common/BottomPopup';
 import Container from '../../components/common/Container';
 import HorizontalMenu from '../../components/common/HorizontalMenu';
 import IconButton from '../../components/common/IconButton';
+import Modal from '../../components/common/Modal';
 import Text from '../../components/common/Text';
 import HomeworkInfo from '../../components/homeworks/HomeworkInfo';
 import MarkPanel, { MarkForm } from '../../components/interviews/MarkPanel';
@@ -89,7 +90,7 @@ export default function Interview({ navigation, route }) {
 
   useEffect(() => {
     if (state === types.STUDENT) {
-      if (interview) setInterview(interviews.find(i => i.interviewer.id === interview.interviewer.id));
+      if (interview && interview.full) setInterview(interviews.find(i => i.id === interview.id));
 
       const homeworkId = route.params.homeworkId;
       fetchLink.withPathTale(homeworkId).fetch().then(setHomework);
@@ -103,10 +104,7 @@ export default function Interview({ navigation, route }) {
           .withPathTale(interviewId)
           .fetch()
           .then(interview => {
-            let newInterviews = [...interviews];
-            const savedIndex = interviews.findIndex(i => i.interviewer.id === interviewId);
-            newInterviews[savedIndex] = { ...interview, full: true };
-            setInterviews(newInterviews);
+            updateInterview({ ...interview, full: true });
           })
           .catch(() => {
             setLoading(false);
@@ -164,9 +162,7 @@ export default function Interview({ navigation, route }) {
   }
 
   function handleAnswer(answer) {
-    if (answers != null) setAnswers([...(answers.filter(a => a.taskId !== answer.taskId) ?? []), answer]);
-    else setAnswers([answer]);
-    console.log(answers.filter(a => a.taskId !== answer.taskId));
+    setAnswers([...(answers?.filter(a => a.taskId !== answer.taskId) ?? []), answer]);
   }
 
   function handleClosedInterivew() {
@@ -174,9 +170,10 @@ export default function Interview({ navigation, route }) {
   }
 
   function updateInterview(newInterview) {
-    let newInterviews = [...interviews];
-    const savedIndex = interviews.findIndex(i => i.id == newInterview.id);
-    newInterviews[savedIndex] = newInterview;
+    const newInterviews = interviews.map(interview => {
+      if (interview.id == newInterview.id) return newInterview;
+      return interview;
+    });
     setInterviews(newInterviews);
   }
 
@@ -293,23 +290,8 @@ export default function Interview({ navigation, route }) {
         </BottomPopup>
       )}
       {state == types.STUDENT && homework && (
-        <Modal
-          animationType="fade"
-          transparent={true}
-          visible={showDetailsModal}
-          onRequestClose={() => setShowDetailsModal(false)}
-        >
-          <View style={styles.centeredView}>
-            <View style={styles.modalView}>
-              <View style={styles.modalHeader}>
-                <Text weight="medium" style={styles.modalTitle}>
-                  {translate('homeworks.info')}
-                </Text>
-                <IconButton name="close" onPress={() => setShowDetailsModal(false)} style={styles.modalClose} />
-              </View>
-              <HomeworkInfo homework={homework} />
-            </View>
-          </View>
+        <Modal title={translate('homeworks.info')} show={showDetailsModal} onClose={() => setShowDetailsModal(false)}>
+          <HomeworkInfo homework={homework} />
         </Modal>
       )}
     </>
@@ -340,36 +322,5 @@ const styles = StyleSheet.create({
   },
   markContainer: {
     marginBottom: 10,
-  },
-
-  centeredView: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#000000AA',
-  },
-  modalView: {
-    minHeight: 200,
-    width: '80%',
-    marginHorizontal: 40,
-    backgroundColor: Color.white,
-    borderRadius: 10,
-    paddingHorizontal: 20,
-    alignItems: 'center',
-  },
-  modalTitle: {
-    textAlign: 'center',
-    paddingVertical: 10,
-    color: Color.black,
-    flex: 1,
-  },
-  modalHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  modalClose: {
-    position: 'absolute',
-    right: 0,
-    padding: 0,
   },
 });

@@ -10,12 +10,12 @@ export default function ReplyMessage({ reply, short, children, ...props }) {
 
   return (
     <View style={styles.reply}>
-      {reply.content && (
+      {reply?.content && (
         <Text numberOfLines={short ? 1 : undefined} {...props}>
           {reply.content}
         </Text>
       )}
-      {reply.author && (
+      {reply?.author && (
         <View style={styles.footer}>
           {!reply.content && <Text style={styles.typeBadge}>{translate('homeworks.interview.taskMessage')}</Text>}
           <Text style={styles.replyAuthor}>

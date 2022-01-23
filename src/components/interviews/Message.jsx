@@ -1,17 +1,6 @@
 import moment from 'moment';
-import React, { useMemo, useRef, useState } from 'react';
-import {
-  Dimensions,
-  Pressable,
-  StyleSheet,
-  TouchableNativeFeedback,
-  TouchableOpacity,
-  Vibration,
-  View,
-} from 'react-native';
-import Animated from 'react-native-reanimated';
-import { SwipeRow } from 'react-native-swipe-list-view';
-import Icon from 'react-native-vector-icons/Ionicons';
+import React, { useMemo, useState } from 'react';
+import { Dimensions, Pressable, StyleSheet, TouchableNativeFeedback, View } from 'react-native';
 import Color from '../../constants';
 import { useTranslation } from '../../utils/Internationalization';
 import BottomPopup from '../common/BottomPopup';
@@ -19,20 +8,11 @@ import ConfirmationAlert from '../common/ConfirmationAlert';
 import Text from '../common/Text';
 import Avatar from '../user/Avatar';
 import MessageSectionDate from './MessageSectionDate';
-import ReplyMessage from './ReplyMessage';
 import UserManager from './UserManager';
-import { StatusBadge } from './StatusBadge';
-import { TestQuestionContent, TextQuestionContent } from './QuestionAnswer';
-import { clearHtmlTags } from '../tasks/TaskList';
-import Check from '../common/Check';
 import ReplyView from './ReplyView';
 import TextMessage from './messageTypes/TextMessage';
 import Answer from './messageTypes/Answer';
 import { Comment } from './messageTypes/Comment';
-
-const MAX_SWIPE_LENGTH = 60;
-const REPLY_SWIPE_LENGTH = 50;
-const REPLY_TRIGGER_LENGTH = 25;
 
 export function getStatusIcon(status) {
   if (status == 'NOT_PERFORMED') return 'ellipsis-horizontal-outline';

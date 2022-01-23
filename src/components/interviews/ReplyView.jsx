@@ -70,7 +70,6 @@ function ReplyView(
       onSwipeValueChange={onSwipeValueChange}
       swipeKey={swipeKey}
       directionalDistanceChangeThreshold={1}
-      onRightAction={() => console.log("AIF")}
       setScrollEnabled={onScrollEnabled}
       {...props}
     >

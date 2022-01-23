@@ -114,8 +114,8 @@ function TaskAnswer({ navigation, route }) {
       .link('interviewMessages')
       .post(taskAnswer, setTryActionPerforming)
       .then(data => {
-        onAnswer?.(data);
         continueTry(data);
+        onAnswer?.(data);
       })
       .catch(error => console.log('Не удалось создать ответ на задание.', error));
   };
@@ -233,7 +233,7 @@ function TaskAnswer({ navigation, route }) {
             </View>
           </View>
         )}
-      {isСompleted === false && !tryActionPerforming && (
+      {!interview?.closed && isСompleted === false && !tryActionPerforming && (
         <>
           {selectedAnswerTry === undefined && (
             <Button title={translate('homeworks.try.start')} style={styles.button} onPress={createTaskAnswer} />
@@ -261,7 +261,8 @@ function TaskAnswer({ navigation, route }) {
             )}
         </>
       )}
-      {state != types.STUDENT &&
+      {!interview?.closed &&
+        state != types.STUDENT &&
         selectedAnswerTry !== undefined &&
         selectedAnswerTry?.answerStatus !== STATUS_NOT_PERFORMED && (
           <Button

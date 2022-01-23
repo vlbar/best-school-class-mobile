@@ -415,7 +415,18 @@
       "loaded": "loaded",
       "selected": "selected",
       "answered": "answered",
-      "statusOutside": "Answer status changed outside"
+      "statusOutside": "Answer status changed outside",
+      "studentAnswer": "Student's answer",
+      "shortMax": "max",
+      "outOf": "out of",
+      "enterComment": "Enter comment text...",
+      "noAnswer": "No answer",
+      "questionFormulation": "Question formulation",
+      "newScore": "New score",
+      "appreciate": "Appreciate",
+      "return": "Return",
+      "reject": "Reject",
+      "rejectConfirmation": "Are you sure you want to reject a student's work? He won't get points for it and he won't be able to remake it."
     },
     "interview": {
       "tasks": "Tasks",

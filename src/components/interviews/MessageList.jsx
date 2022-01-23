@@ -29,8 +29,6 @@ export default function MessageList({
 
   const listRef = useRef(null);
 
-  console.log('LIST RERENDER');
-
   const memoComp = useMemo(() => {
     return (
       <MessageGroupContainer
