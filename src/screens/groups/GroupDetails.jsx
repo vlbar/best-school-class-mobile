@@ -17,7 +17,7 @@ import Color from '../../constants';
 import { ProfileContext } from '../../navigation/NavigationConstants';
 import { CREATE_GROUP_SCREEN } from './CreateGroup';
 import { GROUPS_SCREEN } from './Groups';
-import { GroupsContext } from '../../navigation/main/GroupsNavigationConstants';
+import { GroupsContext, GROUP_TASKS } from '../../navigation/main/GroupsNavigationConstants';
 import { useTranslation } from '../../utils/Internationalization';
 
 const ScrollableView = wrapScrollView(ScrollView);
@@ -66,6 +66,15 @@ export default function GroupDetails({ route, navigation }) {
     navigation.navigate(GROUPS_SCREEN);
   }
 
+  function goToTasks() {
+    navigation.navigate({
+      name: GROUP_TASKS,
+      params: {
+        groupId: group.id,
+      },
+    });
+  }
+
   let isCreator = group?.creatorId == user?.id;
   return (
     <>
@@ -106,7 +115,7 @@ export default function GroupDetails({ route, navigation }) {
                   </View>
                 </View>
               </View>
-              <TouchableOpacity>
+              <TouchableOpacity onPress={goToTasks}>
                 <View style={[styles.row, styles.tasks]}>
                   <Text>{translate('groups.groupDetails.tasks')}</Text>
                   <IconButton
