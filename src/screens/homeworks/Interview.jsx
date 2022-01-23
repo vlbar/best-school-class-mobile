@@ -31,18 +31,8 @@ export const INTERVIEW_SCREEN = 'interview';
 export default function Interview({ navigation, route }) {
   const { translate } = useTranslation();
   const { user, state } = useContext(ProfileContext);
-  const {
-    interviews,
-    setInterviews,
-    tasks,
-    setTasks,
-    homework,
-    setHomework,
-    answers,
-    setAnswers,
-    onAnswer,
-    setOnAnswer,
-  } = useContext(HomeworkContext);
+  const { interviews, setInterviews, tasks, setTasks, homework, setHomework, answers, setAnswers, onAnswer } =
+    useContext(HomeworkContext);
 
   const [interview, setInterview] = useState(undefined);
   const [loading, setLoading] = useState(true);
@@ -68,7 +58,7 @@ export default function Interview({ navigation, route }) {
         messageCreateHref={interview?.link('interviewMessages').href}
         currentUser={user}
         tasks={tasks}
-        onAnswer={handleAnswer}
+        onAnswer={onAnswer}
         onAnswerPress={goToAnswer}
         onInterviewClosed={handleClosedInterivew}
         closed={interview?.closed ?? null}
@@ -78,7 +68,6 @@ export default function Interview({ navigation, route }) {
   }, [interview, user, tasks]);
 
   useEffect(() => {
-    setOnAnswer(() => handleMessage);
     return () => {
       if (state === types.STUDENT) {
         setTasks([]);
@@ -146,8 +135,12 @@ export default function Interview({ navigation, route }) {
     }
   }, [interview]);
 
+  useEffect(() => {
+    if (answers?.length) handleMessage(answers[0]);
+  }, [answers]);
+
   function handleMessage(message) {
-    if (!message) return;
+    if (!message || interview?.full) return;
 
     interview
       .link()
@@ -159,10 +152,6 @@ export default function Interview({ navigation, route }) {
     updateInterview({ ...interview, ...mark, evaluator: user });
 
     setShowMarkPopup(false);
-  }
-
-  function handleAnswer(answer) {
-    setAnswers([...(answers?.filter(a => a.taskId !== answer.taskId) ?? []), answer]);
   }
 
   function handleClosedInterivew() {
