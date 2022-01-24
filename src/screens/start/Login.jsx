@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react';
 import axios from 'axios';
-import { Image, SafeAreaView, StyleSheet, TouchableWithoutFeedback, View, ScrollView } from 'react-native';
+import { SafeAreaView, StyleSheet, TouchableWithoutFeedback, View, ScrollView } from 'react-native';
 
 import Button from './../../components/common/Button';
 import Color from '../../constants';
@@ -16,6 +16,9 @@ import { getI } from '../../utils/Internationalization';
 import { PASSWORD_RECOVERY_SCREEN } from './PasswordRecovery';
 import { REGISTER_SCREEN } from './Register';
 import { TemporaryLoginContext } from '../../../App';
+import LanguageSelectButton from '../../components/auth/LanguageSelectButton';
+import { LANGUAGE_SELECT_SCREEN } from './LanguageSelect';
+import FastImage from 'react-native-fast-image';
 
 function login(username, password) {
   const cridentials = {
@@ -60,14 +63,19 @@ function Login({ navigation }) {
       .finally(() => setLoading(false));
   }
 
+  function goToLanguageSelect() {
+    navigation.navigate(LANGUAGE_SELECT_SCREEN);
+  }
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+      <ScrollView contentContainerStyle={{ flexGrow: 1, backgroundColor: Color.white }}>
+        <LanguageSelectButton onPress={goToLanguageSelect} />
         <View style={[styles.logoContainer]}>
           <Text style={styles.title}>Best school class</Text>
-          <Image source={logo} style={styles.logo} />
-          <Image source={cumwave} style={styles.cumwave} />
+          <FastImage source={logo} style={styles.logo} />
         </View>
+        <FastImage source={cumwave} style={styles.cumwave} />
         <Container style={styles.mainContainer}>
           <View>
             <Text style={styles.cumback}>{getI('start.comeback')}</Text>
@@ -130,19 +138,22 @@ const styles = StyleSheet.create({
   logo: {
     width: 160,
     height: 160,
-    marginBottom: -100,
+    marginBottom: 50
   },
   cumwave: {
+    overflow: 'hidden',
     width: '100%',
     height: 152,
-    resizeMode: 'stretch',
+    marginTop: -152,
+    resizeMode: 'contain',
   },
   container: {
     flexDirection: 'column',
     justifyContent: 'space-between',
   },
   title: {
-    fontWeight: '700',
+    fontWeight: 'bold',
+    marginTop: 40,
     fontSize: 30,
     textTransform: 'uppercase',
     paddingHorizontal: 60,
@@ -152,7 +163,7 @@ const styles = StyleSheet.create({
   cumback: {
     textAlign: 'center',
     fontSize: 17,
-    marginTop: 10,
+    marginTop: 20,
     marginBottom: 20,
     color: Color.black,
   },
