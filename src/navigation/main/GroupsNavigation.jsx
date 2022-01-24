@@ -4,7 +4,8 @@ import Groups, { GROUPS_SCREEN } from '../../screens/groups/Groups';
 import GroupDetails, { GROUPS_DETAILS_SCREEN } from '../../screens/groups/GroupDetails';
 import CreateGroup, { CREATE_GROUP_SCREEN } from '../../screens/groups/CreateGroup';
 import JoinGroup, { JOIN_GROUP_SCREEN } from '../../screens/groups/JoinGroup';
-import { GroupsContext } from './GroupsNavigationConstants';
+import { GroupsContext, GROUP_TASKS } from './GroupsNavigationConstants';
+import HomeworksNavigation from './HomeworksNavigation';
 
 const Stack = createStackNavigator();
 
@@ -31,12 +32,15 @@ const GroupsNavigation = () => {
       <Stack.Navigator
         initialRouteName={GROUPS_SCREEN}
         screenOptions={{ headerShown: false, ...TransitionPresets.ScaleFromCenterAndroid }}
-        
       >
         <Stack.Screen name={GROUPS_SCREEN} component={Groups} />
         <Stack.Screen name={GROUPS_DETAILS_SCREEN} component={GroupDetails} />
         <Stack.Screen name={CREATE_GROUP_SCREEN} component={CreateGroup} />
         <Stack.Screen name={JOIN_GROUP_SCREEN} component={JoinGroup} />
+        {
+          //FIXME: maybe fixed by navigation group??? (by redux for sure)}
+        }
+        <Stack.Screen name={GROUP_TASKS} component={HomeworksNavigation} />
       </Stack.Navigator>
     </GroupsContext.Provider>
   );

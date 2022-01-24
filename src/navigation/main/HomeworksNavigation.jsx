@@ -10,13 +10,16 @@ import TaskEvaluation, { TASK_EVALUATION_SCREEN } from '../../screens/homeworks/
 
 const Stack = createStackNavigator();
 
-const HomeworksNavigation = () => {
+const HomeworksNavigation = ({ route }) => {
   const [homework, setHomework] = useState(null);
   const [interviews, setInterviews] = useState([]);
   const [tasks, setTasks] = useState([]);
   const [answers, setAnswers] = useState([]);
   const [answerTry, setAnswerTry] = useState([]);
   const [onAnswer, setOnAnswer] = useState(null);
+
+  const groupId = route.params?.groupId;
+
   return (
     <HomeworkContext.Provider
       value={{
@@ -38,7 +41,7 @@ const HomeworksNavigation = () => {
         initialRouteName={HOMEWORKS_SCREEN}
         screenOptions={{ headerShown: false, ...TransitionPresets.ScaleFromCenterAndroid }}
       >
-        <Stack.Screen name={HOMEWORKS_SCREEN} component={Homeworks} />
+        <Stack.Screen name={HOMEWORKS_SCREEN} component={Homeworks} initialParams={{ groupId }} />
         <Stack.Screen name={HOMEWORKS_DETAILS_SCREEN} component={HomeworkDetails} />
         <Stack.Screen name={INTERVIEW_SCREEN} component={Interview} />
         <Stack.Screen name={TASK_ANSWER_SCREEN} component={TaskAnswer} />

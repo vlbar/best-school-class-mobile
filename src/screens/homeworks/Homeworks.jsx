@@ -1,18 +1,9 @@
-import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useContext, useState } from 'react';
 
-import Text from '../../components/common/Text';
-import Container from '../../components/common/Container';
 import Header from '../../components/navigation/Header';
-import { getCurrentLanguage, useTranslation } from '../../utils/Internationalization';
-import IconButton from '../../components/common/IconButton';
-import Color from '../../constants';
-import ModalTrigger from '../../components/common/ModalTrigger';
-import BottomPopup from '../../components/common/BottomPopup';
-import { FlatList, Pressable, ScrollView, StyleSheet, View } from 'react-native';
-import Sort from '../../components/common/Sort';
-import GroupSelect from '../../components/groups/GroupSelect';
+import { useTranslation } from '../../utils/Internationalization';
+import { StyleSheet } from 'react-native';
 import { ProfileContext } from '../../navigation/NavigationConstants';
-import Button from '../../components/common/Button';
 import HorizontalMenu from '../../components/common/HorizontalMenu';
 import HomeworkList from '../../components/homeworks/HomeworkList';
 import { HOMEWORKS_DETAILS_SCREEN } from './HomeworkDetails';
@@ -21,19 +12,12 @@ import { INTERVIEW_SCREEN } from './Interview';
 
 export const HOMEWORKS_SCREEN = 'homeworks';
 
-function Homeworks({ navigation }) {
+function Homeworks({ navigation, route }) {
   const { translate } = useTranslation();
   const { state } = useContext(ProfileContext);
-  const currentLanguage = getCurrentLanguage();
-  const [orderBy, setOrderBy] = useState('openingDate-asc');
   const [isFirstTab, setIsFirstTab] = useState(true);
 
-  const orders = useMemo(() => {
-    return {
-      'openingDate-asc': translate('homeworks.sortBy.newest'),
-      'openingDate-desc': translate('homeworks.sortBy.oldest'),
-    };
-  }, [currentLanguage]);
+  const groupId = route.params?.groupId;
 
   function onDetailsPress(homework) {
     navigation.navigate({
@@ -48,34 +32,34 @@ function Homeworks({ navigation }) {
     <>
       <Header
         title={translate('homeworks.title')}
-        canBack={false}
-        headerRight={
-          <ModalTrigger>
-            {({ show, open, close }) => {
-              return (
-                <>
-                  {show && (
-                    <BottomPopup title={translate('common.filters.title')} onClose={close}>
-                      <ScrollView contentContainerStyle={styles.container}>
-                        <Sort orders={orders} value={orderBy} onSelect={setOrderBy} />
-                        <GroupSelect roles={[state]} />
-                        <View style={styles.filterHeader}>
-                          <Pressable>
-                            <Text color={Color.silver} fontSize={16}>
-                              {translate('common.filters.cancel-all')}
-                            </Text>
-                          </Pressable>
-                          <Button title={translate('common.filters.apply')} style={styles.apply} />
-                        </View>
-                      </ScrollView>
-                    </BottomPopup>
-                  )}
-                  <IconButton name="filter-outline" color={Color.darkGray} onPress={open} />
-                </>
-              );
-            }}
-          </ModalTrigger>
-        }
+        canBack={!!groupId}
+        // headerRight={
+        //   <ModalTrigger>
+        //     {({ show, open, close }) => {
+        //       return (
+        //         <>
+        //           {show && (
+        //             <BottomPopup title={translate('common.filters.title')} onClose={close}>
+        //               <ScrollView contentContainerStyle={styles.container}>
+        //                 <Sort orders={orders} value={orderBy} onSelect={setOrderBy} />
+        //                 <GroupSelect roles={[state]} />
+        //                 <View style={styles.filterHeader}>
+        //                   <Pressable>
+        //                     <Text color={Color.silver} fontSize={16}>
+        //                       {translate('common.filters.cancel-all')}
+        //                     </Text>
+        //                   </Pressable>
+        //                   <Button title={translate('common.filters.apply')} style={styles.apply} />
+        //                 </View>
+        //               </ScrollView>
+        //             </BottomPopup>
+        //           )}
+        //           <IconButton name="filter-outline" color={Color.darkGray} onPress={open} />
+        //         </>
+        //       );
+        //     }}
+        //   </ModalTrigger>
+        // }
       />
 
       <HorizontalMenu style={styles.container}>
@@ -86,6 +70,7 @@ function Homeworks({ navigation }) {
             active={isFirstTab}
             role={state.name}
             order={'openingDate-desc'}
+            groupId={groupId}
           />
         </HorizontalMenu.Item>
         <HorizontalMenu.Item title={translate('homeworks.previous')} onPress={() => setIsFirstTab(false)}>
@@ -95,6 +80,7 @@ function Homeworks({ navigation }) {
             active={!isFirstTab}
             role={state.name}
             order={'openingDate-asc'}
+            groupId={groupId}
           />
         </HorizontalMenu.Item>
       </HorizontalMenu>

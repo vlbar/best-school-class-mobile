@@ -12,7 +12,7 @@ import HomeworkDate from './HomeworkDate';
 const HOMEWORK_URL = 'v1/homeworks';
 const fetchLink = new Link(HOMEWORK_URL);
 
-export default function HomeworkList({ active, role, order, containerStyles, onSelect }) {
+export default function HomeworkList({ active, role, order, groupId, containerStyles, onSelect }) {
   const { translate } = useTranslation();
   const homeworkPage = useRef(Resource.based(fetchLink));
   const [homeworks, setHomeworks] = useState([]);
@@ -21,14 +21,15 @@ export default function HomeworkList({ active, role, order, containerStyles, onS
   const currentLanguage = getCurrentLanguage();
 
   useEffect(() => {
-    if (active && fetchLink && !homeworkPage.current) fetchPage(fetchLink.fill('role', role).fill('order', order));
+    if (active && fetchLink && !homeworkPage.current)
+      fetchPage(fetchLink.fill('role', role).fill('order', order).fill('groupId', groupId));
   }, [active]);
 
   useEffect(() => {
     setHomeworks([]);
     homeworkPage.current = null;
-    if (active) fetchPage(fetchLink.fill('role', role).fill('order', order));
-  }, [role, order]);
+    if (active) fetchPage(fetchLink.fill('role', role).fill('order', order).fill('groupId', groupId));
+  }, [role, order, groupId]);
 
   function fetchPage(link, refresh = false) {
     link?.fetch(refresh ? setRefreshing : setLoading).then(page => {
