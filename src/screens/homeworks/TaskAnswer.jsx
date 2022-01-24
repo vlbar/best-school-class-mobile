@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, SafeAreaView, ScrollView, StyleSheet, View } from 'react-native';
 import moment from 'moment';
 import { useIsFocused } from '@react-navigation/native';
@@ -32,8 +32,10 @@ export const TASK_ANSWER_SCREEN = 'taskAnswer';
 function TaskAnswer({ navigation, route }) {
   const { translate } = useTranslation();
   const { state } = useContext(ProfileContext);
-  const { interviews, setInterviews, tasks, setAnswerTry, onAnswer } = useContext(HomeworkContext);
-  const [interview, setInterview] = useState();
+  const { interviews, setInterviews, tasks, answerTry, setAnswerTry, onAnswer } = useContext(HomeworkContext);
+  const interview = useMemo(() => {
+    return interviews.find(x => x.interviewer.id === route.params.interviewerId);
+  }, [interviews]);
   const [task, setTask] = useState();
 
   const [isFetching, setIsFetching] = useState(false);
@@ -46,8 +48,6 @@ function TaskAnswer({ navigation, route }) {
 
   useEffect(() => {
     const taskId = route.params.taskId;
-    const interviewId = route.params.interviewId;
-    setInterview(interviews.find(x => x.id === interviewId));
 
     const shortTask = tasks.find(t => t.id === taskId);
     setTask(shortTask);
@@ -65,6 +65,7 @@ function TaskAnswer({ navigation, route }) {
 
   const fetchAnswerTry = () => {
     let link;
+
     if (interview.link('answers')) {
       link = interview.link('answers').fill('taskId', task.id).fill('size', 1).fill('role', state.name);
     } else {
@@ -293,11 +294,12 @@ const styles = StyleSheet.create({
   },
   button: {
     marginHorizontal: 20,
-    marginVertical: 10,
+    marginBottom: 10,
   },
   scoreBlock: {
     backgroundColor: Color.ultraLightPrimary,
     marginTop: 10,
+    marginBottom: 10,
     marginHorizontal: 20,
     paddingHorizontal: 14,
     paddingTop: 0,

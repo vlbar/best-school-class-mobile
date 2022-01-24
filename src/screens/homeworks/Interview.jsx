@@ -59,7 +59,7 @@ export default function Interview({ navigation, route }) {
         currentUser={user}
         tasks={tasks}
         onAnswer={onAnswer}
-        onAnswerPress={goToAnswer}
+        onAnswerPress={msg => goToAnswer({ interviewerId: interview.interviewer.id, taskId: msg.taskId })}
         onInterviewClosed={handleClosedInterivew}
         closed={interview?.closed ?? null}
         onMessageCreate={handleMessage}
@@ -116,7 +116,7 @@ export default function Interview({ navigation, route }) {
                 undefined: interviewLink,
                 interviewMessages: interviewLink.withPathTale('messages'),
               },
-              { id: user.id },
+              { id: user.id, interviewer: user },
             ),
           );
           setLoading(false);
@@ -141,11 +141,10 @@ export default function Interview({ navigation, route }) {
 
   function handleMessage(message) {
     if (!message || interview?.full) return;
-
     interview
       .link()
       ?.fetch()
-      .then(interview => setInterview({ ...interview, full: true }));
+      .then(interview => updateInterview({ ...interview, full: true }));
   }
 
   function handleMark(mark) {
@@ -160,15 +159,15 @@ export default function Interview({ navigation, route }) {
 
   function updateInterview(newInterview) {
     const newInterviews = interviews.map(interview => {
-      if (interview.id == newInterview.id) return newInterview;
+      if (interview.interviewer.id == newInterview.interviewer.id) return newInterview;
       return interview;
     });
     setInterviews(newInterviews);
   }
 
-  function goToAnswer({ interviewId, taskId }) {
+  function goToAnswer({ interviewerId, taskId }) {
     if (state == types.STUDENT) setInterviews([interview]);
-    navigation.navigate(TASK_ANSWER_SCREEN, { interviewId: interview.id, taskId: taskId });
+    navigation.navigate(TASK_ANSWER_SCREEN, { interviewerId: interviewerId, taskId: taskId });
   }
 
   return (
@@ -202,7 +201,7 @@ export default function Interview({ navigation, route }) {
                   return (
                     <TouchableNativeFeedback
                       disabled={!answer && state != types.STUDENT}
-                      onPress={() => goToAnswer({ interviewId: interview.id, taskId: task.id })}
+                      onPress={() => goToAnswer({ interviewerId: interview.interviewer.id, taskId: task.id })}
                     >
                       <View style={{ paddingVertical: 10 }}>
                         <View style={styles.titleRow}>
