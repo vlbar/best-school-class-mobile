@@ -12,6 +12,9 @@ import InputForm from '../../components/common/InputForm';
 import Text from '../../components/common/Text';
 import { getI } from '../../utils/Internationalization';
 import { LOGIN_SCREEN } from './Login';
+import LanguageSelectButton from '../../components/auth/LanguageSelectButton';
+import { LANGUAGE_SELECT_SCREEN } from './LanguageSelect';
+import CumView from '../../components/auth/CumView';
 
 const change_url = 'v2/accounts/my/password';
 
@@ -28,10 +31,7 @@ export default function PasswordChange({ navigation, route }) {
   useEffect(() => {
     Promise.all([
       SecureStorage.setItem('token', route.params.authentication.token),
-      SecureStorage.setItem(
-        'refreshToken',
-        route.params.authentication.refreshToken,
-      ),
+      SecureStorage.setItem('refreshToken', route.params.authentication.refreshToken),
     ]);
   }, []);
 
@@ -44,33 +44,30 @@ export default function PasswordChange({ navigation, route }) {
       .finally(() => setLoading(false));
   }
 
+  function goToLanguageSelect() {
+    navigation.navigate(LANGUAGE_SELECT_SCREEN);
+  }
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <Image source={cumwave} style={styles.cumwave} />
-      <Container style={styles.container}>
-        <View>
-          <Text style={styles.title}>{getI('password-change.title')}</Text>
-          <Text style={styles.info}>{getI('password-change.info')}</Text>
-          <FormGroup>
-            <InputForm
-              label={getI('password-change.password')}
-              onChange={setPassword}
-              secureTextEntry={true}
-            />
-            <InputForm
-              label={getI('password-change.password-confirm')}
-              onChange={setPasswordConfirm}
-              placeholder={getI('password-change.password-confirm-placeholder')}
-              secureTextEntry={true}
-            />
-          </FormGroup>
-        </View>
-        <Button
-          onPress={onReset}
-          title={getI('password-change.restore')}
-          disabled={loading}
-        />
-      </Container>
+      <CumView title={getI('password-change.title')}>
+        <LanguageSelectButton onPress={goToLanguageSelect} />
+        <Container style={styles.container}>
+          <View>
+            <Text style={styles.info}>{getI('password-change.info')}</Text>
+            <FormGroup>
+              <InputForm label={getI('password-change.password')} onChange={setPassword} secureTextEntry={true} />
+              <InputForm
+                label={getI('password-change.password-confirm')}
+                onChange={setPasswordConfirm}
+                placeholder={getI('password-change.password-confirm-placeholder')}
+                secureTextEntry={true}
+              />
+            </FormGroup>
+          </View>
+          <Button onPress={onReset} title={getI('password-change.restore')} disabled={loading} />
+        </Container>
+      </CumView>
     </SafeAreaView>
   );
 }
@@ -89,12 +86,5 @@ const styles = StyleSheet.create({
   info: {
     fontSize: 17,
     marginVertical: 15,
-  },
-  cumwave: {
-    width: '100%',
-    height: 152,
-    marginTop: -100,
-    resizeMode: 'contain',
-    backgroundColor: Color.background,
   },
 });

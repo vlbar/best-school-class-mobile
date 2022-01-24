@@ -12,6 +12,9 @@ import cumwave from '../../assets/images/cumwave.png';
 import ErrorAlert from '../../components/common/ErrorAlert';
 import Text from '../../components/common/Text';
 import { getI, useTranslation } from '../../utils/Internationalization';
+import LanguageSelectButton from '../../components/auth/LanguageSelectButton';
+import { LANGUAGE_SELECT_SCREEN } from './LanguageSelect';
+import CumView from '../../components/auth/CumView';
 
 const tokens_url = 'v2/confirmation-tokens';
 const authorize_url = 'v2/auth/tokens?confirmationToken';
@@ -36,7 +39,7 @@ const CELL_COUNT = 6;
 const RESEND_TIMEOUT = 120;
 
 export const CONFIRMATION_SCREEN = 'Confirmation';
-export default function Confirmation({ route }) {
+export default function Confirmation({ navigation, route }) {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [code, setCode] = useState('');
@@ -88,62 +91,65 @@ export default function Confirmation({ route }) {
       .finally(() => setLoading(false));
   }
 
+  function goToLanguageSelect() {
+    navigation.navigate(LANGUAGE_SELECT_SCREEN);
+  }
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <Image source={cumwave} style={styles.cumwave} />
-      <Container style={styles.container}>
-        <View>
-          <Text style={styles.title}>{getI('confirmation.title')}</Text>
-          <Text style={styles.info}>{translate('confirmation.info', { email: route.params.email })}</Text>
-
-          <ErrorAlert message={getI(error)}></ErrorAlert>
-
-          <CodeField
-            ref={ref}
-            {...props}
-            value={code}
-            onChangeText={setCode}
-            cellCount={CELL_COUNT}
-            rootStyle={styles.codeFiledRoot}
-            keyboardType="number-pad"
-            textContentType="oneTimeCode"
-            onBlur={onNext}
-            renderCell={({ index, symbol, isFocused }) => {
-              return (
-                <View
-                  key={index}
-                  style={[styles.cellRoot, isFocused && styles.focusCell]}
-                  onLayout={getCellOnLayoutHandler(index)}
-                >
-                  <Text style={styles.cellText} allowFontScaling adjustsFontSizeToFit={true} numberOfLines={1}>
-                    {symbol || (isFocused ? <Cursor /> : null)}
-                  </Text>
-                </View>
-              );
-            }}
-          />
-          <TouchableWithoutFeedback onPress={onResend} disabled={resendTime}>
-            <View>
-              <Text style={styles.resend}>
-                {resendTime && (
-                  <Text>
-                    <Icon name="clock-o" style={styles.resendDisabled} />
-                    <Text style={styles.resendDisabled}>
-                      {' '}
-                      {resendTime}
-                      {'  '}
+      <CumView title={getI('confirmation.title')}>
+        <LanguageSelectButton onPress={goToLanguageSelect} />
+        <Container style={styles.container}>
+          <View>
+            <Text style={styles.info}>{translate('confirmation.info', { email: route.params.email })}</Text>
+            <ErrorAlert message={getI(error)}></ErrorAlert>
+            <CodeField
+              ref={ref}
+              {...props}
+              value={code}
+              onChangeText={setCode}
+              cellCount={CELL_COUNT}
+              rootStyle={styles.codeFiledRoot}
+              keyboardType="number-pad"
+              textContentType="oneTimeCode"
+              onBlur={onNext}
+              renderCell={({ index, symbol, isFocused }) => {
+                return (
+                  <View
+                    key={index}
+                    style={[styles.cellRoot, isFocused && styles.focusCell]}
+                    onLayout={getCellOnLayoutHandler(index)}
+                  >
+                    <Text style={styles.cellText} allowFontScaling adjustsFontSizeToFit={true} numberOfLines={1}>
+                      {symbol || (isFocused ? <Cursor /> : null)}
                     </Text>
+                  </View>
+                );
+              }}
+            />
+            <TouchableWithoutFeedback onPress={onResend} disabled={resendTime}>
+              <View>
+                <Text style={styles.resend}>
+                  {resendTime && (
+                    <Text>
+                      <Icon name="clock-o" style={styles.resendDisabled} />
+                      <Text style={styles.resendDisabled}>
+                        {' '}
+                        {resendTime}
+                        {'  '}
+                      </Text>
+                    </Text>
+                  )}
+                  <Text style={resendTime ? styles.resendDisabled : styles.resendButton}>
+                    {getI('confirmation.resend')}
                   </Text>
-                )}
-                <Text style={resendTime ? styles.resendDisabled : styles.resendButton}>
-                  {getI('confirmation.resend')}
                 </Text>
-              </Text>
-            </View>
-          </TouchableWithoutFeedback>
-        </View>
-        <Button onPress={onNext} title={getI('confirmation.next')} disabled={loading || code.length < 6} />
-      </Container>
+              </View>
+            </TouchableWithoutFeedback>
+          </View>
+          <Button onPress={onNext} title={getI('confirmation.next')} disabled={loading || code.length < 6} />
+        </Container>
+      </CumView>
     </SafeAreaView>
   );
 }
@@ -174,13 +180,6 @@ const styles = StyleSheet.create({
   info: {
     fontSize: 17,
     marginVertical: 15,
-  },
-  cumwave: {
-    width: '100%',
-    height: 152,
-    marginTop: -100,
-    resizeMode: 'contain',
-    backgroundColor: Color.background,
   },
   codeFiledRoot: {
     marginTop: 20,

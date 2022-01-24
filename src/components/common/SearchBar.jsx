@@ -43,7 +43,7 @@ function SearchBar({
 
     if (isValueEmpty) {
       if (onEmpty) onEmpty();
-      else onSearch('');
+      else onSearch?.('');
       lastSubmitedValue.current = newValue;
       clearTimeout(delayTimer.current);
       return;
