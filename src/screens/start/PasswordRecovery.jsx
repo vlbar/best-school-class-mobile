@@ -12,6 +12,9 @@ import ErrorAlert from '../../components/common/ErrorAlert';
 import { CONFIRMATION_SCREEN } from './Confirmation';
 import { getI } from '../../utils/Internationalization';
 import { PASSWORD_RESET_SCREEN } from './PasswordChange';
+import LanguageSelectButton from '../../components/auth/LanguageSelectButton';
+import { LANGUAGE_SELECT_SCREEN } from './LanguageSelect';
+import CumView from '../../components/auth/CumView';
 
 const tokens_url = 'v2/confirmation-tokens';
 
@@ -48,36 +51,36 @@ export default function PasswordRecovery({ navigation }) {
         });
       })
       .catch(err => {
-        if (err.response?.status == 404)
-          setError('password-recovery.account-not-found');
+        if (err.response?.status == 404) setError('password-recovery.account-not-found');
         console.log(err);
       })
       .finally(() => setLoading(false));
   }
 
+  function goToLanguageSelect() {
+    navigation.navigate(LANGUAGE_SELECT_SCREEN);
+  }
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <Image source={cumwave} style={styles.cumwave} />
-      <Container style={styles.container}>
-        <View>
-          <Text style={styles.title}>{getI('password-recovery.title')}</Text>
-          <Text style={styles.info}>{getI('password-recovery.info')}</Text>
-          <ErrorAlert message={getI(error)}></ErrorAlert>
-          <InputForm
-            label={getI('password-recovery.email')}
-            onChange={setEmail}
-            placeholder={getI('password-recovery.email-placeholder')}
-            textContentType="emailAddress"
-            autoComplete="email"
-            keyboardType="email-address"
-          />
-        </View>
-        <Button
-          onPress={onNext}
-          title={getI('password-recovery.continue', 'Продолжить')}
-          disabled={loading}
-        />
-      </Container>
+      <CumView title={getI('password-recovery.title')}>
+        <LanguageSelectButton onPress={goToLanguageSelect} />
+        <Container style={styles.container}>
+          <View>
+            <Text style={styles.info}>{getI('password-recovery.info')}</Text>
+            <ErrorAlert message={getI(error)}></ErrorAlert>
+            <InputForm
+              label={getI('password-recovery.email')}
+              onChange={setEmail}
+              placeholder={getI('password-recovery.email-placeholder')}
+              textContentType="emailAddress"
+              autoComplete="email"
+              keyboardType="email-address"
+            />
+          </View>
+          <Button onPress={onNext} title={getI('password-recovery.continue', 'Продолжить')} disabled={loading} />
+        </Container>
+      </CumView>
     </SafeAreaView>
   );
 }
@@ -95,13 +98,6 @@ const styles = StyleSheet.create({
   },
   info: {
     fontSize: 17,
-    marginVertical: 15,
-  },
-  cumwave: {
-    width: '100%',
-    height: 152,
-    marginTop: -100,
-    resizeMode: 'contain',
-    backgroundColor: Color.background,
+    marginBottom: 15,
   },
 });

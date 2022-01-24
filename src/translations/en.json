@@ -50,6 +50,9 @@
       "password-required": "You did not enter your password!"
     }
   },
+  "languageSelect": {
+    "title": "Choose language"
+  },
   "password-recovery": {
     "title": "Password recovery",
     "info": "Please enter your username or email associated with your account and we will send you a password reset code.",

@@ -4,7 +4,6 @@ import axios from 'axios';
 import SecureStorage from 'react-native-secure-storage';
 import { Formik } from 'formik';
 import { StyleSheet, View, TouchableWithoutFeedback, ScrollView, Image, SafeAreaView } from 'react-native';
-
 import Button from '../../components/common/Button';
 import Color from '../../constants';
 import Container from '../../components/common/Container';
@@ -15,8 +14,11 @@ import InputForm from '../../components/common/InputForm';
 import Text from '../../components/common/Text';
 import { CONFIRMATION_SCREEN } from './Confirmation';
 import { getI } from '../../utils/Internationalization';
-import { LOGIN_SCREEN } from './Login';
 import { TemporaryLoginContext } from '../../../App';
+import Header from '../../components/navigation/Header';
+import LanguageSelectButton from '../../components/auth/LanguageSelectButton';
+import { LANGUAGE_SELECT_SCREEN } from './LanguageSelect';
+import CumView from '../../components/auth/CumView';
 
 function register(values) {
   return axios.post(`v2/accounts/`, values).then(response => {
@@ -61,7 +63,7 @@ function Register({ navigation }) {
   });
 
   function onLogin() {
-    navigation.navigate(LOGIN_SCREEN);
+    navigation.pop();
   }
 
   function afterConfirm(data) {
@@ -94,10 +96,15 @@ function Register({ navigation }) {
       });
   }
 
+  function goToLanguageSelect() {
+    navigation.navigate(LANGUAGE_SELECT_SCREEN);
+  }
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-        <Image source={cumwave} style={styles.cumwave} />
+      <CumView title={getI('register.title')}>
+        <LanguageSelectButton onPress={goToLanguageSelect} />
+
         <Formik
           initialValues={{
             email: '',
@@ -127,7 +134,6 @@ function Register({ navigation }) {
           }) => (
             <Container style={styles.container}>
               <View>
-                <Text style={styles.title}>{getI('register.title')}</Text>
                 <ErrorAlert message={getI(error)}></ErrorAlert>
                 <FormGroup>
                   <InputForm
@@ -136,7 +142,6 @@ function Register({ navigation }) {
                     value={values.secondName}
                     errorMessage={errors.secondName && touched.secondName && errors.secondName}
                     label={getI('register.second-name')}
-                    placeholder={getI('register.second-name-placeholder')}
                   />
                   <InputForm
                     onChange={handleChange('firstName')}
@@ -158,7 +163,6 @@ function Register({ navigation }) {
                     value={values.email}
                     errorMessage={errors.email && touched.email && errors.email}
                     label={getI('register.email')}
-                    placeholder={getI('register.email-placeholder')}
                     textContentType="emailAddress"
                     autoComplete="email"
                     keyboardType="email-address"
@@ -190,7 +194,7 @@ function Register({ navigation }) {
             </Container>
           )}
         </Formik>
-      </ScrollView>
+      </CumView>
     </SafeAreaView>
   );
 }
@@ -215,13 +219,6 @@ const styles = StyleSheet.create({
   littleText: {
     fontSize: 14,
     color: Color.gray,
-  },
-  cumwave: {
-    width: '100%',
-    height: 152,
-    marginTop: -100,
-    resizeMode: 'contain',
-    backgroundColor: Color.background,
   },
 });
 
