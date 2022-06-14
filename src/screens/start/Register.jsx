@@ -3,11 +3,10 @@ import * as yup from 'yup';
 import axios from 'axios';
 import SecureStorage from 'react-native-secure-storage';
 import { Formik } from 'formik';
-import { StyleSheet, View, TouchableWithoutFeedback, ScrollView, Image, SafeAreaView } from 'react-native';
+import { StyleSheet, View, TouchableWithoutFeedback, SafeAreaView } from 'react-native';
 import Button from '../../components/common/Button';
 import Color from '../../constants';
 import Container from '../../components/common/Container';
-import cumwave from '../../assets/images/cumwave.png';
 import ErrorAlert from '../../components/common/ErrorAlert';
 import FormGroup from '../../components/common/FormGroup';
 import InputForm from '../../components/common/InputForm';
@@ -15,7 +14,6 @@ import Text from '../../components/common/Text';
 import { CONFIRMATION_SCREEN } from './Confirmation';
 import { getI } from '../../utils/Internationalization';
 import { TemporaryLoginContext } from '../../../App';
-import Header from '../../components/navigation/Header';
 import LanguageSelectButton from '../../components/auth/LanguageSelectButton';
 import { LANGUAGE_SELECT_SCREEN } from './LanguageSelect';
 import CumView from '../../components/auth/CumView';
@@ -102,7 +100,7 @@ function Register({ navigation }) {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <CumView title={getI('register.title')}>
+      <CumView title={getI('register.title')} scrollOnKeyboard={false}>
         <LanguageSelectButton onPress={goToLanguageSelect} />
 
         <Formik
@@ -124,8 +122,6 @@ function Register({ navigation }) {
             isValid,
             touched,
             isSubmitting,
-            submitForm,
-            setFieldError,
             errors,
             handleChange,
             handleBlur,
@@ -135,7 +131,7 @@ function Register({ navigation }) {
             <Container style={styles.container}>
               <View>
                 <ErrorAlert message={getI(error)}></ErrorAlert>
-                <FormGroup>
+                <FormGroup onBlur={() => (dirty && isValid && !isSubmitting) && handleSubmit()}>
                   <InputForm
                     onChange={handleChange('secondName')}
                     onBlur={handleBlur('secondName')}

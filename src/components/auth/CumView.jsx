@@ -1,14 +1,23 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import cumwave from '../../assets/images/cumwave.png';
 import Color from '../../constants';
+import useIsKeyboardShow from '../../utils/useIsKeyboardShow';
 import Text from '../common/Text';
 import Header from '../navigation/Header';
 
-export default function CumView({ children, title }) {
+export default function CumView({ children, title, scrollOnKeyboard = true }) {
   const titleY = useRef(0);
   const [fullHeader, setFullHeader] = useState(false);
+
+  const scrollRef = useRef();
+  const isKeyboardShow = useIsKeyboardShow();
+
+  useEffect(() => {
+    if(scrollOnKeyboard && isKeyboardShow) 
+      scrollRef.current?.scrollToEnd({animated: true});
+  }, [isKeyboardShow]) 
 
   function handleTitleLayout(e) {
     titleY.current = e.nativeEvent.layout.y - e.nativeEvent.layout.height;
@@ -25,7 +34,7 @@ export default function CumView({ children, title }) {
         <Header backgroundColor={fullHeader ? Color.white : Color.transparent} title={fullHeader ? title : undefined} />
       </View>
 
-      <ScrollView styles={styles.container} onScroll={handleScroll}>
+      <ScrollView ref={scrollRef} onScroll={handleScroll} contentContainerStyle={styles.container}>
         <View>
           <FastImage source={cumwave} style={styles.cumwave} />
         </View>
@@ -41,8 +50,7 @@ export default function CumView({ children, title }) {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: Color.white,
-    position: 'absolute',
+    flexGrow: 1
   },
   header: {
     position: 'absolute',

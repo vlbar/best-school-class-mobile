@@ -12,6 +12,8 @@ import 'moment/locale/de';
 import 'moment/locale/ko';
 import 'moment/locale/hi';
 
+import axios from 'axios';
+
 const defaultLanguage = 'en';
 const translations = [
   {
@@ -74,6 +76,7 @@ export async function configureInternationalization() {
       language = getFallbackAvailableLanguage(getSystemLanguage());
     });
   moment.locale(language);
+  axios.defaults.headers['Accept-Language'] = language;
   return initInternationalization(language, resources);
 }
 
@@ -125,9 +128,9 @@ export function getCurrentLanguage() {
 }
 
 export function changeLanguage(lng) {
-  moment.locale(lng);
   i18n.changeLanguage(lng);
   moment.locale(lng);
+  axios.defaults.headers['Accept-Language'] = lng;
   AsyncStorage.setItem('@language', lng).catch(err => console.log(err));
 }
 

@@ -1,13 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
-import { Image, SafeAreaView, StyleSheet, View } from 'react-native';
+import { SafeAreaView, StyleSheet, View } from 'react-native';
 
 import Button from '../../components/common/Button';
 import Text from '../../components/common/Text';
 import Container from '../../components/common/Container';
 import InputForm from '../../components/common/InputForm';
-import cumwave from '../../assets/images/cumwave.png';
-import Color from '../../constants';
 import ErrorAlert from '../../components/common/ErrorAlert';
 import { CONFIRMATION_SCREEN } from './Confirmation';
 import { getI } from '../../utils/Internationalization';
@@ -15,7 +13,7 @@ import { PASSWORD_RESET_SCREEN } from './PasswordChange';
 import LanguageSelectButton from '../../components/auth/LanguageSelectButton';
 import { LANGUAGE_SELECT_SCREEN } from './LanguageSelect';
 import CumView from '../../components/auth/CumView';
-
+import useIsKeyboardShow from '../../utils/useIsKeyboardShow';
 const tokens_url = 'v2/confirmation-tokens';
 
 function send(email) {
@@ -76,6 +74,7 @@ export default function PasswordRecovery({ navigation }) {
               textContentType="emailAddress"
               autoComplete="email"
               keyboardType="email-address"
+              onSubmitEditing={onNext}
             />
           </View>
           <Button onPress={onNext} title={getI('password-recovery.continue', 'Продолжить')} disabled={loading} />
@@ -87,9 +86,9 @@ export default function PasswordRecovery({ navigation }) {
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: 'column',
     justifyContent: 'space-between',
     paddingBottom: 16,
+    flexGrow: 1,
   },
   title: {
     fontSize: 17,
