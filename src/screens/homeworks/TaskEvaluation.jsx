@@ -1,11 +1,9 @@
 import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, StyleSheet, TouchableNativeFeedback, View } from 'react-native';
-import { KeyboardAwareFlatList } from 'react-native-keyboard-aware-scroll-view';
 import { SwipeListView } from 'react-native-swipe-list-view';
 import BottomPopup from '../../components/common/BottomPopup';
 import Button from '../../components/common/Button';
 import ConfirmationAlert from '../../components/common/ConfirmationAlert';
-import Container from '../../components/common/Container';
 import Text from '../../components/common/Text';
 import QuestionAnswer from '../../components/interviews/QuestionAnswer';
 import Header from '../../components/navigation/Header';
@@ -105,29 +103,34 @@ export default function TaskEvaluation({ navigation }) {
       />
       <View style={styles.container}>
         <View style={styles.bottomPanel}>
-          <View
-            style={{
-              flexGrow: 1,
-              marginRight: 20,
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-            }}
-          >
-            <Text weight="bold">Текущий балл: </Text>
-            {(newScoreFetching || saving) && <ActivityIndicator color={Color.primary} size={25} />}
+          <View style={styles.score}>
+            <Text style={styles.scoreText}>
+              {translate('homeworks.try.newScore')} ({translate('homeworks.try.shortMax')} {task.maxScore}):
+            </Text>
+            {(newScoreFetching || saving) && (
+              <View style={{ justifyContent: 'center' }}>
+                <ActivityIndicator color={Color.primary} size={35} />
+              </View>
+            )}
             {!newScoreFetching && !saving && (
-              <Text Text weight="bold">
+              <Text style={styles.scoreNumber} weight="medium">
                 {currentScore}
               </Text>
             )}
           </View>
-          <Button title={'Оценить'} onPress={() => setShowPopup(true)} />
+
+          <View>
+            <Button
+              disabled={newScoreFetching || saving}
+              title={translate('homeworks.interview.markAction')}
+              onPress={() => setShowPopup(true)}
+            />
+          </View>
         </View>
       </View>
       <BottomPopup show={showPopup} title={translate('common.actions')} onClose={() => setShowPopup(false)}>
         {saving && (
-          <View style={{ flexGrow: 1, alignItems: 'center', justifyContent: 'center' }}>
+          <View style={{ flexGrow: 1, alignItems: 'center', justifyContent: 'center', minHeight: 175 }}>
             <ActivityIndicator color={Color.primary} size={50} />
           </View>
         )}
@@ -135,27 +138,29 @@ export default function TaskEvaluation({ navigation }) {
           <>
             <TouchableNativeFeedback onPress={() => onEvaluate('APPRECIATED')}>
               <View style={{ borderTopWidth: StyleSheet.hairlineWidth }}>
-                <Text style={{ textAlign: 'center', padding: 15, color: Color.success }}>{'Принять'}</Text>
+                <Text style={{ textAlign: 'center', padding: 15, color: Color.success }}>
+                  {translate('homeworks.try.appreciate')}
+                </Text>
               </View>
             </TouchableNativeFeedback>
             {(!task.duration || task.duration - 5 > answerTry.totalDuration / 1000 / 60) && (
               <TouchableNativeFeedback onPress={() => onEvaluate('RETURNED')}>
                 <View style={{ borderTopWidth: StyleSheet.hairlineWidth }}>
-                  <Text style={{ textAlign: 'center', padding: 15 }}>{'Вернуть'}</Text>
+                  <Text style={{ textAlign: 'center', padding: 15 }}>{translate('homeworks.try.return')}</Text>
                 </View>
               </TouchableNativeFeedback>
             )}
             <ConfirmationAlert
               title={translate('common.confirmation')}
-              text={
-                'Уверены, что хотите отклонить работу ученика? Он не получит за неё баллы и не сможет переделать её.'
-              }
+              text={translate('homeworks.try.rejectConfirmation')}
               onConfirm={() => onEvaluate('NOT_APPRECIATED')}
             >
               {({ confirm }) => (
                 <TouchableNativeFeedback onPress={confirm}>
                   <View style={{ borderTopWidth: StyleSheet.hairlineWidth }}>
-                    <Text style={{ textAlign: 'center', padding: 15, color: Color.danger }}>{'Отклонить'}</Text>
+                    <Text style={{ textAlign: 'center', padding: 15, color: Color.danger }}>
+                      {translate('homeworks.try.reject')}
+                    </Text>
                   </View>
                 </TouchableNativeFeedback>
               )}
@@ -172,9 +177,25 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   bottomPanel: {
+    marginVertical: 10,
+  },
+  score: {
+    marginBottom: 10,
+    flexGrow: 1,
+    backgroundColor: '#E6E6E6',
+    borderRadius: 12,
+    padding: 8,
+    paddingLeft: 12,
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 10,
+    justifyContent: 'space-between',
+  },
+  scoreText: {
+    color: Color.gray,
+    marginHorizontal: 10,
+  },
+  scoreNumber: {
+    fontSize: 24,
+    marginHorizontal: 10,
   },
 });

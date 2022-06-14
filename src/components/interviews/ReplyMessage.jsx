@@ -1,26 +1,27 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import Icon from 'react-native-vector-icons/Ionicons';
 import Color from '../../constants';
 import { useTranslation } from '../../utils/Internationalization';
 import Text from '../common/Text';
-import Avatar from '../user/Avatar';
 import UserName from '../user/UserName';
-import { getStatusIcon } from './Message';
-import UserManager from './UserManager';
 
 export default function ReplyMessage({ reply, short, children, ...props }) {
   const { translate } = useTranslation();
 
   return (
     <View style={styles.reply}>
-      <Text style={{ flex: 1 }} numberOfLines={short ? 1 : undefined} {...props}>
-        {reply.content}
-      </Text>
-      {reply.author && (
-        <Text style={styles.replyAuthor}>
-          — <UserName user={reply.author} textSize={14} short />
+      {reply?.content && (
+        <Text numberOfLines={short ? 1 : undefined} {...props}>
+          {reply.content}
         </Text>
+      )}
+      {reply?.author && (
+        <View style={styles.footer}>
+          {!reply.content && <Text style={styles.typeBadge}>{translate('homeworks.interview.taskMessage')}</Text>}
+          <Text style={styles.replyAuthor}>
+            — <UserName user={reply.author} textSize={14} short />
+          </Text>
+        </View>
       )}
       {children}
     </View>
@@ -44,5 +45,14 @@ const styles = StyleSheet.create({
   replyAuthor: {
     textAlign: 'right',
     fontSize: 12,
+  },
+  typeBadge: {
+    backgroundColor: Color.lightPrimary,
+    paddingHorizontal: 5,
+    borderRadius: 5,
+    fontStyle: 'italic',
+    color: Color.white,
+    fontSize: 14,
+    alignSelf: 'flex-start',
   },
 });

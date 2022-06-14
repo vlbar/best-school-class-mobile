@@ -18,6 +18,7 @@ export default function MessageList({
   onAnswerPress,
   messageCreateHref,
   onMessageCreate,
+  onInterviewClosed,
   tasks,
 }) {
   const { translate } = useTranslation();
@@ -27,8 +28,6 @@ export default function MessageList({
   const [ping, setPing] = useState(null);
 
   const listRef = useRef(null);
-
-  console.log('LIST RERENDER');
 
   const memoComp = useMemo(() => {
     return (
@@ -48,7 +47,7 @@ export default function MessageList({
         onScrollEnabled={handleScroll}
       />
     );
-  }, [fetchHref, tasks, currentUser]);
+  }, [fetchHref, tasks, currentUser, closed]);
 
   function handleMessage(message) {
     onMessageCreate?.(message);
@@ -64,7 +63,11 @@ export default function MessageList({
     <View style={styles.container}>
       {memoComp}
       <MessageContext.Provider value={{ replyMessage, setReply, ping, setPing, editingMessage, setEdit }}>
-        {!closed && <MessageInput onSubmit={handleMessage} messageCreateHref={messageCreateHref} />}
+        {!closed && (
+          <View style={{ paddingHorizontal: 20 }}>
+            <MessageInput onInterviewClosed={onInterviewClosed} onSubmit={handleMessage} messageCreateHref={messageCreateHref} />
+          </View>
+        )}
       </MessageContext.Provider>
       {closed && (
         <View style={styles.closedContainer}>
@@ -86,6 +89,7 @@ const styles = StyleSheet.create({
   },
   messageContainer: {
     flexGrow: 1,
+    paddingHorizontal: 20,
   },
   messageInputContainer: {
     flexDirection: 'row',

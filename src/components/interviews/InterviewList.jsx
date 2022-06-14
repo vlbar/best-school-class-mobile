@@ -17,6 +17,7 @@ export default function InterviewList({
   withInactive,
   onSelect: handleSelect,
   ListHeaderComponent,
+  containerStyle,
 }) {
   const { translate } = useTranslation();
   const page = useRef(undefined);
@@ -143,6 +144,13 @@ export default function InterviewList({
         </View>
       }
       ListFooterComponent={loading && <ActivityIndicator color={Color.primary} size={50} />}
+      ListFooterComponentStyle={{
+        flexGrow: 1,
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
+      contentContainerStyle={[{ flexGrow: 1 }, containerStyle]}
       ListEmptyComponent={
         !loading && (
           <View style={styles.emptyMessage}>

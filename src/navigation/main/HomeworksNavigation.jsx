@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { TransitionPresets, createStackNavigator } from '@react-navigation/stack';
 import Homeworks, { HOMEWORKS_SCREEN } from '../../screens/homeworks/Homeworks';
 import HomeworkDetails, { HOMEWORKS_DETAILS_SCREEN } from '../../screens/homeworks/HomeworkDetails';
@@ -14,9 +14,40 @@ const HomeworksNavigation = ({ route }) => {
   const [homework, setHomework] = useState(null);
   const [interviews, setInterviews] = useState([]);
   const [tasks, setTasks] = useState([]);
-  const [answers, setAnswers] = useState([]);
+  const [answers, setAnswers] = useState(null);
   const [answerTry, setAnswerTry] = useState([]);
-  const [onAnswer, setOnAnswer] = useState(null);
+  //REACT BEST STATE SAVING THANK YOU. P.S.: Говно собачье, жлоб вонючий, дерьмо, сука, падла! Иди сюда, мерзавец, негодяй, гад! Иди сюда, ты, говно, жопа!
+  const answersRef = useRef(null);
+
+  //FIXME
+  //  ░░░░██╗░░░░██╗███████╗██╗██╗░░██╗███╗░░░███╗███████╗  ███████╗██████╗░░█████╗░████████╗
+  //  ░░░██╔╝░░░██╔╝██╔════╝██║╚██╗██╔╝████╗░████║██╔════╝  ██╔════╝██╔══██╗██╔══██╗╚══██╔══╝
+  //  ░░██╔╝░░░██╔╝░█████╗░░██║░╚███╔╝░██╔████╔██║█████╗░░  █████╗░░██████╦╝███████║░░░██║░░░
+  //  ░██╔╝░░░██╔╝░░██╔══╝░░██║░██╔██╗░██║╚██╔╝██║██╔══╝░░  ██╔══╝░░██╔══██╗██╔══██║░░░██║░░░
+  //  ██╔╝░░░██╔╝░░░██║░░░░░██║██╔╝╚██╗██║░╚═╝░██║███████╗  ███████╗██████╦╝██║░░██║░░░██║░░░
+  //  ╚═╝░░░░╚═╝░░░░╚═╝░░░░░╚═╝╚═╝░░╚═╝╚═╝░░░░░╚═╝╚══════╝  ╚══════╝╚═════╝░╚═╝░░╚═╝░░░╚═╝░░░
+  //  
+  //  ██╗░░██╗██╗░░░██╗███████╗████████╗░█████╗░  ██████╗░██████╗░░█████╗░░██████╗████████╗░█████╗░
+  //  ██║░░██║██║░░░██║██╔════╝╚══██╔══╝██╔══██╗  ██╔══██╗██╔══██╗██╔══██╗██╔════╝╚══██╔══╝██╔══██╗
+  //  ███████║██║░░░██║█████╗░░░░░██║░░░███████║  ██████╔╝██████╔╝██║░░██║╚█████╗░░░░██║░░░██║░░██║
+  //  ██╔══██║██║░░░██║██╔══╝░░░░░██║░░░██╔══██║  ██╔═══╝░██╔══██╗██║░░██║░╚═══██╗░░░██║░░░██║░░██║
+  //  ██║░░██║╚██████╔╝███████╗░░░██║░░░██║░░██║  ██║░░░░░██║░░██║╚█████╔╝██████╔╝░░░██║░░░╚█████╔╝
+  //  ╚═╝░░╚═╝░╚═════╝░╚══════╝░░░╚═╝░░░╚═╝░░╚═╝  ╚═╝░░░░░╚═╝░░╚═╝░╚════╝░╚═════╝░░░░╚═╝░░░░╚════╝░
+  //  
+  //  ██████╗░██╗░░░░░██╗░░░██╗░█████╗░████████╗  ░█████╗░██████╗░██╗███╗░░██╗░██████╗░███████╗
+  //  ██╔══██╗██║░░░░░╚██╗░██╔╝██╔══██╗╚══██╔══╝  ██╔══██╗██╔══██╗██║████╗░██║██╔════╝░██╔════╝
+  //  ██████╦╝██║░░░░░░╚████╔╝░███████║░░░██║░░░  ██║░░╚═╝██████╔╝██║██╔██╗██║██║░░██╗░█████╗░░
+  //  ██╔══██╗██║░░░░░░░╚██╔╝░░██╔══██║░░░██║░░░  ██║░░██╗██╔══██╗██║██║╚████║██║░░╚██╗██╔══╝░░
+  //  ██████╦╝███████╗░░░██║░░░██║░░██║░░░██║░░░  ╚█████╔╝██║░░██║██║██║░╚███║╚██████╔╝███████╗
+  //  ╚═════╝░╚══════╝░░░╚═╝░░░╚═╝░░╚═╝░░░╚═╝░░░  ░╚════╝░╚═╝░░╚═╝╚═╝╚═╝░░╚══╝░╚═════╝░╚══════╝
+  useEffect(() => {
+    answersRef.current = answers;
+  }, [answers]);
+
+  //WHERE IS SUKA STATE
+  function handleAnswer(answer) {
+    setAnswers([answer, ...(answersRef.current?.filter(a => a.taskId !== answer.taskId) ?? [])]);
+  }
 
   const groupId = route.params?.groupId;
 
@@ -33,8 +64,7 @@ const HomeworksNavigation = ({ route }) => {
         setAnswers,
         answerTry,
         setAnswerTry,
-        onAnswer,
-        setOnAnswer,
+        onAnswer: handleAnswer,
       }}
     >
       <Stack.Navigator
