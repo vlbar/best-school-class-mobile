@@ -80,7 +80,7 @@ function Login({ navigation }) {
           <View>
             <Text style={styles.cumback}>{getI('start.comeback')}</Text>
             <ErrorAlert message={getI(error)}></ErrorAlert>
-            <FormGroup>
+            <FormGroup onBlur={() => !loading && onLogin()}>
               <InputForm
                 label={getI('start.username')}
                 onChange={setUsername}

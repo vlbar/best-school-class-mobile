@@ -55,7 +55,7 @@ export default function PasswordChange({ navigation, route }) {
         <Container style={styles.container}>
           <View>
             <Text style={styles.info}>{getI('password-change.info')}</Text>
-            <FormGroup>
+            <FormGroup onBlur={() => !loading && onReset()}>
               <InputForm label={getI('password-change.password')} onChange={setPassword} secureTextEntry={true} />
               <InputForm
                 label={getI('password-change.password-confirm')}

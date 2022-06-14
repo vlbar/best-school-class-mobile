@@ -3,12 +3,11 @@ import React, { useEffect, useRef, useState } from 'react';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import moment from 'moment';
 import { CodeField, Cursor, useBlurOnFulfill, useClearByFocusCell } from 'react-native-confirmation-code-field';
-import { Image, SafeAreaView, StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
+import { SafeAreaView, StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
 
 import Button from '../../components/common/Button';
 import Color from '../../constants';
 import Container from '../../components/common/Container';
-import cumwave from '../../assets/images/cumwave.png';
 import ErrorAlert from '../../components/common/ErrorAlert';
 import Text from '../../components/common/Text';
 import { getI, useTranslation } from '../../utils/Internationalization';

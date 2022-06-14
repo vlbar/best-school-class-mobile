@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-export default function FormGroup({ children }) {
+export default function FormGroup({ children, onBlur }) {
   const refs = useRef([]);
 
   function onSumbit(i) {
@@ -21,6 +21,7 @@ export default function FormGroup({ children }) {
           inputRef: processRef,
           returnKeyType: i < children.length - 1 ? 'next' : null,
           blurOnSubmit: i == children.length - 1,
+          onBlur: (i == children.length - 1)? onBlur : undefined
         });
       })}
     </View>
